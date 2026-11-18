@@ -6625,9 +6625,7 @@ body {
        หน้าต่างลงทะเบียนประเมินสุขภาพก่อนเข้าสู่หน้าเว็บ (Onboarding Screen)
        ==================================================================== -->
   <div class="onboarding-overlay" id="onboarding-screen">
-    <div class="onboarding-card" style="position: relative;">
-      <!-- ปุ่มปิดเพื่อเข้าสู่หน้าแรกทันที -->
-      <button type="button" class="btn-onboarding-close-x" onclick="window.fitjoyEnterApp();" title="เข้าสู่หน้าหลัก">&times;</button>
+    <div class="onboarding-card">
       <div class="onboarding-header">
         <div class="brand-icon" style="margin: 0 auto 10px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -6704,14 +6702,9 @@ body {
           </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
-            <button type="submit" class="btn-onboarding-calc" id="btn-submit-registration" onclick="event.preventDefault(); window.fitjoyEnterApp();" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-size: 16px; padding: 14px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); border-radius: 14px; font-weight: 800; cursor: pointer;">
-              🚀 บันทึกข้อมูลและเข้าสู่ระบบทันที
-            </button>
-            <button type="button" class="btn-secondary-calc" onclick="window.fitjoyPreviewHealth();" style="background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0284c7; padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13.5px;">
-              ⚡ ตรวจดูผลคำนวณช่วงวัย & ชีพจรเป้าหมายก่อน
-            </button>
-          </div>
+        <button type="submit" class="btn-onboarding-calc" id="btn-submit-registration" onclick="window.fitjoyCalcHealth(event);">
+          ⚡ คำนวณช่วงวัย & อัตราการเต้นของหัวใจ
+        </button>
       </form>
 
       <!-- กล่องแสดงผลการคำนวณและประเมินผลสุขภาพ -->
@@ -7300,24 +7293,127 @@ body {
 <script id="fitjoy-bundle-script">
 
 // ====================================================================
-// Global Entry & Registration Controllers (ป้องกันการค้าง 100%)
+// FitJoy Onboarding Controllers (แบบดั้งเดิม: คำนวณ -> แสดงผล -> บันทึกเข้าเว็บ)
 // ====================================================================
-window.fitjoyPreviewHealth = function() {
-  if (window.app && typeof window.app.handleRegistrationSubmit === 'function') {
-    window.app.handleRegistrationSubmit();
-  }
-};
-window.fitjoyEnterApp = function() {
+window.fitjoyCalcHealth = function(e) {
+  if (e) e.preventDefault();
   try {
-    const firstName = (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
-    const lastName = (document.getElementById("reg-last-name")?.value || "").trim() || "สุขภาพ";
+    const firstName = (document.getElementById("reg-first-name")?.value || "").trim();
+    const lastName = (document.getElementById("reg-last-name")?.value || "").trim();
     const ageVal = document.getElementById("reg-age")?.value;
-    const age = Number(ageVal) || 30;
+    const age = Number(ageVal) || 0;
     const genderEl = document.querySelector('input[name="reg-gender"]:checked');
     const gender = genderEl ? genderEl.value : "ชาย";
     const weightVal = document.getElementById("reg-weight")?.value;
-    const weight = parseFloat(weightVal) || 65;
+    const weight = parseFloat(weightVal) || 0;
     const heightVal = document.getElementById("reg-height")?.value;
+    const height = parseFloat(heightVal) || 0;
+
+    if (!firstName || !lastName || !age || !weight || !height) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องครับ");
+      return;
+    }
+
+    let ageGroup = "adult";
+    if (typeof userStore !== 'undefined' && userStore.determineAgeGroup) {
+      ageGroup = userStore.determineAgeGroup(age);
+    } else {
+      ageGroup = age <= 17 ? "youth" : (age <= 64 ? "adult" : "senior");
+    }
+
+    let criteria = { label: "ผู้ใหญ่", targetHRText: "105 - 135 bpm", intensityLabel: "ระดับปานกลาง", recommendation: "30 นาทีต่อวัน", healthBenefit: "สุขภาพหัวใจแข็งแรง" };
+    if (typeof AGE_CRITERIA !== 'undefined' && AGE_CRITERIA[ageGroup]) {
+      criteria = AGE_CRITERIA[ageGroup];
+    }
+
+    let bmiResult = { bmi: 22.0, category: "ปกติ", key: "green", colorName: "สีเขียว" };
+    if (typeof userStore !== 'undefined' && userStore.calculateBMI) {
+      bmiResult = userStore.calculateBMI(weight, height);
+    } else {
+      const hM = height / 100;
+      const val = (weight / (hM * hM)).toFixed(1);
+      bmiResult = { bmi: val, category: "ประเมินเบื้องต้น", key: "green", colorName: "สีเขียว" };
+    }
+    const activeColor = bmiResult.info || { key: "green", colorName: "สีเขียว" };
+
+    window.fitjoyTempRegistrationData = {
+      firstName,
+      lastName,
+      age,
+      gender,
+      weight,
+      height,
+      bmi: bmiResult.bmi,
+      category: bmiResult.category,
+      ageGroup
+    };
+
+    const resultBox = document.getElementById("onboarding-result-box");
+    if (resultBox) {
+      resultBox.style.display = "block";
+    }
+
+    const elAge = document.getElementById("res-age-group-label");
+    if (elAge) elAge.textContent = criteria.label || "-";
+
+    const elBmi = document.getElementById("res-bmi-val");
+    if (elBmi) elBmi.textContent = String(bmiResult.bmi);
+
+    const elCat = document.getElementById("res-bmi-category");
+    if (elCat) elCat.textContent = "(" + bmiResult.category + ")";
+
+    const elHR = document.getElementById("res-target-hr-val");
+    if (elHR) elHR.textContent = criteria.targetHRText || "-";
+
+    const elRec = document.getElementById("res-hr-recommendation");
+    if (elRec) elRec.textContent = criteria.intensityLabel || "-";
+
+    const bmiCard = document.getElementById("res-bmi-metric-card");
+    if (bmiCard && activeColor.key) {
+      bmiCard.className = "metric-card reg-bmi-card reg-bmi-" + activeColor.key;
+    }
+
+    const pingpongTag = document.getElementById("res-bmi-pingpong-tag");
+    if (pingpongTag && activeColor.key) {
+      pingpongTag.style.display = "inline-flex";
+      pingpongTag.className = "metric-pingpong-tag pingpong-badge-" + activeColor.key;
+      pingpongTag.innerHTML = "● " + (activeColor.colorName || 'ปกติ');
+    }
+
+    const guidelineCard = document.getElementById("res-guideline-card");
+    if (guidelineCard) {
+      guidelineCard.innerHTML = "<strong>💡 ข้อแนะนำสำหรับกลุ่มวัยของคุณ:</strong><br>" +
+        "• <strong>กิจกรรม:</strong> " + (criteria.recommendation || '-') + "<br>" +
+        "• <strong>ช่วงชีพจรที่ปลอดภัย:</strong> " + (criteria.targetHRText || '-') + "<br>" +
+        "• <strong>ประโยชน์หลัก:</strong> " + (criteria.healthBenefit || '-');
+    }
+
+    setTimeout(() => {
+      const btnEnter = document.getElementById("btn-enter-website");
+      if (btnEnter) {
+        btnEnter.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (resultBox) {
+        resultBox.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+
+  } catch (err) {
+    console.error("[Calc Error]", err);
+  }
+};
+
+window.fitjoyEnterApp = function() {
+  try {
+    const data = window.fitjoyTempRegistrationData || {};
+    const firstName = data.firstName || (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
+    const lastName = data.lastName || (document.getElementById("reg-last-name")?.value || "").trim() || "สุขภาพ";
+    const ageVal = data.age || document.getElementById("reg-age")?.value;
+    const age = Number(ageVal) || 30;
+    const genderEl = document.querySelector('input[name="reg-gender"]:checked');
+    const gender = data.gender || (genderEl ? genderEl.value : "ชาย");
+    const weightVal = data.weight || document.getElementById("reg-weight")?.value;
+    const weight = parseFloat(weightVal) || 65;
+    const heightVal = data.height || document.getElementById("reg-height")?.value;
     const height = parseFloat(heightVal) || 165;
 
     if (typeof userStore !== 'undefined' && userStore.register) {
