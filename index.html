@@ -6570,6 +6570,30 @@ body {
   line-height: 1.35;
 }
 
+.btn-onboarding-close-x {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+.btn-onboarding-close-x:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: scale(1.05);
+}
 </style>
 
   <!-- PWA & Mobile Web App Meta Tags -->
@@ -6601,7 +6625,9 @@ body {
        หน้าต่างลงทะเบียนประเมินสุขภาพก่อนเข้าสู่หน้าเว็บ (Onboarding Screen)
        ==================================================================== -->
   <div class="onboarding-overlay" id="onboarding-screen">
-    <div class="onboarding-card">
+    <div class="onboarding-card" style="position: relative;">
+      <!-- ปุ่มปิดเพื่อเข้าสู่หน้าแรกทันที -->
+      <button type="button" class="btn-onboarding-close-x" onclick="window.fitjoyEnterApp();" title="เข้าสู่หน้าหลัก">&times;</button>
       <div class="onboarding-header">
         <div class="brand-icon" style="margin: 0 auto 10px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -6678,9 +6704,14 @@ body {
           </div>
         </div>
 
-        <button type="submit" class="btn-onboarding-calc" id="btn-submit-registration">
-          ⚡ คำนวณช่วงวัย & อัตราการเต้นของหัวใจ
-        </button>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+            <button type="submit" class="btn-onboarding-calc" id="btn-submit-registration" onclick="event.preventDefault(); window.fitjoyEnterApp();" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-size: 16px; padding: 14px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); border-radius: 14px; font-weight: 800; cursor: pointer;">
+              🚀 บันทึกข้อมูลและเข้าสู่ระบบทันที
+            </button>
+            <button type="button" class="btn-secondary-calc" onclick="window.fitjoyPreviewHealth();" style="background: #f0f9ff; border: 1.5px solid #bae6fd; color: #0284c7; padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13.5px;">
+              ⚡ ตรวจดูผลคำนวณช่วงวัย & ชีพจรเป้าหมายก่อน
+            </button>
+          </div>
       </form>
 
       <!-- กล่องแสดงผลการคำนวณและประเมินผลสุขภาพ -->
@@ -7271,6 +7302,11 @@ body {
 // ====================================================================
 // Global Entry & Registration Controllers (ป้องกันการค้าง 100%)
 // ====================================================================
+window.fitjoyPreviewHealth = function() {
+  if (window.app && typeof window.app.handleRegistrationSubmit === 'function') {
+    window.app.handleRegistrationSubmit();
+  }
+};
 window.fitjoyEnterApp = function() {
   try {
     const firstName = (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
@@ -8918,7 +8954,31 @@ class UserStore {
           @media print {
             button { display: none; }
           }
-        </style>
+        .btn-onboarding-close-x {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+.btn-onboarding-close-x:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: scale(1.05);
+}
+</style>
       </head>
       <body>
         <div class="header">
