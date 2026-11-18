@@ -264,7 +264,6 @@ class UserStore {
   getInitialSampleHistory() {
     return [];
   }
-  }
 
   // ตรวจสอบว่าขณะนี้เปิดโหมดทดสอบอยู่หรือไม่
   isDemoMode() {
@@ -759,3 +758,4 @@ class UserStore {
 }
 
 const userStore = new UserStore();
+window.userStore = userStore;
