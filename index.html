@@ -191,6 +191,14 @@
         </div>
 
         <div class="header-right">
+          <button type="button" class="btn-header-install" id="btn-header-pwa-install" title="ดาวน์โหลด/ติดตั้งแอป">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>ติดตั้งแอป</span>
+          </button>
           <span class="header-badge" id="header-user-greeting">เริ่มต้นง่าย ได้ทุกวัน</span>
           <button type="button" class="btn-profile-shortcut" id="btn-header-profile" title="ดูโปรไฟล์และสมุดสุขภาพ">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -631,6 +639,32 @@
       </div>
 
       <button type="button" class="btn-ios-modal-close" id="btn-close-ios-modal">เข้าใจแล้ว</button>
+    </div>
+  </div>
+
+  <!-- Modal แนะนำการติดตั้งสำหรับ Windows / Desktop -->
+  <div class="pwa-ios-modal-overlay" id="pwa-desktop-modal" style="display: none;">
+    <div class="pwa-ios-modal-card">
+      <img src="icons/icon-192.png" alt="โลโก้ฟิตจอย" class="pwa-ios-modal-icon" />
+      <h3 class="pwa-ios-modal-title">ติดตั้ง "ฟิตจอย" ลงคอมพิวเตอร์</h3>
+      <p class="pwa-ios-modal-desc">เปิดใช้งานจากเดสก์ท็อปได้รวดเร็วเหมือนโปรแกรมทั่วไป</p>
+      
+      <div class="pwa-ios-steps">
+        <div class="pwa-ios-step-item">
+          <span class="pwa-step-badge">1</span>
+          <span>สังเกตที่ <strong>แถบพิมพ์ URL ด้านบนขวา</strong> ของเบราว์เซอร์ (Chrome / Edge)</span>
+        </div>
+        <div class="pwa-ios-step-item">
+          <span class="pwa-step-badge">2</span>
+          <span>คลิกที่ไอคอน <strong>ติดตั้ง (รูปหน้าจอคอม 💻 หรือเครื่องหมาย ⊕ / ⬇️)</strong></span>
+        </div>
+        <div class="pwa-ios-step-item">
+          <span class="pwa-step-badge">3</span>
+          <span>คลิกปุ่ม <strong>"ติดตั้ง" (Install)</strong> ไอคอนฟิตจอยจะไปอยู่ที่หน้าจอ Desktop ทันที!</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-ios-modal-close" id="btn-close-desktop-modal">เข้าใจแล้ว</button>
     </div>
   </div>
 

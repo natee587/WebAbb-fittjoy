@@ -1,6 +1,6 @@
 /**
  * FitJoy PWA Installation & Service Worker Manager
- * รองรับ Android, iOS (iPhone/iPad), และ Windows (PC)
+ * รองรับ Android, iOS (iPhone/iPad), และ Windows (PC / Mac)
  */
 
 (function () {
@@ -21,14 +21,11 @@
     });
   }
 
-  // 2. จัดการ Event ติดตั้งบน Android / Windows (Chrome, Edge, Samsung Internet)
+  // 2. ดักจับ Event ติดตั้งบน Android / Windows / Chrome / Edge
   window.addEventListener('beforeinstallprompt', (e) => {
-    // ป้องกัน Browser ขึ้นแถบ mini-infobar อัตโนมัติ เพื่อให้ใช้ปุ่มของเราเอง
     e.preventDefault();
     deferredPrompt = e;
     console.log('[PWA] beforeinstallprompt event captured');
-
-    // แสดงปุ่มติดตั้งบนหน้าเว็บ
     showInstallUI();
   });
 
@@ -45,37 +42,43 @@
   });
 
   function initInstallUI() {
-    const installBanner = document.getElementById('pwa-install-banner');
     const btnInstall = document.getElementById('btn-pwa-install');
+    const btnHeaderInstall = document.getElementById('btn-header-pwa-install');
     const btnCloseBanner = document.getElementById('btn-pwa-banner-close');
     const iosModal = document.getElementById('pwa-ios-modal');
     const btnCloseIosModal = document.getElementById('btn-close-ios-modal');
+    const desktopModal = document.getElementById('pwa-desktop-modal');
+    const btnCloseDesktopModal = document.getElementById('btn-close-desktop-modal');
 
-    // ถ้าเปิดใช้งานอยู่ในโหมดแอปแล้ว (Standalone) ไม่ต้องแสดงปุ่ม
+    // ถ้าเปิดใช้งานอยู่ในโหมดแอปแล้ว (Standalone) ซ่อนปุ่มทั้งหมด
     if (isStandalone) {
-      if (installBanner) installBanner.style.display = 'none';
+      hideInstallUI();
       return;
     }
 
-    // ถ้าเป็น iOS Safari แสดงปุ่มติดตั้งเสมอ เพราะ iOS ไม่มี beforeinstallprompt
-    if (isIOS) {
-      showInstallUI();
-    }
+    // แสดงปุ่มและแบนเนอร์ติดตั้งเสมอ (ทั้งบนมือถือและคอมพิวเตอร์ / Live Server)
+    showInstallUI();
 
-    // ปุ่มกดติดตั้ง
+    // ปุ่มกดติดตั้งในแบนเนอร์
     if (btnInstall) {
       btnInstall.addEventListener('click', handleInstallClick);
     }
 
-    // ปุ่มปิดแถบแบนเนอร์ (ถ้าผู้ใช้ไม่ต้องการติดตั้งตอนนี้)
+    // ปุ่มกดติดตั้งบน Header
+    if (btnHeaderInstall) {
+      btnHeaderInstall.addEventListener('click', handleInstallClick);
+    }
+
+    // ปุ่มปิดแถบแบนเนอร์
     if (btnCloseBanner) {
       btnCloseBanner.addEventListener('click', () => {
+        const installBanner = document.getElementById('pwa-install-banner');
         if (installBanner) installBanner.style.display = 'none';
         sessionStorage.setItem('fitjoy_dismiss_install', 'true');
       });
     }
 
-    // ปุ่มปิด Modal แนะนำสำหรับ iOS
+    // ปุ่มปิด Modal iOS
     if (btnCloseIosModal && iosModal) {
       btnCloseIosModal.addEventListener('click', () => {
         iosModal.style.display = 'none';
@@ -84,58 +87,77 @@
 
     if (iosModal) {
       iosModal.addEventListener('click', (e) => {
-        if (e.target === iosModal) {
-          iosModal.style.display = 'none';
-        }
+        if (e.target === iosModal) iosModal.style.display = 'none';
+      });
+    }
+
+    // ปุ่มปิด Modal Desktop
+    if (btnCloseDesktopModal && desktopModal) {
+      btnCloseDesktopModal.addEventListener('click', () => {
+        desktopModal.style.display = 'none';
+      });
+    }
+
+    if (desktopModal) {
+      desktopModal.addEventListener('click', (e) => {
+        if (e.target === desktopModal) desktopModal.style.display = 'none';
       });
     }
   }
 
   function showInstallUI() {
     if (isStandalone) return;
-    if (sessionStorage.getItem('fitjoy_dismiss_install') === 'true') return;
-
+    
+    // แบนเนอร์บนหน้าแรก
     const installBanner = document.getElementById('pwa-install-banner');
-    if (installBanner) {
+    if (installBanner && sessionStorage.getItem('fitjoy_dismiss_install') !== 'true') {
       installBanner.style.display = 'flex';
+    }
+
+    // ปุ่มบน Header
+    const headerBtn = document.getElementById('btn-header-pwa-install');
+    if (headerBtn) {
+      headerBtn.style.display = 'inline-flex';
     }
   }
 
   function hideInstallUI() {
     const installBanner = document.getElementById('pwa-install-banner');
-    if (installBanner) {
-      installBanner.style.display = 'none';
-    }
+    if (installBanner) installBanner.style.display = 'none';
+
+    const headerBtn = document.getElementById('btn-header-pwa-install');
+    if (headerBtn) headerBtn.style.display = 'none';
   }
 
   async function handleInstallClick() {
-    // กรณีที่ 1: Android หรือ Windows (มี beforeinstallprompt)
+    // 1. ถ้ามี Event พร้อมติดตั้งทันที (Chrome / Edge / Android)
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
       if (choiceResult.outcome === 'accepted') {
         console.log('[PWA] User accepted installation prompt');
         hideInstallUI();
-      } else {
-        console.log('[PWA] User dismissed installation prompt');
       }
       deferredPrompt = null;
       return;
     }
 
-    // กรณีที่ 2: iOS (iPhone / iPad Safari)
+    // 2. ถ้าเป็น iOS (iPhone / iPad)
     if (isIOS) {
       const iosModal = document.getElementById('pwa-ios-modal');
       if (iosModal) {
         iosModal.style.display = 'flex';
-      } else {
-        alert("วิธีติดตั้งบน iOS / iPhone:\n1. แตะปุ่มแชร์ (Share) ด้านล่างของ Safari\n2. เลื่อนลงแล้วแตะ 'เพิ่มไปยังหน้าจอโฮม' (Add to Home Screen)");
       }
       return;
     }
 
-    // กรณีที่ 3: Browser อื่นๆ บนคอม/มือถือ ที่ไม่มี prompt โดยตรง
-    alert("คำแนะนำการติดตั้ง:\n- สำหรับคอมพิวเตอร์: คลิกที่ไอคอน 'ติดตั้ง' (Install App) บนแถบ URL ด้านบนขวาของเบราว์เซอร์\n- สำหรับมือถือ: แตะที่เมนู (3 จุด) แล้วเลือก 'ติดตั้งแอป' หรือ 'เพิ่มลงในหน้าจอหลัก'");
+    // 3. ถ้าเป็นคอมพิวเตอร์ (Windows PC / Mac)
+    const desktopModal = document.getElementById('pwa-desktop-modal');
+    if (desktopModal) {
+      desktopModal.style.display = 'flex';
+    } else {
+      alert("วิธีติดตั้งลงคอมพิวเตอร์:\nคลิกที่ไอคอน 'ติดตั้งแอป' (Install App) หรือเครื่องหมาย ⊕ / ⬇️ ที่แถบ URL ด้านบนขวาของ Google Chrome หรือ Microsoft Edge");
+    }
   }
 
   function showToast(msg) {
@@ -143,16 +165,13 @@
     toast.className = 'pwa-toast';
     toast.textContent = msg;
     document.body.appendChild(toast);
-    setTimeout(() => {
-      toast.classList.add('show');
-    }, 50);
+    setTimeout(() => toast.classList.add('show'), 50);
     setTimeout(() => {
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 300);
     }, 3500);
   }
 
-  // ส่งออกไปที่ window เผื่อเรียกจากภายนอก
   window.fitjoyPWA = {
     promptInstall: handleInstallClick
   };
