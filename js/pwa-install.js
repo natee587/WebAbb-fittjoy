@@ -46,6 +46,7 @@
   function initInstallUI() {
     const btnInstall = document.getElementById('btn-pwa-install');
     const btnHeaderInstall = document.getElementById('btn-header-pwa-install');
+    const btnOnboardingInstall = document.getElementById('btn-onboarding-pwa-install');
     const btnCloseBanner = document.getElementById('btn-pwa-banner-close');
 
     // Confirm Modal Elements
@@ -74,6 +75,9 @@
     }
     if (btnHeaderInstall) {
       btnHeaderInstall.addEventListener('click', openConfirmModal);
+    }
+    if (btnOnboardingInstall) {
+      btnOnboardingInstall.addEventListener('click', openConfirmModal);
     }
 
     // กดยกเลิกในหน้าต่างถาม

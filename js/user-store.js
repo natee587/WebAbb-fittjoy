@@ -113,15 +113,28 @@ class UserStore {
 
   cleanupAllDemoData() {
     let changed = false;
+    const demoTitles = [
+      "แอโรบิกแดนซ์เพื่อหัวใจแข็งแรง (Aerobic Dance)",
+      "เดินเร็วสลับแกว่งแขน (Brisk Walk)",
+      "การเต้นบาสโลบเพื่อสุขภาพ (Pasolob)",
+      "บอดี้เวท & ยางยืดชะลอวัย (Resistance Band)"
+    ];
+
     this.users.forEach(u => {
       if (u.history && u.history.length > 0) {
         const initialLen = u.history.length;
-        u.history = u.history.filter(r => !r.isDemo && !(r.id && (String(r.id).startsWith("sample-") || String(r.id).startsWith("demo-"))));
+        u.history = u.history.filter(r => {
+          if (r.isDemo === true) return false;
+          if (r.id && (String(r.id).startsWith("sample-") || String(r.id).startsWith("demo-"))) return false;
+          if (r.exerciseTitle && demoTitles.includes(r.exerciseTitle) && (r.durationMinutes === 25 || r.durationMinutes === 30 || r.durationMinutes === 35 || r.durationMinutes === 40)) return false;
+          return true;
+        });
         if (u.history.length !== initialLen) {
           changed = true;
         }
       }
     });
+
     if (changed) {
       this.saveAllUsers();
     }
@@ -249,85 +262,8 @@ class UserStore {
   }
 
   getInitialSampleHistory() {
-    const today = new Date();
-    const helperDate = (daysAgo) => {
-      const dt = new Date(today);
-      dt.setDate(today.getDate() - daysAgo);
-      const y = dt.getFullYear();
-      const m = String(dt.getMonth() + 1).padStart(2, '0');
-      const d = String(dt.getDate()).padStart(2, '0');
-      const isoDate = `${y}-${m}-${d}`;
-      const thDate = dt.toLocaleDateString("th-TH", { year: "numeric", month: "short", day: "numeric" });
-      return { dt, isoDate, thDate };
-    };
-
-    const d1 = helperDate(1); // 1 วันที่แล้ว (เมื่อวาน) -> 35 นาที (ผ่านเกณฑ์ สีเขียว)
-    const d2 = helperDate(2); // 2 วันที่แล้ว -> 25 นาที (ไม่ผ่านเกณฑ์ สีแดง)
-    const d3 = helperDate(3); // 3 วันที่แล้ว -> 30 นาที (ผ่านเกณฑ์ สีเขียว)
-    const d4 = helperDate(4); // 4 วันที่แล้ว -> 40 นาที (ผ่านเกณฑ์ สีเขียว)
-
-    return [
-      {
-        id: "demo-d1",
-        isDemo: true,
-        isoDate: d1.isoDate,
-        date: `${d1.thDate}, 17:30 น.`,
-        timeStr: "17:30 น.",
-        exerciseTitle: "แอโรบิกแดนซ์เพื่อหัวใจแข็งแรง (Aerobic Dance)",
-        ageGroup: "adult",
-        ageGroupLabel: "อายุ 18 - 64 ปี (วัยผู้ใหญ่)",
-        heartRate: 125,
-        durationMinutes: 35,
-        status: "ผ่านเกณฑ์! หัวใจเต้นในระดับปานกลางยอดเยี่ยม 🟢",
-        badgeClass: "badge-success",
-        recommendation: "ออกกำลังกายอย่างน้อย 3 วันต่อสัปดาห์ นาน 30 นาทีต่อวัน"
-      },
-      {
-        id: "demo-d2",
-        isDemo: true,
-        isoDate: d2.isoDate,
-        date: `${d2.thDate}, 06:45 น.`,
-        timeStr: "06:45 น.",
-        exerciseTitle: "เดินเร็วสลับแกว่งแขน (Brisk Walk)",
-        ageGroup: "adult",
-        ageGroupLabel: "อายุ 18 - 64 ปี (วัยผู้ใหญ่)",
-        heartRate: 110,
-        durationMinutes: 25,
-        status: "ยังไม่ถึงเกณฑ์เวลา 30 นาที (ขาดอีก 5 นาที) 🔴",
-        badgeClass: "badge-warning",
-        recommendation: "ออกกำลังกายอย่างน้อย 3 วันต่อสัปดาห์ นาน 30 นาทีต่อวัน"
-      },
-      {
-        id: "demo-d3",
-        isDemo: true,
-        isoDate: d3.isoDate,
-        date: `${d3.thDate}, 16:20 น.`,
-        timeStr: "16:20 น.",
-        exerciseTitle: "การเต้นบาสโลบเพื่อสุขภาพ (Pasolob)",
-        ageGroup: "adult",
-        ageGroupLabel: "อายุ 18 - 64 ปี (วัยผู้ใหญ่)",
-        heartRate: 118,
-        durationMinutes: 30,
-        status: "ผ่านเกณฑ์พอดี 30 นาที! สุขภาพแข็งแรง 🟢",
-        badgeClass: "badge-success",
-        recommendation: "ออกกำลังกายอย่างน้อย 3 วันต่อสัปดาห์ นาน 30 นาทีต่อวัน"
-      },
-      {
-        id: "demo-d4",
-        isDemo: true,
-        isoDate: d4.isoDate,
-        date: `${d4.thDate}, 07:00 น.`,
-        timeStr: "07:00 น.",
-        exerciseTitle: "บอดี้เวท & ยางยืดชะลอวัย (Resistance Band)",
-        ageGroup: "adult",
-        ageGroupLabel: "อายุ 18 - 64 ปี (วัยผู้ใหญ่)",
-        heartRate: 120,
-        durationMinutes: 40,
-        status: "ผ่านเกณฑ์ยอดเยี่ยม! ออกกำลังกายเกินเป้าหมาย 🟢",
-        badgeClass: "badge-success",
-        recommendation: "ออกกำลังกายอย่างน้อย 3 วันต่อสัปดาห์ นาน 30 นาทีต่อวัน"
-      }
-    ];
+    return [];
+  }
   }
 
   // ตรวจสอบว่าขณะนี้เปิดโหมดทดสอบอยู่หรือไม่
@@ -403,7 +339,7 @@ class UserStore {
       village: formData.village || "ชุมชนบ้านหม้อแข็งแรง",
       weeklyGoalMinutes: 150,
       createdAt: new Date().toLocaleDateString("th-TH"),
-      history: this.getInitialSampleHistory()
+      history: []
     };
 
     this.users.push(newUser);

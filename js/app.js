@@ -16,6 +16,10 @@ class FitEasyApp {
   }
 
   init() {
+    if (window.userStore) {
+      window.userStore.cleanupAllDemoData();
+    }
+
     window.postWorkoutModal = new PostWorkoutModal();
     window.videoManager = new VideoManager();
     window.workoutCalendar = new WorkoutCalendar("workout-calendar-mount");

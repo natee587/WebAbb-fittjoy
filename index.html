@@ -39,6 +39,25 @@
         </p>
       </div>
 
+      <!-- แถบปุ่มติดตั้งแอปบนหน้าลงทะเบียนแรกเข้า (Onboarding Install App) -->
+      <div class="onboarding-install-banner" id="onboarding-install-banner">
+        <div class="onboarding-install-left">
+          <img src="icons/icon-192.png" alt="ไอคอนฟิตจอย" class="onboarding-install-icon" />
+          <div class="onboarding-install-info">
+            <div class="onboarding-install-title">ติดตั้งแอป "ฟิตจอย"</div>
+            <div class="onboarding-install-subtitle">เพิ่มลงหน้าจอโฮมเพื่อใช้งานได้สะดวกแม้ออฟไลน์</div>
+          </div>
+        </div>
+        <button type="button" class="btn-onboarding-install-app" id="btn-onboarding-pwa-install">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>ติดตั้งแอป</span>
+        </button>
+      </div>
+
       <!-- ฟอร์มกรอกข้อมูล -->
       <form id="onboarding-form" onsubmit="event.preventDefault(); window.app.handleRegistrationSubmit();">
         <div class="form-grid-2">
