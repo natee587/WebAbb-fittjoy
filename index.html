@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FitEasy | สื่อกลางส่งเสริมสุขภาพและกิจกรรมทางกายในชุมชน "ฟิตจอย"</title>
+  <meta name="description" content="เรียนรู้ท่าออกกำลังกายสำหรับผู้เริ่มต้น ทำตามได้ที่บ้าน ไม่ต้องใช้อุปกรณ์ และส่งเสริมกิจกรรมทางกายในชุมชน">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ฟิตจอย">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- ====================================================================
+       หน้าต่างลงทะเบียนประเมินสุขภาพก่อนเข้าสู่หน้าเว็บ (Onboarding Screen)
+       ==================================================================== -->
+  <div class="onboarding-overlay" id="onboarding-screen">
+    <div class="onboarding-card">
+      <div class="onboarding-header">
+        <div class="brand-icon" style="margin: 0 auto 10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+        </div>
+        <span class="header-badge" style="display: inline-block; margin-bottom: 8px;">ฟิตจอย</span>
+        <h2 class="onboarding-title">ลงทะเบียนประเมินสุขภาพเบื้องต้น</h2>
+        <p class="onboarding-desc">
+          กรุณากรอกข้อมูลเพื่อคำนวณช่วงวัย ค่าดัชนีมวลกาย (BMI) และกำหนดช่วงอัตราการเต้นของหัวใจที่ปลอดภัยและเหมาะสมกับคุณก่อนเข้าสู่เว็บไซต์
+        </p>
+      </div>
+
+      <!-- ฟอร์มกรอกข้อมูล -->
+      <form id="onboarding-form" onsubmit="event.preventDefault(); window.app.handleRegistrationSubmit();">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="reg-first-name">ชื่อ <span class="req">*</span></label>
+            <input type="text" id="reg-first-name" class="form-input" placeholder="เช่น สมคิด" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-last-name">นามสกุล <span class="req">*</span></label>
+            <input type="text" id="reg-last-name" class="form-input" placeholder="เช่น แข็งแรงดี" required />
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="reg-age">อายุ (ปี) <span class="req">*</span></label>
+            <input type="number" id="reg-age" class="form-input" placeholder="เช่น 45" min="6" max="110" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">เพศ <span class="req">*</span></label>
+            <div class="gender-radio-group">
+              <label class="gender-pill">
+                <input type="radio" name="reg-gender" value="ชาย" checked />
+                <span>👨 ชาย</span>
+              </label>
+              <label class="gender-pill">
+                <input type="radio" name="reg-gender" value="หญิง" />
+                <span>👩 หญิง</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="reg-weight">น้ำหนัก (กิโลกรัม) <span class="req">*</span></label>
+            <input type="number" step="0.1" id="reg-weight" class="form-input" placeholder="เช่น 62.5" min="15" max="250" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-height">ส่วนสูง (เซนติเมตร) <span class="req">*</span></label>
+            <input type="number" step="0.5" id="reg-height" class="form-input" placeholder="เช่น 165" min="80" max="230" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-onboarding-calc" id="btn-submit-registration">
+          ⚡ คำนวณช่วงวัย & อัตราการเต้นของหัวใจ
+        </button>
+      </form>
+
+      <!-- กล่องแสดงผลการคำนวณและประเมินผลสุขภาพ -->
+      <div class="onboarding-result-box" id="onboarding-result-box" style="display: none;">
+        <h3 class="result-header-title">📊 ผลการประเมินสุขภาพเบื้องต้นของคุณ</h3>
+        
+        <div class="result-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon">👥</div>
+            <div class="metric-info">
+              <div class="metric-label">ช่วงวัยที่ประเมินได้</div>
+              <div class="metric-val" id="res-age-group-label">-</div>
+            </div>
+          </div>
+
+          <div class="metric-card reg-bmi-card" id="res-bmi-metric-card" role="button" tabindex="0" title="คลิกเพื่อดูรายละเอียดเกณฑ์ปิงปองจราจร 7 สี">
+            <div class="metric-icon" id="res-bmi-icon">⚖️</div>
+            <div class="metric-info">
+              <div class="metric-label" style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                <span>ดัชนีมวลกาย (BMI)</span>
+                <span class="bmi-click-guide-pill" id="res-bmi-click-pill">ℹ️ แตะดูเกณฑ์ 7 สี</span>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;">
+                <div class="metric-val" id="res-bmi-val">-</div>
+                <span class="metric-pingpong-tag" id="res-bmi-pingpong-tag" style="display: none;"></span>
+              </div>
+              <div class="metric-sub" id="res-bmi-category">-</div>
+            </div>
+          </div>
+
+          <div class="metric-card full-width">
+            <div class="metric-icon">💓</div>
+            <div class="metric-info">
+              <div class="metric-label">ช่วงอัตราการเต้นของหัวใจเป้าหมาย (Target HR)</div>
+              <div class="metric-val" id="res-target-hr-val" style="color: #0284c7;">-</div>
+              <div class="metric-sub" id="res-hr-recommendation">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guideline-summary-card" id="res-guideline-card"></div>
+
+        <button type="button" class="btn-enter-website" id="btn-enter-website">
+          🎉 บันทึกและเข้าสู่ฟิตจอย
+        </button>
+      </div>
+
+    </div>
+  </div><!-- /onboarding-overlay -->
+
+  <!-- ====================================================================
+       Modal: สลับบัญชีผู้ใช้ / ลงทะเบียนคนใหม่ (Switch User Modal)
+       ==================================================================== -->
+  <div class="modal-overlay" id="switch-user-modal">
+    <div class="switch-user-window">
+      <div class="video-modal-header">
+        <h3>👥 สลับผู้ใช้งานในเครื่องนี้</h3>
+        <button type="button" class="video-modal-close-btn" id="btn-close-switch-modal">&times;</button>
+      </div>
+      <div class="switch-user-body">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+          เลือกผู้ใช้งานเดิมเพื่อสลับประวัติสุขภาพ หรือลงทะเบียนเพิ่มสำหรับสมาชิกในครอบครัว / ชุมชน
+        </p>
+
+        <!-- รายชื่อผู้ใช้ที่บันทึกไว้ในเครื่องนี้ -->
+        <div class="user-roster-list" id="user-roster-list-container"></div>
+
+        <button type="button" class="btn-add-new-user-pill" id="btn-register-new-user-modal">
+          ➕ ลงทะเบียนผู้ใช้รายใหม่
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- กรอบแอปพลิเคชันหลัก (App Shell) -->
+  <div class="app-container" id="app-main-shell">
+
+    <!-- แถบควบคุมมุมมองและระบบเสียง (Top Controls) -->
+    <div class="top-control-bar">
+      <button type="button" class="top-control-btn" id="btn-toggle-viewport">
+        📱 สลับมุมมองจำลองมือถือ (Mobile View)
+      </button>
+      <div style="display: flex; gap: 6px;">
+        <button type="button" class="top-control-btn" id="btn-open-user-switcher" title="สลับผู้ใช้หรือลงทะเบียนคนใหม่">
+          👥 <span id="top-bar-user-name">สลับผู้ใช้</span>
+        </button>
+        <button type="button" class="top-control-btn" id="btn-toggle-sound">
+          🔊 เปิดเสียง
+        </button>
+      </div>
+    </div>
+
+    <!-- ส่วนหัวของแอป (App Header) - ถอดแบบจาก Framer -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand-wrapper" onclick="window.app.switchTab('home')">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+          </div>
+          <span class="brand-name">ฟิตจอย</span>
+        </div>
+
+        <div class="header-right">
+          <span class="header-badge" id="header-user-greeting">เริ่มต้นง่าย ได้ทุกวัน</span>
+          <button type="button" class="btn-profile-shortcut" id="btn-header-profile" title="ดูโปรไฟล์และสมุดสุขภาพ">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         แท็บ 1: หน้าแรก (Home View)
+         ==================================================================== -->
+    <main class="app-tab-view active" id="view-home">
+      <!-- ส่วนต้อนรับและกระตุ้นความตระหนัก -->
+      <section class="welcome-hero">
+        <h1 class="hero-main-title">พร้อมเริ่มต้นสุขภาพดีหรือยัง?</h1>
+        <p class="hero-subtitle">ดูแลสุขภาพดีๆ เริ่มต้นได้จากตัวคุณ</p>
+      </section>
+
+      <!-- แบนเนอร์ดาวน์โหลด/ติดตั้งแอป PWA (iOS, Android, Windows) -->
+      <section class="pwa-install-banner" id="pwa-install-banner" role="banner">
+        <div class="pwa-banner-left">
+          <img src="icons/icon-192.png" alt="ฟิตจอย ไอคอน" class="pwa-banner-icon-img" />
+          <div class="pwa-banner-texts">
+            <h3 class="pwa-banner-title">ติดตั้งแอป "ฟิตจอย"</h3>
+            <p class="pwa-banner-subtitle">เพิ่มลงหน้าจอโฮม ใช้งานสะดวกแม้ออฟไลน์</p>
+          </div>
+        </div>
+        <div class="pwa-banner-actions">
+          <button type="button" class="btn-pwa-install" id="btn-pwa-install">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>ติดตั้งแอป</span>
+          </button>
+          <button type="button" class="btn-pwa-close" id="btn-pwa-banner-close" title="ปิด">&times;</button>
+        </div>
+      </section>
+
+      <!-- การ์ดเวลาสะสมในการออกกำลังกายประจำวัน (Daily Workout Stat Card - NEW!) -->
+      <section class="daily-stat-card" id="home-daily-stat-card"></section>
+
+      <!-- การ์ดไฮไลท์แนะนำการออกกำลังกายที่เหมาะสมเฉพาะคุณ -->
+      <section class="personalized-rec-card" id="home-personalized-rec-card"></section>
+
+      <!-- แถบค้นหาท่าออกกำลังกาย -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" class="input-exercise-search" id="input-exercise-search" placeholder="ค้นหาท่าออกกำลังกายที่เหมาะกับคุณ" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- แบนเนอร์ขั้นตอนความปลอดภัย: Warm-up & Cool Down -->
+      <section class="routine-banners-container">
+        <!-- กล่อง Warm-up -->
+        <div class="routine-banner-card banner-warmup" id="btn-open-warmup" role="button" tabindex="0">
+          <div class="routine-banner-badge-icon">☀️</div>
+          <div class="routine-banner-info">
+            <span class="routine-tag tag-warmup">ก่อนเริ่มออกกำลังกาย</span>
+            <h4 class="routine-title">ท่าบริหารร่างกาย (Warm-up)</h4>
+            <p class="routine-desc">เตรียมกล้ามเนื้อและข้อต่อ ป้องกันการบาดเจ็บ (5–10 นาที)</p>
+          </div>
+          <div class="routine-play-btn">
+            <span class="play-icon">▶</span> ดูคลิป
+          </div>
+        </div>
+
+        <!-- กล่อง Cool Down -->
+        <div class="routine-banner-card banner-cooldown" id="btn-open-cooldown" role="button" tabindex="0">
+          <div class="routine-banner-badge-icon">🧘‍♂️</div>
+          <div class="routine-banner-info">
+            <span class="routine-tag tag-cooldown">หลังออกกำลังกายครบ</span>
+            <h4 class="routine-title">ท่ายืดเหยียดร่างกาย (Cool Down)</h4>
+            <p class="routine-desc">คลายกล้ามเนื้อ ลดความเมื่อยล้าและลดชีพจร (5–10 นาที)</p>
+          </div>
+          <div class="routine-play-btn">
+            <span class="play-icon">▶</span> ดูคลิป
+          </div>
+        </div>
+      </section>
+
+      <!-- ชิปตัวกรองหมวดหมู่ช่วงอายุ -->
+      <div class="filter-chips-scroll">
+        <button type="button" class="filter-chip active" data-category="ทั้งหมด">ทั้งหมด</button>
+        <button type="button" class="filter-chip" data-category="วัยเด็กและวัยรุ่น (6–17 ปี)">วัยเด็กและวัยรุ่น (6–17 ปี)</button>
+        <button type="button" class="filter-chip" data-category="วัยผู้ใหญ่ (18–64 ปี)">วัยผู้ใหญ่ (18–64 ปี)</button>
+        <button type="button" class="filter-chip" data-category="วัยผู้สูงอายุ (65 ปีขึ้นไป)">วัยผู้สูงอายุ (65 ปีขึ้นไป)</button>
+      </div>
+
+      <!-- หัวข้อและรายการท่าแนะนำ -->
+      <div class="section-header-row">
+        <h3 class="section-title-thai">ท่าออกกำลังกายทั้งหมด</h3>
+        <span class="section-subtitle-badge" id="home-exercises-count">23 ท่าแนะนำ</span>
+      </div>
+
+      <!-- รายการการ์ดท่าออกกำลังกาย (Render via JS) -->
+      <div class="exercises-grid" id="home-exercises-grid"></div>
+
+      <!-- กล่องให้กำลังใจด้านล่าง -->
+      <div class="encouragement-card">
+        <div class="enc-quote">ค่อย ๆ ไป ก็ถึงเป้าหมายได้</div>
+        <div class="enc-subtext">เริ่มวันละนิด พักเมื่อเหนื่อย และอย่าลืมดื่มน้ำสะอาด</div>
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         แท็บ 2: ความรู้สุขภาพ (Knowledge View)
+         ==================================================================== -->
+    <section class="app-tab-view" id="view-knowledge">
+      <h2 class="knowledge-section-title">🩺 ความรู้สุขภาพและการป้องกันโรค NCDs</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        ข้อมูลทางการแพทย์และแนวทางปฏิบัติตามมาตรฐาน <strong>กรมควบคุมโรค กระทรวงสาธารณสุข</strong> เพื่อการป้องกันและเฝ้าระวังโรคไม่ติดต่อเรื้อรัง (NCDs)
+      </p>
+
+      <div class="ncd-cards-grid" id="knowledge-ncd-container"></div>
+
+      <h2 class="knowledge-section-title" style="margin-top: 28px;">🎯 หลักการออกกำลังกายตามหลักฟิต</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        หลักการสากล 4 มิติเพื่อการออกกำลังกายที่ปลอดภัยและเกิดประโยชน์ต่อร่างกายสูงสุด
+      </p>
+      <div class="fitt-list" id="knowledge-fitt-container"></div>
+
+      <h2 class="knowledge-section-title" style="margin-top: 28px;">👥 ข้อแนะนำกิจกรรมทางกายตาม 3 กลุ่มวัย</h2>
+      <div class="age-cards-list" id="knowledge-age-container"></div>
+
+      <div class="encouragement-card" style="text-align: left; background: #f0fdf4; border-color: #bbf7d0; margin-top: 24px;">
+        <h3 style="font-size: 16px; color: #15803d; margin-bottom: 6px;">💡 คุณมีพฤติกรรมเนือยนิ่งหรือไม่?</h3>
+        <p style="font-size: 12px; color: #334155; margin-bottom: 10px;">
+          พฤติกรรมเนือยนิ่ง (Sedentary Behavior) คือการนั่งหรือเอนกายต่อเนื่องเกิน 2 ชั่วโมง เช่น นั่งทำงาน ดูทีวี หรือไถมือถือ
+        </p>
+        <div style="font-size: 12px; line-height: 1.6; color: #166534;">
+          ✓ ลุกขึ้นยืนและยืดเหยียดทุกๆ 60 นาที<br>
+          ✓ เดินสะสมก้าวให้ได้อย่างน้อย 6,000 - 8,000 ก้าวต่อวัน<br>
+          ✓ เข้าร่วมกิจกรรมเต้นบาสโลบหรือเดินเร็วในชุมชนบ้านหม้อสัปดาห์ละ 3-4 วัน
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         แท็บ 3: ฝึกปฏิบัติและสเตชันวัดชีพจร (Practice View)
+         ==================================================================== -->
+    <section class="app-tab-view" id="view-practice">
+      <h2 class="knowledge-section-title">⏱️ สเตชันฝึกปฏิบัติการวัดชีพจรด้วยตนเอง</h2>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+        การวัดชีพจรด้วยตนเองช่วยประเมินความหนักของการออกกำลังกายและความพร้อมของหัวใจ
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 24px;">
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px;">
+          <h4 style="font-size: 15px; color: var(--primary); margin-bottom: 6px;">📍 1. ชีพจรที่ข้อมือ (Radial Pulse)</h4>
+          <p style="font-size: 13px; color: #334155;">
+            หงายฝ่ามือขึ้น ใช้นิ้วชี้และนิ้วกลางแตะลงบริเวณร่องใต้โคนนิ้วหัวแม่มือ กดน้ำหนักเบาๆ จนรู้สึกถึงการเต้นของหลอดเลือดแดง
+          </p>
+        </div>
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px;">
+          <h4 style="font-size: 15px; color: var(--primary); margin-bottom: 6px;">📍 2. ชีพจรข้างลำคอ (Carotid Pulse)</h4>
+          <p style="font-size: 13px; color: #334155;">
+            วางปลายนิ้วชี้และนิ้วกลางข้างลูกกระเดือกในร่องคอ แตะแผ่วเบา ห้ามกดแรง และห้ามกดพร้อมกันทั้งสองข้าง
+          </p>
+        </div>
+      </div>
+
+      <div id="practice-pulse-timer-container"></div>
+    </section>
+
+    <!-- ====================================================================
+         แท็บ 4: ปฏิทินบันทึกผลการออกกำลังกาย (Calendar & Workout History)
+         ==================================================================== -->
+    <section class="app-tab-view" id="view-calendar">
+      <!-- ส่วนปฏิทินบันทึกผลการออกกำลังกายรายวัน & สรุปผลรายสัปดาห์ -->
+      <div id="workout-calendar-mount"></div>
+    </section>
+
+    <!-- ====================================================================
+         แท็บ 5: โปรไฟล์ & สมุดสุขภาพดิจิทัล (Profile View)
+         ==================================================================== -->
+    <section class="app-tab-view" id="view-profile">
+      <div class="profile-card-header">
+        <div class="profile-avatar-circle" id="profile-display-avatar">👤</div>
+        <div class="profile-user-info" style="flex-grow: 1;">
+          <h3 id="profile-display-name">ผู้รักสุขภาพชุมชน</h3>
+          <p id="profile-display-village">ชุมชนบ้านหม้อแข็งแรง</p>
+          <div id="profile-display-details" style="font-size: 12px; color: #475569; margin-top: 4px;">
+            อายุ: <span id="prof-age">-</span> ปี | เพศ: <span id="prof-gender">-</span> | BMI: <span id="prof-bmi" style="font-weight: bold; color: #0284c7;">-</span>
+          </div>
+        </div>
+        <button type="button" class="top-control-btn" id="btn-edit-registration" style="align-self: flex-start;">
+          ✏️ แก้ไขข้อมูล
+        </button>
+      </div>
+
+      <!-- ปุ่มสลับผู้ใช้ / ออกจากระบบสำหรับคนใหม่ -->
+      <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+        <button type="button" class="btn-user-action-pill" id="btn-profile-switch-user" style="flex: 1;">
+          👥 สลับบัญชีผู้ใช้ในเครื่องนี้
+        </button>
+        <button type="button" class="btn-user-action-pill danger" id="btn-profile-logout" style="flex: 1;">
+          🚪 ออกจากระบบ (สำหรับคนใหม่)
+        </button>
+      </div>
+
+      <!-- แถบสรุปด่วน อายุ / น้ำหนัก / ส่วนสูง พร้อมปุ่มอัปเดตด่วน -->
+      <div class="profile-body-metrics-bar">
+        <div class="body-metric-item">
+          <span class="bm-label">อายุ</span>
+          <span class="bm-val"><strong id="prof-summary-age">-</strong> ปี</span>
+        </div>
+        <div class="body-metric-item">
+          <span class="bm-label">น้ำหนัก</span>
+          <span class="bm-val"><strong id="prof-summary-weight">-</strong> กก.</span>
+        </div>
+        <div class="body-metric-item">
+          <span class="bm-label">ส่วนสูง</span>
+          <span class="bm-val"><strong id="prof-summary-height">-</strong> ซม.</span>
+        </div>
+        <button type="button" class="btn-quick-edit-body" id="btn-quick-edit-weight" title="คลิกเพื่ออัปเดตน้ำหนักและส่วนสูง">
+          ⚖️ ปรับน้ำหนัก
+        </button>
+      </div>
+
+      <!-- การ์ดดัชนีมวลกาย (BMI) ตามเกณฑ์ปิงปองจราจร 7 สี -->
+      <div class="bmi-pingpong-card" id="bmi-pingpong-card-container">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- ข้อมูลช่วงวัยและเกณฑ์เป้าหมายของผู้ใช้ -->
+      <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 13px; font-weight: 700; color: var(--text-navy);">กลุ่มวัยที่ประเมินได้ของคุณ:</span>
+          <span class="status-badge badge-info" id="prof-badge-age-group">กำลังโหลด...</span>
+        </div>
+        <div style="font-size: 13px; color: #0284c7; font-weight: 600; margin-bottom: 4px;" id="prof-target-hr-text">
+          -
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);" id="prof-guideline-rec-text">
+          -
+        </div>
+      </div>
+
+      <!-- สถิติสะสม -->
+      <div class="profile-stats-row">
+        <div class="stat-metric-box">
+          <div class="stat-metric-val" id="profile-stat-total-mins">0 นาที</div>
+          <div class="stat-metric-lbl">เวลาออกกำลังกายสะสม</div>
+        </div>
+        <div class="stat-metric-box">
+          <div class="stat-metric-val" id="profile-stat-total-acts">0 ครั้ง</div>
+          <div class="stat-metric-lbl">จำนวนครั้งที่บันทึก</div>
+        </div>
+      </div>
+
+      <!-- Modal อัปเดตน้ำหนักและส่วนสูงแบบด่วน -->
+      <div class="quick-weight-modal-backdrop" id="quick-weight-modal-backdrop" style="display: none;">
+        <div class="quick-weight-modal-content">
+          <div class="quick-modal-header">
+            <h4>⚖️ อัปเดตน้ำหนักและส่วนสูง</h4>
+            <button type="button" class="btn-close-modal-x" id="btn-close-quick-weight-modal">✕</button>
+          </div>
+          <form id="form-quick-weight" style="padding: 18px 20px;">
+            <div class="quick-form-field">
+              <label for="quick-input-weight">น้ำหนักปัจจุบัน (กิโลกรัม):</label>
+              <input type="number" id="quick-input-weight" step="0.1" min="20" max="250" required placeholder="เช่น 65.5">
+            </div>
+            <div class="quick-form-field" style="margin-top: 14px;">
+              <label for="quick-input-height">ส่วนสูง (เซนติเมตร):</label>
+              <input type="number" id="quick-input-height" step="0.5" min="80" max="250" required placeholder="เช่น 168">
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 8px;">
+              <button type="submit" class="btn-save-quick-weight" style="flex: 1;">
+                ✓ บันทึก & ประเมินผล 7 สีทันที
+              </button>
+              <button type="button" class="btn-cancel-quick-weight" id="btn-cancel-quick-weight">
+                ยกเลิก
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         Floating Bottom Navigation Bar (5 เมนู)
+         ==================================================================== -->
+    <nav class="bottom-nav-bar">
+      <div class="bottom-nav-inner">
+        <!-- 1. หน้าแรก -->
+        <button type="button" class="bottom-nav-item active" data-tab="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>หน้าแรก</span>
+        </button>
+
+        <!-- 2. ความรู้สุขภาพ -->
+        <button type="button" class="bottom-nav-item" data-tab="knowledge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+            <path d="M6 6h10"></path>
+            <path d="M6 10h10"></path>
+          </svg>
+          <span>ความรู้สุขภาพ</span>
+        </button>
+
+        <!-- 3. ฝึกปฏิบัติ -->
+        <button type="button" class="bottom-nav-item" data-tab="practice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>ฝึกปฏิบัติ</span>
+        </button>
+
+        <!-- 4. ปฏิทินบันทึกผล (NEW!) -->
+        <button type="button" class="bottom-nav-item" data-tab="calendar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+            <line x1="16" x2="16" y1="2" y2="6"/>
+            <line x1="8" x2="8" y1="2" y2="6"/>
+            <line x1="3" x2="21" y1="10" y2="10"/>
+            <path d="m9 16 2 2 4-4"/>
+          </svg>
+          <span>ปฏิทินบันทึกผล</span>
+        </button>
+
+        <!-- 5. โปรไฟล์ -->
+        <button type="button" class="bottom-nav-item" data-tab="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>โปรไฟล์</span>
+        </button>
+      </div>
+    </nav>
+
+  </div><!-- /app-container -->
+
+  <!-- Modal เครื่องเล่นวิดีโอ YouTube -->
+  <div class="modal-overlay" id="video-player-modal">
+    <div class="video-modal-window">
+      <div class="video-modal-header">
+        <h3 id="video-modal-exercise-title">วิดีโอสาธิตวิธีทำ</h3>
+        <button type="button" class="video-modal-close-btn" title="ปิดหน้าต่าง">&times;</button>
+      </div>
+      <div class="video-modal-scrollable">
+        <div id="video-embed-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal ปลดล็อกบันทึกชีพจรหลังดูคลิปจบ -->
+  <div class="modal-overlay" id="post-workout-modal">
+    <div class="modal-content-area"></div>
+  </div>
+
+  <!-- ====================================================================
+       Modal: ป๊อปอัปแสดงรายละเอียดเกณฑ์ BMI ปิงปองจราจร 7 สี (คลิกจากหน้าลงทะเบียน)
+       ==================================================================== -->
+  <div class="modal-overlay bmi-popup-overlay" id="bmi-pingpong-popup-modal" style="display: none;">
+    <div class="bmi-popup-modal-window">
+      <div class="bmi-popup-modal-header">
+        <div class="bmi-popup-modal-title">
+          <span class="popup-modal-icon">🎯</span>
+          <span>เกณฑ์ดัชนีมวลกาย (BMI) ปิงปองจราจร 7 สี</span>
+        </div>
+        <button type="button" class="video-modal-close-btn" id="btn-close-bmi-popup-modal" title="ปิดหน้าต่าง">&times;</button>
+      </div>
+      <div class="bmi-popup-modal-body" id="bmi-popup-modal-content">
+        <!-- Rendered dynamically by app.js with gauge, advice, and 7-color breakdown -->
+      </div>
+      <div class="bmi-popup-modal-footer">
+        <button type="button" class="btn-enter-website" id="btn-dismiss-bmi-popup-modal" style="margin: 0; width: 100%;">
+          เข้าใจแล้ว / ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       Modal: ป๊อปอัปผลการประเมินการพูด (Talk Test Result Popup)
+       ==================================================================== -->
+  <div class="modal-overlay talk-popup-overlay" id="talk-test-popup-modal" style="display: none;">
+    <div class="talk-popup-modal-window">
+      <div class="talk-popup-modal-header">
+        <div class="talk-popup-modal-title">
+          <span class="popup-modal-icon">🗣️</span>
+          <span id="talk-popup-modal-title-text">ผลการประเมินการพูด (Talk Test)</span>
+        </div>
+        <button type="button" class="video-modal-close-btn" id="btn-close-talk-popup" title="ปิดหน้าต่าง">&times;</button>
+      </div>
+      <div class="talk-popup-modal-body" id="talk-popup-modal-content">
+        <!-- Rendered dynamically by pulse-timer.js -->
+      </div>
+      <div class="talk-popup-modal-footer" id="talk-popup-footer">
+        <button type="button" class="btn-primary" id="btn-dismiss-talk-popup" style="width: 100%; padding: 12px 18px; border-radius: var(--radius-md); font-weight: 700; font-size: 15px;">
+          รับทราบ / ทดสอบใหม่อีกครั้ง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal แนะนำการติดตั้งสำหรับ iOS (iPhone / iPad) -->
+  <div class="pwa-ios-modal-overlay" id="pwa-ios-modal" style="display: none;">
+    <div class="pwa-ios-modal-card">
+      <img src="icons/icon-192.png" alt="โลโก้ฟิตจอย" class="pwa-ios-modal-icon" />
+      <h3 class="pwa-ios-modal-title">ติดตั้งแอป "ฟิตจอย" บน iPhone / iPad</h3>
+      <p class="pwa-ios-modal-desc">เพิ่มไอคอนไว้ที่หน้าจอโฮมเพื่อเข้าใช้งานได้เหมือนแอปจริง</p>
+      
+      <div class="pwa-ios-steps">
+        <div class="pwa-ios-step-item">
+          <span class="pwa-step-badge">1</span>
+          <span>แตะที่ปุ่มแชร์ 
+            <svg class="pwa-step-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+              <polyline points="16 6 12 2 8 6"></polyline>
+              <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            ที่แถบด้านล่างของ Safari
+          </span>
+        </div>
+        <div class="pwa-ios-step-item">
+          <span class="pwa-step-badge">2</span>
+          <span>เลื่อนลงมาแล้วเลือก <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong></span>
+        </div>
+        <div class="pwa-ios-step-item">
+          <span class="pwa-step-badge">3</span>
+          <span>แตะ <strong>"เพิ่ม" (Add)</strong> ที่มุมขวาบน จะมีไอคอนฟิตจอยอยู่ที่หน้าโฮมทันที</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-ios-modal-close" id="btn-close-ios-modal">เข้าใจแล้ว</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/content-data.js"></script>
+  <script src="js/audio-cues.js"></script>
+  <script src="js/user-store.js"></script>
+  <script src="js/pulse-timer.js"></script>
+  <script src="js/post-workout-modal.js"></script>
+  <script src="js/video-manager.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/pwa-install.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

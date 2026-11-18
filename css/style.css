@@ -1,0 +1,6260 @@
+/* ==========================================================================
+   FitEasy - Mobile Health Web Application Stylesheet
+   ออกแบบตามต้นแบบ Framer (บ้านหม้อแข็งแรง) โทนสีฟ้า-ขาว สะอาดตา มินิมอล
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #2886e9;
+  --primary-hover: #1e70c7;
+  --primary-light: #eaf4ff;
+  --bg-page: #f7fafe;
+  --card-bg: #ffffff;
+  --text-navy: #203448;
+  --text-muted: #7b8c9f;
+  --border-color: #e5edf5;
+  --shadow-sm: 0 2px 8px rgba(32, 52, 72, 0.04);
+  --shadow-md: 0 8px 24px rgba(40, 134, 233, 0.08);
+  --success: #10b981;
+  --success-light: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+  --coral: #f43f5e;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Anuphan', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-navy);
+  line-height: 1.5;
+  min-height: 100vh;
+  padding-bottom: 90px; /* เว้นที่สำหรับ Bottom Nav */
+}
+
+/* ==========================================================================
+   App Shell & Viewport Mode (จำลอง Mobile / เต็มจอ)
+   ========================================================================== */
+.app-container {
+  max-width: 1024px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  transition: max-width 0.3s ease;
+}
+
+/* โหมดจำลองจอมือถือ */
+.app-container.mobile-frame-mode {
+  max-width: 440px;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.05);
+}
+
+/* แถบควบคุมด้านบนสุด (Viewport Toggle & Sound) */
+.top-control-bar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 6px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.top-control-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid #d0e7ff;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-control-btn:hover {
+  background: #dceeff;
+}
+
+/* ==========================================================================
+   Header Bar (ตามภาพ UI ต้นแบบ)
+   ========================================================================== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 20px;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 10px rgba(40, 134, 233, 0.3);
+}
+
+.brand-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.01em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-badge {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid #d4e8fd;
+}
+
+.btn-profile-shortcut {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-profile-shortcut:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* ==========================================================================
+   Tab Views Switcher
+   ========================================================================== */
+.app-tab-view {
+  display: none;
+  padding: 20px 20px 110px;
+  animation: fadeIn 0.25s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .app-tab-view {
+    padding: 12px 10px 110px;
+  }
+}
+
+.app-tab-view.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   หน้าแรก (Home View) - ถอดแบบจากภาพต้นฉบับ
+   ========================================================================== */
+.welcome-hero {
+  text-align: center;
+  margin: 16px 0 24px;
+}
+
+.hero-subtitle-top {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.hero-main-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.hero-community-caption {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* การ์ด YOUR FIRST STEP */
+.hero-step-card {
+  background-color: var(--primary-light);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border: 1px solid #dbeafe;
+  position: relative;
+  overflow: hidden;
+}
+
+.step-card-left {
+  max-width: 65%;
+}
+
+.step-card-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.step-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.step-card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.btn-first-step-cta {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(40, 134, 233, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-first-step-cta:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.step-card-right-icon {
+  width: 72px;
+  height: 72px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  box-shadow: 0 4px 15px rgba(40, 134, 233, 0.12);
+  flex-shrink: 0;
+}
+
+.step-card-right-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+/* แถบค้นหา */
+.search-container {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon-svg {
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input-exercise-search {
+  width: 100%;
+  padding: 12px 16px 12px 46px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-navy);
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.input-exercise-search:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(40, 134, 233, 0.15);
+}
+
+/* แบนเนอร์ขั้นตอนความปลอดภัย: Warm-up & Cool Down */
+.routine-banners-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .routine-banners-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+.routine-banner-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1.5px solid transparent;
+  user-select: none;
+}
+
+.routine-banner-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.routine-banner-card:active {
+  transform: scale(0.98);
+}
+
+/* ธีมสี Warm-up: ส้มทองอบอุ่น */
+.banner-warmup {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+.banner-warmup:hover {
+  border-color: #f59e0b;
+}
+
+/* ธีมสี Cool Down: มิ้นต์เขียวสดชื่นผ่อนคลาย */
+.banner-cooldown {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
+}
+.banner-cooldown:hover {
+  border-color: #10b981;
+}
+
+.routine-banner-badge-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.routine-banner-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.routine-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.tag-warmup {
+  background: #fef08a;
+  color: #b45309;
+}
+
+.tag-cooldown {
+  background: #bbf7d0;
+  color: #15803d;
+}
+
+.routine-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-dark, #1e293b);
+  margin: 0 0 3px 0;
+  line-height: 1.3;
+}
+
+.routine-desc {
+  font-size: 11.5px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.routine-play-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+}
+
+.routine-banner-card:hover .routine-play-btn {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.routine-play-btn .play-icon {
+  font-size: 9px;
+}
+
+/* ชิปตัวกรองหมวดหมู่ */
+.filter-chips-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 24px;
+  scrollbar-width: none;
+}
+
+.filter-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip {
+  background: var(--card-bg);
+  color: var(--text-navy);
+  border: 1px solid var(--border-color);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.filter-chip.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+/* หัวข้อหมวดหมู่ท่าแนะนำ */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.section-title-thai {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.section-subtitle-badge {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ตารางแสดงการ์ดท่าออกกำลังกาย (Grid) */
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 640px) {
+  .exercises-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.exercise-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.exercise-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-img-wrapper {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.exercise-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.exercise-card:hover .exercise-photo {
+  transform: scale(1.03);
+}
+
+.badge-level {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  color: var(--text-navy);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.badge-placeholder {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #64748b;
+  padding: 16px;
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.exercise-card:hover .card-img-placeholder {
+  background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+}
+
+.ph-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+}
+
+.ph-text {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  line-height: 1.3;
+}
+
+.card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-english-title {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.card-thai-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 12px;
+}
+
+.card-footer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.info-duration {
+  font-weight: 500;
+  color: var(--text-navy);
+}
+
+.btn-card-play {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid #cce4fc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.btn-card-play:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* แบนเนอร์ให้กำลังใจด้านล่าง */
+.encouragement-card {
+  background: #ffffff;
+  border: 1px dashed #cce4fc;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.enc-quote {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.enc-subtext {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Bottom Navigation Bar (5 เมนู)
+   ========================================================================== */
+.bottom-nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-color);
+  padding: 8px 12px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.bottom-nav-inner {
+  max-width: 540px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.bottom-nav-item {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.bottom-nav-item svg {
+  width: 22px;
+  height: 22px;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.bottom-nav-item.active svg {
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   ระบบวิดีโอ YouTube (16:9, Rounded-16px, Seek Lock)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.video-modal-window {
+  background: white;
+  width: 100%;
+  max-width: 680px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.video-modal-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.video-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.video-modal-close-btn, .modal-close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-navy);
+}
+
+.video-modal-scrollable {
+  overflow-y: auto;
+  padding: 18px 20px;
+}
+
+/* สัดส่วน 16:9 และขอบมน 16px */
+.video-ratio-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.video-ratio-box iframe,
+.video-ratio-box video,
+.video-ratio-box .native-video-player,
+.video-ratio-box #youtube-player-mount {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: none;
+  object-fit: contain;
+  background: #000;
+}
+
+.video-lock-badge-bar {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #92400e;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Placeholder สำหรับกิจกรรมที่ยังไม่มีคลิป */
+.video-placeholder-card {
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.placeholder-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.placeholder-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+}
+
+.placeholder-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 420px;
+  margin-bottom: 14px;
+}
+
+.placeholder-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-direct-practice {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-add-yt-url {
+  background: white;
+  color: var(--text-navy);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.video-instructions-card {
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.video-instructions-card h4 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.step-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   เครื่องมือนับชีพจร (Pulse Timer)
+   ========================================================================== */
+.pulse-timer-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: 24px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.timer-mode-switcher {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 20px;
+  padding: 3px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+}
+
+.mode-pill {
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mode-pill.active {
+  background: white;
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.pulse-clock-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-dial-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+}
+
+.timer-dial-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-track {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 8;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s linear;
+}
+
+.timer-dial-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pulsing-heart {
+  font-size: 24px;
+  transition: transform 0.15s;
+}
+
+.pulsing-heart.beating {
+  animation: heartBeat 1s infinite ease-in-out;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.25); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.timer-seconds {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--text-navy);
+  line-height: 1;
+}
+
+.timer-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.timer-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-timer-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(40, 134, 233, 0.3);
+}
+
+.btn-timer-secondary {
+  background: #f1f5f9;
+  color: var(--text-navy);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.timer-input-section {
+  width: 100%;
+  max-width: 320px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+}
+
+.timer-input-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-navy);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.timer-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.input-pulse {
+  flex-grow: 1;
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+}
+
+.input-pulse:focus {
+  border-color: var(--primary);
+}
+
+.btn-calc-pulse {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid #cce4fc;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.calc-result-box {
+  width: 100%;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.result-card {
+  margin-top: 14px;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: left;
+}
+
+.result-card.badge-success { background: #ecfdf5; border: 1px solid #a7f3d0; }
+.result-card.badge-info { background: #f0f9ff; border: 1px solid #bae6fd; }
+.result-card.badge-warning { background: #fffbeb; border: 1px solid #fde68a; }
+
+.result-bpm-val { font-size: 15px; margin-bottom: 4px; color: var(--text-navy); }
+.result-status-badge { font-size: 13px; font-weight: 700; color: #065f46; margin-bottom: 4px; }
+.result-advice { font-size: 12px; color: #334155; margin-bottom: 8px; }
+.result-age-group { font-size: 11px; color: var(--text-muted); }
+
+.btn-save-record {
+  width: 100%;
+  margin-top: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Post-Workout Heart Rate Modal (ประเมิน 3 กลุ่มวัย)
+   ========================================================================== */
+.post-workout-card {
+  padding: 24px;
+  max-width: 580px;
+  background: white;
+  border-radius: var(--radius-xl);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.post-badge-celebrate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.post-modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.post-modal-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.age-pills-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 520px) {
+  .age-pills-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.age-select-pill {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.age-select-pill strong {
+  font-size: 13px;
+  color: var(--text-navy);
+}
+
+.age-select-pill span {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.age-select-pill.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(40, 134, 233, 0.15);
+}
+
+.age-select-pill.active strong {
+  color: var(--primary);
+}
+
+.guideline-card {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.guideline-card .guide-title {
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 4px;
+}
+
+.manual-input-box {
+  margin-top: 14px;
+}
+
+.manual-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 8px;
+}
+
+.input-pulse-lg {
+  flex-grow: 1;
+  padding: 10px 16px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: 600;
+  text-align: center;
+}
+
+.btn-primary-blue {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.eval-result-card {
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.eval-result-card.badge-success { background: #ecfdf5; border: 1.5px solid #6ee7b7; }
+.eval-result-card.badge-info { background: #f0f9ff; border: 1.5px solid #7dd3fc; }
+.eval-result-card.badge-warning { background: #fffbeb; border: 1.5px solid #fcd34d; }
+
+.eval-bpm-header {
+  font-size: 15px;
+  color: var(--text-navy);
+  margin-bottom: 4px;
+}
+
+.bpm-num {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.eval-status-pill {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.eval-advice-text {
+  font-size: 13px;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.eval-guideline-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  padding-top: 6px;
+  margin-bottom: 12px;
+}
+
+.eval-button-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-save-health-log {
+  flex-grow: 1;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-close-secondary {
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   หน้าความรู้สุขภาพ (Knowledge View)
+   ========================================================================== */
+.knowledge-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 20px 0 12px;
+  color: var(--text-navy);
+}
+
+.ncd-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .ncd-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ncd-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.ncd-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* 4 ธีมสีแยกตามกลุ่มโรค */
+.ncd-card.ncd-theme-diabetes {
+  border-left-color: #0284c7;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+}
+.ncd-card.ncd-theme-diabetes .ncd-badge-sub {
+  color: #0369a1;
+  background: #e0f2fe;
+}
+.ncd-card.ncd-theme-diabetes .btn-ncd-toggle {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
+}
+
+.ncd-card.ncd-theme-hypertension {
+  border-left-color: #dc2626;
+  background: linear-gradient(180deg, #ffffff 0%, #fef2f2 100%);
+}
+.ncd-card.ncd-theme-hypertension .ncd-badge-sub {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+.ncd-card.ncd-theme-hypertension .btn-ncd-toggle {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.ncd-card.ncd-theme-cardiovascular {
+  border-left-color: #ea580c;
+  background: linear-gradient(180deg, #ffffff 0%, #fff7ed 100%);
+}
+.ncd-card.ncd-theme-cardiovascular .ncd-badge-sub {
+  color: #c2410c;
+  background: #ffedd5;
+}
+.ncd-card.ncd-theme-cardiovascular .btn-ncd-toggle {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #ea580c;
+}
+
+.ncd-card.ncd-theme-obesity {
+  border-left-color: #16a34a;
+  background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);
+}
+.ncd-card.ncd-theme-obesity .ncd-badge-sub {
+  color: #15803d;
+  background: #dcfce7;
+}
+.ncd-card.ncd-theme-obesity .btn-ncd-toggle {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #16a34a;
+}
+
+.ncd-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.ncd-icon {
+  font-size: 28px;
+  line-height: 1;
+  padding: 4px;
+}
+
+.ncd-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.ncd-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-navy);
+  line-height: 1.35;
+}
+
+.ncd-badge-sub {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  line-height: 1.4;
+}
+
+.ncd-summary-box {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+}
+
+.ncd-summary-text {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ส่วนขยายเนื้อหาฉบับเต็ม */
+.ncd-expandable-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.ncd-detail-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.ncd-detail-section.warning-box {
+  background: #fff5f5;
+  border-color: #fed7d7;
+}
+.ncd-detail-section.warning-box .ncd-section-label {
+  color: #c53030;
+}
+
+.ncd-detail-section.prevention-box {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+.ncd-detail-section.prevention-box .ncd-section-label {
+  color: #15803d;
+}
+
+.ncd-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.ncd-desc-text {
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ncd-source-tag {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.ncd-source-tag strong {
+  color: #334155;
+}
+
+/* ปุ่มกดพับ-ขยาย */
+.btn-ncd-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ncd-toggle:hover {
+  filter: brightness(0.96);
+}
+
+.btn-ncd-toggle.expanded {
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+.toggle-btn-arrow {
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+/* FITT Cards */
+.fitt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.fitt-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.fitt-badge {
+  width: 42px;
+  height: 42px;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fitt-content h4 { font-size: 15px; color: var(--text-navy); margin-bottom: 2px; }
+.fitt-summary { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+.fitt-detail { font-size: 12px; color: var(--text-muted); }
+
+/* คำแนะนำ 3 กลุ่มวัย */
+.age-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.age-knowledge-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  position: relative;
+}
+
+.age-badge-tag {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.age-knowledge-card h4 { font-size: 15px; margin-bottom: 6px; color: var(--text-navy); }
+.age-rec-text { font-size: 13px; color: var(--text-navy); margin-bottom: 4px; }
+.age-target-text { font-size: 12px; color: #0284c7; margin-bottom: 4px; }
+.age-benefit-text { font-size: 12px; color: #475569; margin-bottom: 4px; }
+.age-safety-text { font-size: 12px; color: #b45309; }
+
+/* ==========================================================================
+   หน้ากิจกรรมชุมชน (Community View)
+   ========================================================================== */
+/* ==========================================================================
+   หน้ากิจกรรมชุมชน (Community View - ถอดแบบจาก Framer Image 2)
+   ========================================================================== */
+.community-hero-banner-framer {
+  background: #f0f7ff;
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  border: 1px solid #d4e8fd;
+  margin-bottom: 20px;
+}
+
+.comm-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.comm-banner-icon {
+  font-size: 22px;
+}
+
+.comm-banner-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+.comm-banner-motto {
+  font-size: 13px;
+  font-style: italic;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.comm-banner-desc {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+/* การ์ดเต้นบาสโลบยอดนิยม */
+.pasolob-feature-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.pasolob-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pasolob-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pasolob-icon {
+  font-size: 20px;
+}
+
+.pasolob-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.badge-popular {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.pasolob-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.btn-pasolob-play {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(40, 134, 233, 0.25);
+}
+
+.btn-pasolob-play:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* การ์ดตารางนัดหมายออกกำลังกายชุมชน */
+.community-schedule-card {
+  margin-bottom: 20px;
+}
+
+.schedule-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.schedule-header-title h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.schedule-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sched-pill-row {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 2px 6px rgba(32, 52, 72, 0.02);
+  transition: transform 0.2s ease;
+}
+
+.sched-pill-row:hover {
+  transform: translateY(-1px);
+}
+
+.sched-day-pill {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 12px;
+  white-space: nowrap;
+  min-width: 65px;
+  text-align: center;
+}
+
+.sched-detail-col {
+  flex-grow: 1;
+}
+
+.sched-act-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 2px;
+}
+
+.sched-act-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* การ์ดบทบาทประธาน อสม. */
+.vhv-role-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.vhv-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vhv-icon {
+  font-size: 20px;
+}
+
+.vhv-title-row h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.vhv-desc {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.vhv-contact-footer {
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   หน้าโปรไฟล์ & สมุดสุขภาพดิจิทัล (Profile View)
+   ========================================================================== */
+.profile-card-header {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-avatar-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.profile-user-info h3 { font-size: 18px; color: var(--text-navy); }
+.profile-user-info p { font-size: 13px; color: var(--text-muted); }
+
+.profile-stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-metric-box {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-metric-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-metric-lbl {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ตารางประวัติชีพจร */
+.history-table-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.history-table th {
+  background: #f8fafc;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+}
+
+.history-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.status-badge.badge-success { background: #dcfce7; color: #15803d; }
+.status-badge.badge-info { background: #e0f2fe; color: #0369a1; }
+.status-badge.badge-warning { background: #fef3c7; color: #b45309; }
+
+.btn-print-summary {
+  width: 100%;
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.25);
+}
+
+.btn-print-summary:hover {
+  background: #0369a1;
+}
+
+/* ==========================================================================
+   Toast Notification
+   ========================================================================== */
+.toast-notice-box {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: #1e293b;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  max-width: 90%;
+}
+
+.toast-notice-box.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Onboarding / Registration Screen Styles (หน้าลงทะเบียนและประเมินสุขภาพ)
+   ========================================================================== */
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.onboarding-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.onboarding-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 560px;
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-color);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.onboarding-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+}
+
+.onboarding-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 480px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+}
+
+.form-label .req {
+  color: #ef4444;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-navy);
+  outline: none;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(40, 134, 233, 0.15);
+}
+
+.gender-radio-group {
+  display: flex;
+  gap: 8px;
+}
+
+.gender-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.gender-pill input {
+  display: none;
+}
+
+.gender-pill:has(input:checked) {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.btn-onboarding-calc {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 14px;
+  box-shadow: 0 4px 15px rgba(40, 134, 233, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-onboarding-calc:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* กล่องผลลัพธ์การลงทะเบียน */
+.onboarding-result-box {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px dashed #e2e8f0;
+  animation: fadeIn 0.3s ease;
+}
+
+.result-header-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 14px;
+}
+
+.result-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metric-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metric-card.full-width {
+  grid-column: span 2;
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+@media (max-width: 480px) {
+  .result-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .metric-card.full-width {
+    grid-column: span 1;
+  }
+}
+
+.metric-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.metric-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.metric-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0369a1;
+}
+
+.guideline-summary-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 12px;
+  color: #166534;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.btn-enter-website {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-enter-website:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+}
+
+/* ==========================================================================
+   Personalized Recommendation Card Styles (การ์ดแนะนำท่าเฉพาะบุคคล)
+   ========================================================================== */
+.personalized-rec-card {
+  background: linear-gradient(135deg, #f0f7ff 0%, #f4fbf7 100%);
+  border: 1.5px solid #bfdbfe;
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 16px rgba(40, 134, 233, 0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.rec-header-row {
+  margin-bottom: 14px;
+}
+
+.rec-user-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-navy);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* รายการกล่องข้อมูลสุขภาพขนาดใหญ่ อ่านง่าย ไม่ตกกรอบ */
+.rec-meta-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rec-meta-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ffffff;
+  border: 1.5px solid #dbeafe;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rec-meta-card:hover {
+  box-shadow: 0 4px 12px rgba(40, 134, 233, 0.08);
+}
+
+.rec-meta-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.rec-meta-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.rec-meta-label {
+  display: block;
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.rec-meta-val {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.rec-meta-val .rec-meta-sub {
+  font-weight: 500;
+  font-size: 13.5px;
+  color: #475569;
+}
+
+.rec-meta-card.item-target .rec-meta-val {
+  color: #0369a1;
+}
+
+.rec-meta-card.item-pulse .rec-meta-val {
+  color: #be123c;
+}
+
+.rec-meta-card.item-bmi .rec-meta-val {
+  color: #15803d;
+}
+
+/* ==========================================================================
+   เซตออกกำลังกายแนะนำเฉพาะคุณ (Workout Set Layout)
+   ========================================================================== */
+.rec-workout-set-container {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 14px 14px;
+  border: 1.5px solid #dbeafe;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.05);
+}
+
+.set-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.set-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+
+.set-icon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.set-main-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-navy);
+  display: block;
+}
+
+.set-count-pill {
+  background: #e0f2fe;
+  color: #0284c7;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rec-set-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rec-set-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.rec-set-item-card:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.rec-set-item-card:active {
+  transform: translateY(0);
+}
+
+.set-item-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+
+.set-step-number {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #64748b;
+  background: #e2e8f0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.set-item-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.set-item-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.set-item-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.set-item-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.meta-en {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.meta-dot {
+  color: #cbd5e1;
+}
+
+.meta-dur {
+  color: #0284c7;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.btn-item-play {
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+}
+
+.btn-item-play:hover {
+  background: #0369a1;
+  transform: scale(1.03);
+}
+
+@media (max-width: 480px) {
+  .personalized-rec-card {
+    padding: 16px 14px;
+  }
+  .rec-user-title {
+    font-size: 16.5px;
+  }
+  .rec-meta-card {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+  .rec-meta-icon {
+    font-size: 22px;
+  }
+  .rec-meta-label {
+    font-size: 12px;
+  }
+  .rec-meta-val {
+    font-size: 14.5px;
+  }
+  .rec-workout-set-container {
+    padding: 10px 10px;
+  }
+  .rec-set-item-card {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+  .set-item-thumb {
+    width: 42px;
+    height: 42px;
+  }
+  .meta-en {
+    max-width: 90px;
+  }
+  .btn-item-play {
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+}
+
+/* ==========================================================================
+   Switch User Modal & Roster Styles
+   ========================================================================== */
+.switch-user-window {
+  background: white;
+  width: 100%;
+  max-width: 480px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.switch-user-body {
+  padding: 20px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.user-roster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.user-roster-item {
+  background: #f8fafc;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-roster-item:hover {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.user-roster-item.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(40, 134, 233, 0.12);
+}
+
+.roster-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.roster-info {
+  flex-grow: 1;
+}
+
+.roster-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.roster-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.roster-active-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  background: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+}
+
+.btn-add-new-user-pill {
+  width: 100%;
+  background: #f1f5f9;
+  color: var(--text-navy);
+  border: 1.5px dashed #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-add-new-user-pill:hover {
+  background: #e0f2fe;
+  border-color: #0284c7;
+  color: #0284c7;
+}
+
+.btn-user-action-pill {
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-navy);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-user-action-pill:hover {
+  background: #e2e8f0;
+}
+
+.btn-user-action-pill.danger {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.btn-user-action-pill.danger:hover {
+  background: #fee2e2;
+}
+
+/* ปุ่มลบบัญชีผู้ใช้ในหน้าต่างสลับบัญชี */
+.btn-delete-user {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-delete-user:hover {
+  background: #fecaca;
+  color: #b91c1c;
+  transform: scale(1.03);
+}
+
+/* ==========================================================================
+   Workout Calendar View Styles (ปฏิทินบันทึกผลการออกกำลังกาย)
+   ========================================================================== */
+.calendar-card-wrapper {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .calendar-card-wrapper {
+    padding: 16px 12px;
+    border-radius: var(--radius-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-card-wrapper {
+    padding: 12px 6px;
+    border-radius: var(--radius-md);
+  }
+}
+
+.calendar-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.calendar-month-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 4px;
+}
+
+.calendar-meta-tags {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.calendar-user-badge {
+  font-size: 12px;
+  color: #0284c7;
+  font-weight: 600;
+  background: var(--primary-light);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.calendar-target-badge {
+  font-size: 12px;
+  color: #166534;
+  font-weight: 600;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.calendar-nav-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Demo Mode Toggle Switch (สวิตช์เปิด/ปิด โหมดทดสอบ)
+   ========================================================================== */
+.demo-toggle-pill {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.demo-toggle-pill.is-active {
+  background: #fdf4ff;
+  border-color: #d8b4fe;
+  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.12);
+}
+
+.demo-toggle-caption {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.demo-toggle-pill.is-active .demo-toggle-caption {
+  color: #9333ea;
+}
+
+/* Switch styling */
+.toggle-switch-ui {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.toggle-switch-ui input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-slider-round {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+}
+
+.toggle-slider-round:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-switch-ui input:checked + .toggle-slider-round {
+  background-color: #9333ea;
+}
+
+.toggle-switch-ui input:checked + .toggle-slider-round:before {
+  transform: translateX(14px);
+}
+
+.demo-toggle-status {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.demo-toggle-status.off {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.demo-toggle-status.on {
+  background: #9333ea;
+  color: white;
+}
+
+.calendar-nav-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-cal-nav {
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text-navy);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cal-nav:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-cal-nav-today {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cal-nav-today:hover {
+  background: #d0e7ff;
+}
+
+/* ==========================================================================
+   Hero Weekly Summary Card (การ์ดสรุปผลรายสัปดาห์ เด่นๆ ง่ายๆ ตัวหนังสือไม่เยอะ)
+   ========================================================================== */
+.weekly-hero-card {
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-hero-card.status-pass {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border: 1.5px solid #86efac;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
+}
+
+.weekly-hero-card.status-progress {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #bae6fd;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.08);
+}
+
+.weekly-hero-card.status-not-passed,
+.weekly-hero-card.status-fail {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #fed7aa;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.08);
+}
+
+.week-hero-left {
+  flex: 1;
+}
+
+.week-hero-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.week-hero-headline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.week-status-pill {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.week-status-pill.pill-pass {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.week-status-pill.pill-progress {
+  background: #0284c7;
+  color: white;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
+
+.week-status-pill.pill-not-passed,
+.week-status-pill.pill-fail {
+  background: #f59e0b;
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+}
+
+.week-range-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.week-hero-desc {
+  font-size: 13px;
+  color: var(--text-navy);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.week-encouragement-quote {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.7);
+  border-left: 3px solid #f59e0b;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.week-hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(4px);
+}
+
+.week-metric-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.metric-big-num {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.metric-big-num.text-pass {
+  color: #10b981;
+}
+
+.metric-big-num.text-progress {
+  color: #0284c7;
+}
+
+.metric-big-num.text-not-passed,
+.metric-big-num.text-fail {
+  color: #d97706;
+}
+
+.week-progress-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot-item {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.dot-item.active {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+}
+
+.weekly-hero-card.status-progress .dot-item.active {
+  background: #0284c7;
+  color: white;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+.weekly-hero-card.status-not-passed .dot-item.active,
+.weekly-hero-card.status-fail .dot-item.active {
+  background: #f59e0b;
+  color: white;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+}
+
+@media (max-width: 600px) {
+  .weekly-hero-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+  }
+  .week-hero-right {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 12px;
+  }
+  .week-metric-counter {
+    margin-bottom: 0;
+  }
+}
+
+/* ==========================================================================
+   Color Legend (คำอธิบายสีสัญลักษณ์)
+   ========================================================================== */
+.calendar-color-legend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  padding: 4px 2px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.legend-box.legend-passed {
+  background: #dcfce7;
+  border: 1.5px solid #22c55e;
+}
+
+.legend-box.legend-failed {
+  background: #fee2e2;
+  border: 1.5px solid #ef4444;
+}
+
+.legend-box.legend-rest {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+}
+
+/* แถบสรุปสถิติประจำเดือน */
+.calendar-monthly-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+@media (max-width: 640px) {
+  .calendar-monthly-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.cal-stat-item {
+  text-align: center;
+}
+
+.cal-stat-number {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.cal-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.calendar-table-container {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* แถวชื่อวัน 7 วัน */
+.calendar-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 6px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cal-weekday-cell {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-navy);
+  padding: 6px 0;
+  min-width: 0;
+}
+
+.cal-weekday-cell.weekend {
+  color: #dc2626;
+}
+
+/* ช่องวันในเดือน - ใช้ minmax(0, 1fr) ป้องกันการขยายล้นตารางบนมือถือ */
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cal-day-cell {
+  min-height: 72px;
+  min-width: 0;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: var(--radius-sm);
+  padding: 5px 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.cal-day-cell.prev-month-day,
+.cal-day-cell.next-month-day {
+  background: #f8fafc;
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cal-day-cell.current-month-day:hover {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
+.day-num-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.day-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-navy);
+}
+
+.today-tag {
+  background: var(--primary);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+
+.cal-day-cell.is-today {
+  border: 1.5px solid var(--primary);
+  background: #f8fbff;
+}
+
+.cal-day-cell.is-selected {
+  outline: 2.5px solid var(--primary);
+  outline-offset: -1px;
+}
+
+/* ช่องวันที่มีการออกกำลังกาย - แยกตามสถานะ เขียว (ผ่าน) / แดง (ไม่ผ่าน) */
+.cal-day-cell.has-workout.day-passed {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.cal-day-cell.has-workout.day-failed {
+  background: #fff1f2;
+  border-color: #fca5a5;
+}
+
+.cal-day-workout-pill {
+  border-radius: 8px;
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.cal-day-workout-pill.pill-passed {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+.cal-day-workout-pill.pill-failed {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+.pill-status-icon {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.pill-mins-txt {
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Mobile Responsive Rules สำหรับปฏิทิน
+   ========================================================================== */
+@media (max-width: 480px) {
+  .calendar-weekdays-row {
+    gap: 2px;
+    margin-bottom: 4px;
+  }
+  .cal-weekday-cell {
+    font-size: 11px;
+    padding: 4px 0;
+  }
+  .calendar-days-grid {
+    gap: 3px;
+  }
+  .cal-day-cell {
+    min-height: 52px;
+    padding: 3px 2px;
+    border-radius: 8px;
+  }
+  .day-num {
+    font-size: 11px;
+    line-height: 1;
+  }
+  .today-tag {
+    font-size: 8px;
+    padding: 1px 3px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  .cal-day-workout-pill {
+    padding: 2px 1px;
+    gap: 2px;
+    margin-top: 2px;
+    border-radius: 5px;
+  }
+  .pill-status-icon {
+    font-size: 8.5px;
+    line-height: 1;
+  }
+  .pill-mins-txt {
+    font-size: 8.5px;
+    line-height: 1;
+  }
+  .pill-mins-unit {
+    display: none; /* ซ่อนคำว่า 'นาที' บนหน้าจอมือถือ เพื่อให้ตัวเลขและเครื่องหมายไม่ตกขอบ */
+  }
+}
+
+@media (max-width: 360px) {
+  .calendar-days-grid {
+    gap: 2px;
+  }
+  .cal-day-cell {
+    min-height: 48px;
+    padding: 2px 1px;
+  }
+  .pill-status-icon,
+  .pill-mins-txt {
+    font-size: 8px;
+  }
+}
+
+/* แบนเนอร์ประเมินผลประจำวันในกล่องรายละเอียด (Daily Evaluation Banner) */
+.day-eval-summary-banner {
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.day-eval-summary-banner.pass {
+  background: #ecfdf5;
+  border: 1.5px solid #86efac;
+}
+
+.day-eval-summary-banner.fail {
+  background: #fff1f2;
+  border: 1.5px solid #fca5a5;
+}
+
+.eval-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eval-banner-icon {
+  font-size: 22px;
+}
+
+.eval-banner-status {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 2px;
+}
+
+.eval-banner-detail {
+  font-size: 12px;
+  color: var(--text-navy);
+}
+
+.eval-banner-score-tag {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.eval-banner-score-tag.pass {
+  background: #10b981;
+  color: white;
+}
+
+.eval-banner-score-tag.fail {
+  background: #ef4444;
+  color: white;
+}
+
+.detail-count-badge.warning {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ส่วนแสดงรายละเอียดของวันที่เลือก */
+.day-detail-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.day-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-date-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.detail-date-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.detail-count-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: var(--text-muted);
+}
+
+.detail-count-badge.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* รายการกิจกรรมในวันนั้น */
+.day-workout-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day-workout-item-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.workout-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.workout-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.workout-item-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.workout-item-time {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.workout-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.workout-hr-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.workout-hr-display .hr-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.workout-hr-display .hr-unit {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.workout-status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.workout-status-badge.badge-success { background: #dcfce7; color: #15803d; }
+.workout-status-badge.badge-info { background: #e0f2fe; color: #0369a1; }
+.workout-status-badge.badge-warning { background: #fef3c7; color: #b45309; }
+
+.empty-workout-state {
+  text-align: center;
+  padding: 28px 16px;
+}
+
+.empty-cal-icon {
+  font-size: 38px;
+  margin-bottom: 8px;
+}
+
+.empty-workout-state h4 {
+  font-size: 15px;
+  color: var(--text-navy);
+  margin-bottom: 4px;
+}
+
+.empty-workout-state p {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Daily Workout Stat Card Styles (การ์ดสถิติเวลาสะสมประจำวัน)
+   ========================================================================== */
+.daily-stat-card {
+  background: #ffffff;
+  border: 1.5px solid #bae6fd;
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.daily-stat-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-stat-title-group h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.daily-date-tag {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #d0e7ff;
+}
+
+.daily-counter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin: 10px 0 16px;
+  gap: 10px;
+}
+
+.daily-big-number-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.daily-time-giant {
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-family: 'Inter', 'Anuphan', sans-serif;
+}
+
+.daily-target-giant {
+  font-size: 20px;
+  font-weight: 700;
+  color: #64748b;
+  font-family: 'Inter', 'Anuphan', sans-serif;
+}
+
+.daily-target-giant .unit {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.daily-percent-badge {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 6px 14px;
+  border-radius: 14px;
+  border: 1px solid #d0e7ff;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+}
+
+.daily-percent-badge.completed {
+  color: #10b981;
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.daily-goal-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.daily-goal-pill.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.daily-goal-pill.completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* แถบ Progress Bar ประจำวัน */
+.daily-progress-track {
+  width: 100%;
+  height: 14px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.daily-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  border-radius: 12px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.daily-progress-fill.completed {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.daily-today-chips-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.today-workout-chip {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #166534;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   การ์ดและปุ่มแจ้งเตือน Cool Down ประจำวันเมื่อทำครบเป้าหมาย
+   ========================================================================== */
+.daily-cooldown-cta-card {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1.5px solid #10b981;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.18);
+  animation: pulseCooldownGlow 2.4s infinite ease-in-out;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.daily-cooldown-cta-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
+}
+
+@keyframes pulseCooldownGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.cooldown-cta-icon-box {
+  width: 42px;
+  height: 42px;
+  background: #10b981;
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.cooldown-cta-text-box {
+  flex: 1;
+  text-align: left;
+}
+
+.cooldown-cta-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #065f46;
+  margin-bottom: 2px;
+}
+
+.cooldown-cta-desc {
+  font-size: 11.5px;
+  color: #047857;
+  line-height: 1.4;
+}
+
+.btn-cooldown-action {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-cooldown-action:hover {
+  background: #047857;
+}
+
+.daily-cooldown-done-badge {
+  margin-top: 12px;
+  background: #f0fdf4;
+  border: 1px dashed #86efac;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #166534;
+  font-weight: 600;
+  width: 100%;
+}
+
+.daily-cooldown-done-badge .cooldown-done-icon {
+  font-size: 16px;
+}
+
+/* ==========================================================================
+   All History CTA Button & Modal View (ประวัติทั้งหมด & ส่งออก PDF ในหน้าปฏิทิน)
+   ========================================================================== */
+.calendar-all-history-cta-wrap {
+  margin-top: 18px;
+  margin-bottom: 28px;
+}
+
+.btn-all-history-modal {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+  transition: all 0.25s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.btn-all-history-modal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+}
+
+.btn-all-history-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-pulse-badge {
+  font-size: 26px;
+  background: rgba(255, 255, 255, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-all-history-text .btn-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.btn-all-history-text .btn-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.btn-all-history-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn-all-history-action .btn-arrow {
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+
+.btn-all-history-modal:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 600px) {
+  .btn-all-history-modal {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .btn-all-history-action {
+    justify-content: center;
+  }
+}
+
+/* ปุ่มพิมพ์เฉพาะวันในการ์ดรายวัน */
+.day-detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-print-day-pill {
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-print-day-pill:hover {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  transform: translateY(-1px);
+}
+
+/* Modal Backdrop & Dialog */
+.all-history-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInModal 0.25s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.all-history-modal-content {
+  background: white;
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: popInModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popInModal {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-all-history-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.modal-header-titles h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 2px;
+}
+
+.modal-header-titles p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.btn-close-modal-x {
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.btn-close-modal-x:hover {
+  background: #e2e8f0;
+  color: var(--text-navy);
+}
+
+/* Modal Metric Stats */
+.modal-stats-overview-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 14px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-stat-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  text-align: center;
+}
+
+.modal-stat-card .m-val {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.modal-stat-card .m-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Modal Print Toolbar */
+.modal-print-toolbar {
+  padding: 12px 24px;
+  background: #f0f9ff;
+  border-bottom: 1px solid #bae6fd;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-print-action-main {
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 200px;
+}
+
+.btn-print-action-main:hover {
+  background: #0369a1;
+}
+
+.btn-print-action-secondary {
+  background: white;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-print-action-secondary:hover {
+  background: #e0f2fe;
+}
+
+/* Table in Modal */
+.modal-table-scroll-wrap {
+  padding: 16px 24px;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 46vh;
+}
+
+.all-history-full-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.all-history-full-table th {
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  position: sticky;
+  top: 0;
+}
+
+.all-history-full-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.hist-row-title {
+  font-weight: 600;
+  color: var(--text-navy);
+  margin-bottom: 2px;
+}
+
+.hist-row-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.hist-row-dur {
+  font-weight: 600;
+  color: #0369a1;
+}
+
+.hist-row-hr {
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.hist-row-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  line-height: 1.3;
+}
+
+/* Modal Footer */
+.modal-all-history-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.btn-modal-dismiss {
+  background: #e2e8f0;
+  color: var(--text-navy);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-modal-dismiss:hover {
+  background: #cbd5e1;
+}
+
+/* ==========================================================================
+   BMI 7-Color Ping-Pong Traffic Light System (เกณฑ์ปิงปองจราจร 7 สี หน้าโปรไฟล์)
+   ========================================================================== */
+/* แถบสรุปด่วน อายุ / น้ำหนัก / ส่วนสูง */
+.profile-body-metrics-bar {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.body-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.body-metric-item .bm-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.body-metric-item .bm-val {
+  font-size: 15px;
+  color: var(--text-navy);
+}
+
+.body-metric-item .bm-val strong {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.btn-quick-edit-body {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid #bae6fd;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-quick-edit-body:hover {
+  background: #d0e7ff;
+  transform: translateY(-1px);
+}
+
+/* การ์ดดัชนีมวลกาย ปิงปองจราจร 7 สี */
+.bmi-pingpong-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+@media (max-width: 480px) {
+  .bmi-pingpong-card {
+    padding: 16px 14px;
+  }
+}
+
+.bmi-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bmi-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 2px;
+}
+
+.bmi-calc-formula {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ป้ายสถานะปิงปองจราจรที่หัวการ์ด */
+.bmi-pingpong-active-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pingpong-circle-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ตัวเลขคะแนน BMI ขนาดใหญ่ */
+.bmi-score-hero-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.bmi-big-num-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.bmi-giant-val {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-navy);
+}
+
+.bmi-unit-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.bmi-level-pill {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* แถบสเกล 7 สี (Gauge Bar Track) */
+.bmi-gauge-container {
+  position: relative;
+  margin: 24px 0 20px;
+  padding: 0 4px;
+}
+
+.bmi-gauge-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: #f1f5f9;
+}
+
+.gauge-segment {
+  height: 100%;
+  transition: flex 0.3s;
+}
+
+.gauge-segment.seg-green-light { background-color: #4ade80; }
+.gauge-segment.seg-white { background-color: #ffffff; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+.gauge-segment.seg-green-dark { background-color: #16a34a; }
+.gauge-segment.seg-yellow { background-color: #facc15; }
+.gauge-segment.seg-orange { background-color: #fb923c; }
+.gauge-segment.seg-red { background-color: #ef4444; }
+.gauge-segment.seg-black { background-color: #0f172a; }
+
+/* เข็มชี้ Slider Pointer */
+.bmi-gauge-pointer {
+  position: absolute;
+  top: -12px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 2;
+}
+
+.pointer-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  background: #0f172a;
+}
+
+.pointer-stem {
+  width: 2.5px;
+  height: 22px;
+  background: #0f172a;
+  border-radius: 2px;
+  margin-top: 1px;
+}
+
+/* ขีดตัวเลขกำกับสเกล */
+.bmi-scale-labels-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0 2px;
+}
+
+/* กล่องคำแนะนำสุขภาพตามเกณฑ์สีปัจจุบัน */
+.bmi-advice-card {
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  transition: all 0.25s ease;
+}
+
+.advice-card-header {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.advice-card-text {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* รายการแจกแจงเกณฑ์ปิงปองจราจร 7 สี */
+.bmi-7colors-breakdown-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 18px;
+  margin-top: 10px;
+}
+
+.breakdown-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bmi-7colors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bmi-color-item {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  transition: all 0.25s ease;
+}
+
+.bmi-color-item.is-current-level {
+  border: 2px solid #0284c7;
+  background: #f8fafc;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* ปรับสีกรอบและพื้นหลังตามเกณฑ์ปิงปองจราจร 7 สี */
+.bmi-color-item.is-current-level.current-green-light {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.bmi-color-item.is-current-level.current-white {
+  border-color: #0284c7; /* ยกเว้นสีขาว ให้เป็นสีน้ำเงิน เพื่อการมองเห็นที่ชัดเจน */
+  background: #f0f9ff;
+}
+
+.bmi-color-item.is-current-level.current-green-dark {
+  border-color: #15803d;
+  background: #ecfdf5;
+}
+
+.bmi-color-item.is-current-level.current-yellow {
+  border-color: #eab308;
+  background: #fefce8;
+}
+
+.bmi-color-item.is-current-level.current-orange {
+  border-color: #f97316;
+  background: #fff7ed;
+}
+
+.bmi-color-item.is-current-level.current-red {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.bmi-color-item.is-current-level.current-black {
+  border-color: #0f172a;
+  background: #f8fafc;
+}
+
+.color-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.color-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-bullet-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.color-item-title {
+  font-size: 13px;
+  color: var(--text-navy);
+}
+
+.color-name-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.color-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-range-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.current-you-tag {
+  background: #0284c7;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.current-you-tag.tag-green-light { background: #16a34a; }
+.current-you-tag.tag-white { background: #0284c7; } /* ยกเว้นสีขาว ให้เป็นสีน้ำเงิน */
+.current-you-tag.tag-green-dark { background: #15803d; }
+.current-you-tag.tag-yellow { background: #ca8a04; }
+.current-you-tag.tag-orange { background: #ea580c; }
+.current-you-tag.tag-red { background: #dc2626; }
+.current-you-tag.tag-black { background: #0f172a; }
+
+.color-item-advice {
+  font-size: 12px;
+  color: var(--text-navy);
+  line-height: 1.45;
+  margin: 4px 0 0 20px;
+}
+
+@media (max-width: 480px) {
+  .color-item-advice {
+    margin-left: 0;
+  }
+}
+
+.bmi-footnote-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 14px;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Ping-Pong 7 Colors Variations (Themes)
+   ========================================================================== */
+/* 1. เขียวอ่อน */
+.pingpong-green-light { background-color: #4ade80; color: #166534; }
+.pingpong-pill-green-light { background: #dcfce7; color: #166534; border: 1.5px solid #86efac; }
+.pingpong-badge-green-light { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.pingpong-box-green-light { background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; }
+
+/* 2. ขาว */
+.pingpong-white { background-color: #ffffff; color: #334155; border: 1.5px solid #94a3b8; }
+.pingpong-pill-white { background: #f8fafc; color: #334155; border: 1.5px solid #94a3b8; }
+.pingpong-badge-white { background: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
+.pingpong-box-white { background: #f8fafc; border: 1.5px solid #cbd5e1; color: #334155; }
+
+/* 3. เขียวเข้ม */
+.pingpong-green-dark { background-color: #16a34a; color: white; }
+.pingpong-pill-green-dark { background: #16a34a; color: white; }
+.pingpong-badge-green-dark { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.pingpong-box-green-dark { background: #ecfdf5; border: 1.5px solid #86efac; color: #14532d; }
+
+/* 4. เหลือง */
+.pingpong-yellow { background-color: #facc15; color: #854d0e; }
+.pingpong-pill-yellow { background: #fef08a; color: #854d0e; border: 1.5px solid #facc15; }
+.pingpong-badge-yellow { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+.pingpong-box-yellow { background: #fefce8; border: 1.5px solid #fde047; color: #854d0e; }
+
+/* 5. ส้ม */
+.pingpong-orange { background-color: #fb923c; color: white; }
+.pingpong-pill-orange { background: #ffedd5; color: #c2410c; border: 1.5px solid #fb923c; }
+.pingpong-badge-orange { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+.pingpong-box-orange { background: #fff7ed; border: 1.5px solid #fed7aa; color: #9a3412; }
+
+/* 6. แดง */
+.pingpong-red { background-color: #ef4444; color: white; }
+.pingpong-pill-red { background: #fee2e2; color: #b91c1c; border: 1.5px solid #f87171; }
+.pingpong-badge-red { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.pingpong-box-red { background: #fef2f2; border: 1.5px solid #fca5a5; color: #991b1b; }
+
+/* 7. ดำ */
+.pingpong-black { background-color: #0f172a; color: white; }
+.pingpong-pill-black { background: #0f172a; color: white; }
+.pingpong-badge-black { background: #e2e8f0; color: #0f172a; border: 1px solid #94a3b8; }
+.pingpong-box-black { background: #f8fafc; border: 1.5px solid #475569; color: #0f172a; }
+
+/* Modal อัปเดตน้ำหนักด่วน */
+.quick-weight-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeInModal 0.2s ease;
+}
+
+.quick-weight-modal-content {
+  background: white;
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: popInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quick-modal-header {
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quick-modal-header h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin: 0;
+}
+
+.quick-form-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+}
+
+.quick-form-field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.quick-form-field input:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.btn-save-quick-weight {
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-save-quick-weight:hover {
+  background: #0369a1;
+}
+
+.btn-cancel-quick-weight {
+  background: #f1f5f9;
+  color: var(--text-navy);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-cancel-quick-weight:hover {
+  background: #e2e8f0;
+}
+
+/* ==========================================================================
+   หน้าลงทะเบียน: กรอบผลประเมิน BMI ตามเกณฑ์ปิงปองจราจร 7 สี + ป๊อปอัปรายละเอียด
+   ========================================================================== */
+.metric-card.reg-bmi-card {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.metric-card.reg-bmi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.metric-card.reg-bmi-card:active {
+  transform: translateY(0);
+}
+
+.bmi-click-guide-pill {
+  font-size: 10px;
+  font-weight: 600;
+  color: #0284c7;
+  background: #e0f2fe;
+  padding: 2px 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid #bae6fd;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.metric-card.reg-bmi-card:hover .bmi-click-guide-pill {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.metric-pingpong-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* สีกรอบและสีพื้นหลังสำหรับผลประเมิน BMI หน้าลงทะเบียน 7 สี */
+/* 1. เขียวอ่อน */
+.reg-bmi-card.reg-bmi-green-light {
+  border-color: #22c55e !important;
+  background: #f0fdf4 !important;
+}
+
+/* 2. ขาว (ยกเว้นสีขาว ให้เป็นสีน้ำเงิน เพื่อการมองเห็นที่ชัดเจน) */
+.reg-bmi-card.reg-bmi-white {
+  border-color: #0284c7 !important;
+  background: #f0f9ff !important;
+}
+
+/* 3. เขียวเข้ม */
+.reg-bmi-card.reg-bmi-green-dark {
+  border-color: #15803d !important;
+  background: #ecfdf5 !important;
+}
+
+/* 4. เหลือง */
+.reg-bmi-card.reg-bmi-yellow {
+  border-color: #eab308 !important;
+  background: #fefce8 !important;
+}
+
+/* 5. ส้ม */
+.reg-bmi-card.reg-bmi-orange {
+  border-color: #f97316 !important;
+  background: #fff7ed !important;
+}
+
+/* 6. แดง */
+.reg-bmi-card.reg-bmi-red {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+/* 7. ดำ */
+.reg-bmi-card.reg-bmi-black {
+  border-color: #0f172a !important;
+  background: #f8fafc !important;
+}
+
+/* ป๊อปอัป Modal แสดงรายละเอียดเกณฑ์ 7 สี (z-index สูงกว่า onboarding overlay) */
+.modal-overlay.bmi-popup-overlay {
+  z-index: 500;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bmi-popup-modal-window {
+  background: #ffffff;
+  width: 100%;
+  max-width: 620px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bmi-popup-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.bmi-popup-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.bmi-popup-modal-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.bmi-popup-modal-body .bmi-card-inner {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.bmi-popup-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+/* ==========================================================================
+   สเตชันฝึกปฏิบัติ: การประเมินด้วยการพูด (Talk Test) 3 ระดับ
+   ========================================================================== */
+.timer-mode-switcher {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 20px;
+  padding: 4px;
+  margin-bottom: 20px;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mode-pill {
+  border: none;
+  background: transparent;
+  padding: 7px 14px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mode-pill.active {
+  background: white;
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 480px) {
+  .timer-mode-switcher {
+    border-radius: 16px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .mode-pill {
+    padding: 6px 10px;
+    font-size: 11.5px;
+  }
+}
+
+.talk-test-view {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.talk-test-header-card {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.talk-badge-pill {
+  display: inline-block;
+  background: #0284c7;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.talk-title {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.talk-subtitle {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.talk-level-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.talk-card {
+  background: #ffffff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  cursor: default;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: text;
+}
+
+.talk-card.selected {
+  border-width: 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.talk-card.card-light.selected {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.talk-card.card-moderate.selected {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.talk-card.card-heavy.selected {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.talk-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.talk-card-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.talk-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.dot-light { background: #22c55e; }
+.dot-moderate { background: #f59e0b; }
+.dot-heavy { background: #ef4444; }
+
+.talk-card-title {
+  font-size: 14.5px;
+  color: var(--text-navy);
+}
+
+.talk-chip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.chip-light {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.chip-target {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.chip-heavy {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.talk-card-desc {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+
+.talk-speech-test-box {
+  background: #ffffff;
+  border: 1px dashed #f59e0b;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 6px;
+}
+
+.speech-test-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+.speech-quote-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quote-pill {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.talk-indicator-tag {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.talk-indicator-tag span {
+  font-weight: 600;
+  color: var(--text-navy);
+}
+
+.talk-indicator-tag.warning span {
+  color: #b91c1c;
+}
+
+.talk-target-badge-pill {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #fde68a;
+}
+
+/* ==========================================================================
+   การ์ดตัวจับเวลาการพูด (Talk Stopwatch) & ป๊อปอัปผลประเมินอัตโนมัติ
+   ========================================================================== */
+.talk-stopwatch-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-lg);
+  padding: 20px 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.talk-stopwatch-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.talk-mic-indicator {
+  font-size: 32px;
+  width: 58px;
+  height: 58px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  transition: all 0.25s ease;
+  border: 2px solid #e2e8f0;
+}
+
+.talk-mic-indicator.recording {
+  background: #fee2e2;
+  border-color: #ef4444;
+  animation: micPulse 1s infinite alternate;
+}
+
+@keyframes micPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  100% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+}
+
+.talk-stopwatch-time {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.talk-time-number {
+  font-size: 54px;
+  font-weight: 800;
+  color: var(--text-navy);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.talk-time-unit {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.talk-stopwatch-status {
+  font-size: 13px;
+  color: var(--text-muted);
+  min-height: 20px;
+  margin-top: 2px;
+}
+
+.talk-stopwatch-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.btn-talk-timer-toggle {
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 11px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.btn-talk-timer-toggle:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}
+
+.btn-talk-timer-toggle.is-running {
+  background: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  animation: stopBtnGlow 1.5s infinite alternate;
+}
+
+@keyframes stopBtnGlow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.1); }
+}
+
+/* แถบเกณฑ์เปรียบเทียบเวลา */
+.talk-threshold-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px;
+}
+
+.threshold-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.threshold-item .th-time {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.threshold-item .th-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.threshold-item.item-light { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.threshold-item.item-moderate { background: #fffbeb; border: 1.5px solid #fde68a; }
+.threshold-item.item-heavy { background: #fef2f2; border: 1px solid #fecaca; }
+
+.talk-level-list-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ป๊อปอัปผลการประเมินการพูด (Talk Test Popup Modal) */
+.modal-overlay.talk-popup-overlay {
+  z-index: 550;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.talk-popup-modal-window {
+  background: #ffffff;
+  width: 100%;
+  max-width: 520px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.talk-popup-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.talk-popup-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-navy);
+}
+
+.talk-popup-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.talk-popup-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+}
+
+/* Questionnaire Styles (ขั้นตอนเลือกอาการหลังจับเวลา 3 วินาที) */
+.talk-questionnaire-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalScaleIn 0.2s ease-out;
+}
+
+.talk-q-header {
+  text-align: center;
+}
+
+.talk-q-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  border: 1px solid #bae6fd;
+}
+
+.talk-q-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.talk-q-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.talk-q-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.talk-q-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.talk-q-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.talk-q-btn:active {
+  transform: translateY(0);
+}
+
+.talk-q-btn.btn-choice-light:hover {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.talk-q-btn.btn-choice-moderate:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.talk-q-btn.btn-choice-heavy:hover {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.talk-q-badge-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+  border: 1.5px solid transparent;
+}
+
+.btn-choice-light .talk-q-badge-num {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.btn-choice-moderate .talk-q-badge-num {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.btn-choice-heavy .talk-q-badge-num {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.talk-q-info {
+  flex: 1;
+}
+
+.talk-q-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 3px;
+  line-height: 1.35;
+}
+
+.talk-q-sub {
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.talk-q-action-icon {
+  font-size: 16px;
+  color: #94a3b8;
+  font-weight: 700;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.talk-q-btn:hover .talk-q-action-icon {
+  transform: translateX(3px);
+  color: var(--primary);
+}
+
+.talk-popup-result-card {
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  border: 2px solid var(--border-color);
+  text-align: left;
+}
+
+.talk-popup-result-card.popup-theme-light {
+  background: #f0fdf4;
+  border-color: #22c55e;
+}
+
+.talk-popup-result-card.popup-theme-moderate {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+
+.talk-popup-result-card.popup-theme-heavy {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.talk-popup-time-badge {
+  display: inline-block;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12.5px;
+  color: var(--text-navy);
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.talk-popup-hero-level {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.talk-hero-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-navy);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.talk-target-pill-pop {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.talk-popup-criteria-box {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.criteria-box-title,
+.advice-box-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-navy);
+  margin-bottom: 4px;
+}
+
+.criteria-box-desc,
+.advice-box-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.talk-popup-advice-box {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.talk-popup-age-badge {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   กล่องประโยคทดสอบที่ต้องพูด (Prompt Box เด่นสะดุดตาเหนือปุ่มจับเวลา)
+   ========================================================================== */
+.talk-prompt-highlight-box {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.08);
+}
+
+.prompt-box-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  color: #166534;
+  margin-bottom: 10px;
+}
+
+.prompt-header-icon {
+  font-size: 16px;
+}
+
+.prompt-phrases-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  .prompt-phrases-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.prompt-phrase-card {
+  background: #ffffff;
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.phrase-bullet {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.phrase-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #15803d;
+  line-height: 1.4;
+}
+
+.prompt-box-subtext {
+  font-size: 12px;
+  color: #166534;
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   แถบแสดงสถานะ ผ่านเกณฑ์ / ยังไม่ผ่านเกณฑ์ ในป๊อปอัปผลประเมิน
+   ========================================================================== */
+.talk-pass-hero-card {
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 2px solid transparent;
+}
+
+.talk-pass-hero-card.status-passed {
+  background: #ecfdf5;
+  border-color: #10b981;
+}
+
+.talk-pass-hero-card.status-not-passed {
+  background: #fff7ed;
+  border-color: #f97316;
+}
+
+.pass-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pass-hero-emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.pass-hero-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-navy);
+  margin-bottom: 2px;
+}
+
+.pass-hero-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pass-status-pill {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pill-passed {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+.pill-not-passed {
+  background: #f97316;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
+}
+
+
+/* ====================================================================
+   PWA Installation Banner & iOS Guide Modal
+   ==================================================================== */
+.pwa-install-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #38bdf8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 12px 0 18px 0;
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.12);
+  position: relative;
+  animation: pwaSlideDown 0.35s ease-out forwards;
+}
+
+@keyframes pwaSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pwa-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pwa-banner-icon-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.pwa-banner-texts {
+  min-width: 0;
+}
+
+.pwa-banner-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0369a1;
+  margin: 0 0 2px 0;
+  line-height: 1.25;
+}
+
+.pwa-banner-subtitle {
+  font-size: 12px;
+  color: #0284c7;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-pwa-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-pwa-install:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(2, 132, 199, 0.45);
+}
+
+.btn-pwa-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.btn-pwa-close:hover {
+  color: #475569;
+}
+
+/* Modal แนะนำสำหรับผู้ใช้ iOS (Safari) */
+.pwa-ios-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: pwaFadeIn 0.25s ease-out;
+}
+
+@keyframes pwaFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pwa-ios-modal-card {
+  background: #ffffff;
+  border-radius: 24px;
+  max-width: 380px;
+  width: 100%;
+  padding: 24px 20px 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  position: relative;
+}
+
+.pwa-ios-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  margin: 0 auto 12px;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.pwa-ios-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.pwa-ios-modal-desc {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 18px 0;
+  line-height: 1.4;
+}
+
+.pwa-ios-steps {
+  text-align: left;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pwa-ios-step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.pwa-step-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pwa-step-icon-svg {
+  display: inline-block;
+  vertical-align: middle;
+  color: #0284c7;
+  margin: 0 2px;
+}
+
+.btn-ios-modal-close {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-ios-modal-close:hover {
+  background: #0369a1;
+}
+
+/* Toast */
+.pwa-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 100000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.pwa-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
