@@ -6282,3 +6282,151 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
+
+
+/* ====================================================================
+   PWA Confirm Modal (ถามยืนยันก่อนเพิ่มลงหน้าจอโฮม)
+   ==================================================================== */
+.pwa-confirm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: pwaFadeIn 0.25s ease-out;
+}
+
+.pwa-confirm-modal-card {
+  background: #ffffff;
+  border-radius: 24px;
+  max-width: 400px;
+  width: 100%;
+  padding: 24px 22px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+  animation: pwaCardPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pwaCardPop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pwa-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.pwa-confirm-app-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+  flex-shrink: 0;
+}
+
+.pwa-confirm-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 3px 0;
+}
+
+.pwa-confirm-author {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.pwa-confirm-body {
+  padding: 18px 0;
+}
+
+.pwa-confirm-question {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 14px 0;
+  line-height: 1.45;
+}
+
+.pwa-confirm-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pwa-confirm-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #475569;
+}
+
+.pwa-confirm-benefits li svg {
+  flex-shrink: 0;
+}
+
+.pwa-confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-confirm-cancel {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-confirm-cancel:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.btn-confirm-install {
+  flex: 1.6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-confirm-install:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+}

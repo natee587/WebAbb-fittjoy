@@ -1,12 +1,13 @@
 {
-  "name": "ฟิตจอย - สื่อส่งเสริมสุขภาพและกิจกรรมทางกาย",
+  "id": "./index.html",
+  "name": "ฟิตจอย - FitJoy",
   "short_name": "ฟิตจอย",
   "description": "แอปพลิเคชันออกกำลังกายสำหรับผู้เริ่มต้น ทำตามได้ที่บ้าน ส่งเสริมกิจกรรมทางกายในชุมชน",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f0fdf4",
-  "theme_color": "#10b981",
+  "background_color": "#ffffff",
+  "theme_color": "#0284c7",
   "orientation": "portrait-primary",
   "lang": "th",
   "icons": [
@@ -33,23 +34,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "categories": ["health", "fitness", "lifestyle"],
-  "shortcuts": [
-    {
-      "name": "หน้าแรก",
-      "short_name": "หน้าแรก",
-      "description": "เปิดหน้าแรกฟิตจอย",
-      "url": "./index.html#home",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "คลังท่าออกกำลังกาย",
-      "short_name": "ท่าฝึก",
-      "description": "ดูท่าออกกำลังกายทั้งหมด",
-      "url": "./index.html#practice",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
