@@ -18,6 +18,19 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/favicon.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- PWA Early Event Capture (ดักจับ Event ติดตั้งทันทีตั้งแต่เริ่มโหลด ห้ามพลาดเด็ดขาด) -->
+  <script>
+    window.fitjoyDeferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      window.fitjoyDeferredPrompt = e;
+      console.log('⚡ [PWA-HEAD] beforeinstallprompt captured early!');
+      if (window.fitjoyPWA && typeof window.fitjoyPWA.onPromptReady === 'function') {
+        window.fitjoyPWA.onPromptReady(e);
+      }
+    });
+  </script>
 </head>
 <body>
 

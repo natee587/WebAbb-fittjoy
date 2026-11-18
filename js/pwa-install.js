@@ -1,11 +1,11 @@
 /**
  * FitJoy PWA Installation & Service Worker Manager
  * รองรับ Android, iOS (iPhone/iPad), และ Windows (PC / Mac)
- * มีหน้าต่างถามยืนยันก่อนเพิ่มลงหน้าจอโฮม
+ * มี Early Capture ดักจับ Event ทันทีตั้งแต่ใน Head
  */
 
 (function () {
-  let deferredPrompt = null;
+  let deferredPrompt = window.fitjoyDeferredPrompt || null;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
@@ -26,7 +26,8 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    console.log('[PWA] beforeinstallprompt captured');
+    window.fitjoyDeferredPrompt = e;
+    console.log('[PWA] beforeinstallprompt captured in script');
     showInstallUI();
   });
 
@@ -34,6 +35,7 @@
   window.addEventListener('appinstalled', () => {
     console.log('[PWA] FitJoy was installed successfully');
     deferredPrompt = null;
+    window.fitjoyDeferredPrompt = null;
     hideInstallUI();
     closeAllModals();
     showToast('เพิ่มแอป "ฟิตจอย" ลงหน้าจอโฮมเรียบร้อยแล้ว!');
@@ -157,6 +159,11 @@
 
   // 1. เปิดหน้าต่างถามยืนยันก่อน
   function openConfirmModal() {
+    // ซิงค์ prompt จาก window เสมอ
+    if (!deferredPrompt && window.fitjoyDeferredPrompt) {
+      deferredPrompt = window.fitjoyDeferredPrompt;
+    }
+
     const confirmModal = document.getElementById('pwa-confirm-modal');
     if (confirmModal) {
       confirmModal.style.display = 'flex';
@@ -172,15 +179,25 @@
       confirmModal.style.display = 'none';
     }
 
+    const promptObj = deferredPrompt || window.fitjoyDeferredPrompt;
+
     // กรณีที่ 1: ถ้าเบราว์เซอร์พร้อมยิง prompt ติดตั้งทันที (Android / Chrome / Edge)
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        console.log('[PWA] User accepted install prompt');
-        hideInstallUI();
+    if (promptObj) {
+      console.log('[PWA] Prompting install to user...');
+      try {
+        promptObj.prompt();
+        const choiceResult = await promptObj.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          console.log('[PWA] User accepted install prompt');
+          hideInstallUI();
+        } else {
+          console.log('[PWA] User dismissed install prompt');
+        }
+      } catch (err) {
+        console.warn('[PWA] Prompt error:', err);
       }
       deferredPrompt = null;
+      window.fitjoyDeferredPrompt = null;
       return;
     }
 
@@ -223,6 +240,10 @@
 
   window.fitjoyPWA = {
     openConfirm: openConfirmModal,
-    promptInstall: executeAddToHomeScreen
+    promptInstall: executeAddToHomeScreen,
+    onPromptReady: (e) => {
+      deferredPrompt = e;
+      showInstallUI();
+    }
   };
 })();
