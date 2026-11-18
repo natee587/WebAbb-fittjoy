@@ -7053,39 +7053,21 @@ body {
         </div>
       </div>
 
-      <!-- การ์ดจัดการข้อมูลและการใช้งานแบบไม่ใช้เน็ต (Offline Mode & Video Cache Manager) -->
-      <div class="profile-card offline-sync-card" style="margin-top: 18px; background: white; border-radius: var(--radius-lg); padding: 20px; border: 1.5px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+      <!-- การ์ดสถานะการใช้งานแบบไม่ใช้เน็ต (Offline 100% Ready) -->
+      <div class="profile-card offline-sync-card" style="margin-top: 18px; background: white; border-radius: var(--radius-lg); padding: 18px; border: 1.5px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 24px;">📶</span>
             <div>
-              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-navy);">การใช้งานแบบออฟไลน์ (ไม่ใช้เน็ต)</h4>
+              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-navy);">การใช้งานแบบออฟไลน์ (Offline 100%)</h4>
               <span id="network-status-badge" style="font-size: 12px; color: #16a34a; font-weight: 600;">🟢 ออนไลน์พร้อมใช้งาน</span>
             </div>
           </div>
-          <span id="offline-cache-count" style="font-size: 13px; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; color: #15803d;">0 / 23 คลิปในเครื่อง</span>
+          <span style="font-size: 12.5px; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 20px; color: #065f46;">✓ ใช้งานได้ตลอดเวลาแม้ไม่มีเน็ต</span>
         </div>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.45;">
-          ระบบแอปและข้อมูลสุขภาพทั้งหมดใช้งานแบบออฟไลน์ได้ 100% คุณสามารถกดดาวน์โหลดวิดีโอคลิปท่าออกกำลังกายเก็บไว้ในหน่วยความจำของเครื่องล่วงหน้า เพื่อเปิดดูได้ทุกคลิปแม้ไม่มีสัญญาณอินเทอร์เน็ต
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; margin-bottom: 0; line-height: 1.5;">
+          ระบบแอป ฟิตจอย, ข้อมูลสุขภาพ, คู่มือท่าทาง, การคำนวณ BMI 7 สี, ตัวจับเวลานับชีพจร และปฏิทินบันทึก ถูกบันทึกไว้ในเครื่องของคุณเรียบร้อยแล้ว สามารถเปิดใช้งานได้ทุกที่ทุกเวลาแม้ปิดสัญญาณอินเทอร์เน็ต
         </p>
-        <div id="offline-download-progress-wrap" style="display: none; margin-bottom: 14px;">
-          <div style="display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 6px;">
-            <span id="offline-download-label" style="color: var(--text-navy); font-weight: 600;">กำลังดาวน์โหลดคลิป...</span>
-            <span id="offline-download-percent" style="color: #0284c7; font-weight: 700;">0%</span>
-          </div>
-          <div style="width: 100%; height: 9px; background: #e2e8f0; border-radius: 6px; overflow: hidden;">
-            <div id="offline-download-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #0284c7, #10b981); transition: width 0.2s;"></div>
-          </div>
-        </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button type="button" id="btn-download-all-offline" style="flex: 2; min-width: 200px; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 10px; padding: 11px 16px; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span id="btn-download-all-offline-text">📥 ดาวน์โหลดวิดีโอทั้งหมดไว้ดูออฟไลน์</span>
-          </button>
-          <button type="button" id="btn-clear-offline-cache" style="flex: 1; min-width: 110px; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #64748b; border-radius: 10px; padding: 11px; font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer;">
-            ล้างแคชวิดีโอ
-          </button>
-        </div>
       </div>
 
       <!-- Modal อัปเดตน้ำหนักและส่วนสูงแบบด่วน -->
@@ -7175,11 +7157,11 @@ body {
 
   </div><!-- /app-container -->
 
-  <!-- Modal เครื่องเล่นวิดีโอ YouTube -->
+  <!-- Modal คู่มือและขั้นตอนการปฏิบัติท่าออกกำลังกาย -->
   <div class="modal-overlay" id="video-player-modal">
     <div class="video-modal-window">
       <div class="video-modal-header">
-        <h3 id="video-modal-exercise-title">วิดีโอสาธิตวิธีทำ</h3>
+        <h3 id="video-modal-exercise-title">คู่มือและขั้นตอนการปฏิบัติท่าออกกำลังกาย</h3>
         <button type="button" class="video-modal-close-btn" title="ปิดหน้าต่าง">&times;</button>
       </div>
       <div class="video-modal-scrollable">
@@ -10398,69 +10380,17 @@ class VideoManager {
     return match ? match[1] : null;
   }
 
-  openVideo(exercise, checkFirstTime = true) {
+  openVideo(exercise) {
     if (!exercise) return;
-
-    // ระบบนำทางอัตโนมัติ: หากคลิกออกกำลังกายครั้งแรกของรอบนี้ ให้เด้งไป Warm-up ก่อน
-    // เมื่อสลับบัญชีหรือสร้างบัญชีใหม่ สถานะจะถูกรีเซ็ตและเด้ง Warm-up สำหรับคนนั้นเสมอ
-    const warmupEx = window.WARMUP_EXERCISE || (typeof WARMUP_EXERCISE !== "undefined" ? WARMUP_EXERCISE : null);
-    if (checkFirstTime && exercise.id !== "routine-warmup" && exercise.id !== "routine-cooldown" && warmupEx) {
-      const activeUserId = (window.userStore && userStore.activeUserId) ? userStore.activeUserId : "default";
-
-      // หากผู้ใช้นี้ยังไม่ได้ทำ Warm-up ในรอบนี้
-      if (!this.isUserWarmedUp(activeUserId)) {
-        this.markUserWarmedUp(activeUserId);
-        this.pendingExercise = exercise; // บันทึกท่าที่ต้องการเล่นไว้
-
-        if (window.audioCues && typeof audioCues.playBeep === "function") {
-          audioCues.playBeep();
-        }
-        this.showToastNotice("🔔 เริ่มต้นออกกำลังกาย! เพื่อความปลอดภัย ระบบพาคุณมาวอร์มอัพ (Warm-up) ก่อนครับ ☀️");
-
-        // เปิดหน้าต่าง Warm-up ทันที ไม่ต้องรอหน่วงเวลา
-        this.openVideo(warmupEx, false);
-        return;
-      }
-    }
 
     this.routineRecordedThisSession = false;
     this.currentExercise = exercise;
     const modal = document.getElementById("video-player-modal");
     if (!modal) return;
 
-    // ตรวจสอบว่ามีการแก้ไข URL กำหนดเองหรือไม่
-    const effectiveUrl = this.customUrls[exercise.id] || exercise.videoUrl;
-    const videoId = this.extractYouTubeId(effectiveUrl);
-
-    this.renderModalContent(exercise, videoId, effectiveUrl);
+    this.renderModalContent(exercise);
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
-
-    if (videoId) {
-      this.initPlayer(videoId);
-    } else if (effectiveUrl) {
-      this.initLocalVideo();
-
-      // บันทึกคลิปวิดีโอเข้าแคชออฟไลน์อัตโนมัติในพื้นหลัง (Auto-Cache for Offline 100%)
-      if ('caches' in window) {
-        try {
-          const vCacheName = 'fitjoy-video-cache-v4';
-          caches.open(vCacheName).then(cache => {
-            const fullUrl = new URL(encodeURI(effectiveUrl), window.location.href).href;
-            cache.match(fullUrl).then(existing => {
-              if (!existing) {
-                fetch(fullUrl).then(res => {
-                  if (res && res.status === 200) {
-                    cache.put(fullUrl, res);
-                    console.log('[Auto-Cache] Saved video for offline:', effectiveUrl);
-                  }
-                }).catch(() => {});
-              }
-            });
-          }).catch(() => {});
-        } catch(e) {}
-      }
-    }
   }
 
   closeModal() {
@@ -10469,64 +10399,14 @@ class VideoManager {
       clearInterval(this.localSeekInterval);
       this.localSeekInterval = null;
     }
-    if (this.localVideoEl) {
-      try {
-        this.localVideoEl.pause();
-        this.localVideoEl.removeAttribute("src");
-        this.localVideoEl.load();
-      } catch (e) {}
-      this.localVideoEl = null;
-    }
-    if (this.player && this.player.destroy) {
-      try {
-        this.player.destroy();
-      } catch (e) {}
-      this.player = null;
-    }
     const modal = document.getElementById("video-player-modal");
     if (modal) {
       modal.classList.remove("active");
     }
     document.body.style.overflow = "";
-
-    // หากเป็นการดู Warm-up หรือ Cool Down และยังไม่ได้บันทึกเวลา ให้บันทึกเวลาสะสมทันที
-    let routineTimeFormatted = "";
-    if (this.currentExercise && (this.currentExercise.id === "routine-warmup" || this.currentExercise.id === "routine-cooldown")) {
-      if (!this.routineRecordedThisSession) {
-        this.routineRecordedThisSession = true;
-        routineTimeFormatted = this.recordRoutineTime(this.currentExercise) || "1 น.";
-      }
-
-      if (this.currentExercise.id === "routine-cooldown" && window.userStore) {
-        const activeUserId = userStore.activeUserId || "default";
-        const todayStats = userStore.getTodayStats();
-        localStorage.setItem(`fiteasy_cooldown_done_${activeUserId}`, todayStats.todayIso);
-        if (routineTimeFormatted) {
-          this.showToastNotice(`🧘‍♂️ บันทึกเวลายืดเหยียด Cool Down (+${routineTimeFormatted}) เรียบร้อยแล้ว สุขภาพดีเยี่ยมครับ!`);
-        }
-      }
-      if (window.app && window.app.renderDailyStatCard) {
-        window.app.renderDailyStatCard();
-      }
-    }
-
-    // หากเพิ่งเสร็จจาก Warm-up และมีท่าที่ผู้ใช้เลือกไว้ค้างอยู่ ให้นำเข้าสู่ท่านั้นอัตโนมัติ
-    if (this.pendingExercise) {
-      const nextEx = this.pendingExercise;
-      this.pendingExercise = null;
-      setTimeout(() => {
-        const noticeTxt = routineTimeFormatted 
-          ? `✨ วอร์มอัพเรียบร้อยแล้ว (+${routineTimeFormatted})! กำลังเปิดท่า "${nextEx.title}" ▶`
-          : `✨ วอร์มอัพเรียบร้อยแล้ว! กำลังเปิดท่า "${nextEx.title}" ▶`;
-        this.showToastNotice(noticeTxt);
-        setTimeout(() => {
-          this.openVideo(nextEx, false);
-        }, 700);
-      }, 350);
-    }
   }
 
-  renderModalContent(exercise, videoId, effectiveUrl) {
+  renderModalContent(exercise) {
     const titleEl = document.getElementById("video-modal-exercise-title");
     const container = document.getElementById("video-embed-container");
 
@@ -10536,125 +10416,82 @@ class VideoManager {
 
     if (!container) return;
 
-    if (videoId || effectiveUrl) {
-      const playerHtml = videoId
-        ? `<div id="youtube-player-mount"></div>`
-        : `<video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" controls autoplay playsinline preload="auto"></video>`;
+    let practiceBtnText = "⏱️ ปฏิบัติกิจกรรมเสร็จแล้ว บันทึกชีพจร & เวลา";
+    if (exercise.id === "routine-warmup") {
+      practiceBtnText = "☀️ วอร์มอัพร่างกายเสร็จสิ้น บันทึกเวลา";
+    } else if (exercise.id === "routine-cooldown") {
+      practiceBtnText = "🧘‍♂️ ยืดเหยียดผ่อนคลายร่างกายเสร็จสิ้น บันทึกเวลา";
+    }
 
-      // กรณีมี YouTube URL หรือไฟล์วิดีโอ MP4 ในเครื่อง: เรนเดอร์เครื่องเล่นพร้อมแถบล็อก
-      container.innerHTML = `
-        <div class="video-ratio-box">
-          ${playerHtml}
-        </div>
-        <div class="video-lock-badge-bar">
-          <span class="lock-icon">🔒</span>
-          <span class="lock-text">ระบบล็อกแถบเลื่อน: กรุณาดูคลิปและทำตามจนจบเพื่อปลดล็อกการบันทึกชีพจร</span>
-        </div>
-        <div class="video-instructions-card">
-          <h4>💡 ประโยชน์และคำแนะนำ:</h4>
-          <p style="font-size: 13.5px; color: #475569; margin-bottom: 12px; line-height: 1.6;">${exercise.benefits || ''}</p>
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #166534;">
-            <strong>🎯 เป้าหมายการฝึก:</strong> ${exercise.duration} | ${exercise.frequency || '3–4 ครั้งต่อสัปดาห์'}<br>
-            ${exercise.restTime ? `<strong>⏱️ เวลาพักระหว่างเซ็ต:</strong> ${exercise.restTime}` : ''}
-          </div>
-          <h4>📋 ขั้นตอนการปฏิบัติ:</h4>
-          <div class="step-guide-list">
-            ${(exercise.instructions || []).map((step, idx) => `
-              <div class="step-item">
-                <span class="step-num">${idx + 1}</span>
-                <span class="step-txt">${step}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    } else {
-      let practiceBtnText = "⏱️ ทำกิจกรรมจบแล้ว บันทึกชีพจร / การประเมิน";
-      if (exercise.id === "routine-warmup") {
-        practiceBtnText = this.pendingExercise 
-          ? `✨ วอร์มอัพเรียบร้อยแล้ว เข้าสู่ท่า "${this.pendingExercise.title}" เลย ▶`
-          : "✨ วอร์มอัพเรียบร้อยแล้ว พร้อมเริ่มออกกำลังกาย!";
-      } else if (exercise.id === "routine-cooldown") {
-        practiceBtnText = "🧘 ยืดเหยียดผ่อนคลายร่างกายเสร็จสิ้น";
-      }
+    container.innerHTML = `
+      <!-- รูปภาพภาพประกอบท่าทาง / สัญลักษณ์ท่าทาง (ไม่โหลดคลิปวิดีโอ 100%) -->
+      <div class="exercise-guide-hero" style="border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: #f8fafc; text-align: center; border: 1.5px solid #e2e8f0;">
+        ${exercise.image ? `
+          <img src="${encodeURI(exercise.image)}" alt="${exercise.title}" style="max-height: 280px; width: 100%; object-fit: contain; background: #ffffff; padding: 8px; border-radius: 16px;" />
+        ` : `
+          <div style="padding: 40px; font-size: 54px;">${exercise.id === 'routine-warmup' ? '☀️' : (exercise.id === 'routine-cooldown' ? '🧘‍♂️' : '🏃')}</div>
+        `}
+      </div>
 
-      // กรณีไม่มี URL: แสดง Placeholder ว่าง "รอคลิปจากผู้พัฒนา"
-      container.innerHTML = `
-        ${exercise.id === "routine-warmup" && this.pendingExercise ? `
-          <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #f59e0b; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(245,158,11,0.15);">
-            <span style="font-size: 26px;">☀️</span>
-            <div style="font-size: 13.5px; color: #92400e; line-height: 1.5;">
-              <strong>เริ่มออกกำลังกายรอบใหม่!</strong> เพื่อความปลอดภัยและป้องกันการบาดเจ็บ ระบบพาคุณมาวอร์มอัพ (Warm-up) ร่างกายก่อน<br>
-              เมื่อวอร์มอัพเสร็จ จะเปิดท่า <strong>"${this.pendingExercise.title}"</strong> ให้ทันทีครับ
-            </div>
-          </div>
-        ` : ''}
-        ${exercise.id === "routine-cooldown" ? `
-          <div style="background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 2px solid #10b981; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(16,185,129,0.15);">
-            <span style="font-size: 26px;">🧘‍♂️</span>
-            <div style="font-size: 13.5px; color: #065f46; line-height: 1.5;">
-              <strong>ยอดเยี่ยมมาก! วันนี้คุณออกกำลังกายครบตามเกณฑ์เป้าหมายแล้ว 🎉</strong><br>
-              เข้าสู่ช่วงการยืดเหยียดร่างกาย (Cool Down) เพื่อลดอัตราการเต้นของหัวใจและผ่อนคลายกล้ามเนื้ออย่างปลอดภัยครับ
-            </div>
-          </div>
-        ` : ''}
-        <div class="video-placeholder-card">
-          <div class="placeholder-icon">${exercise.id === 'routine-warmup' ? '☀️' : (exercise.id === 'routine-cooldown' ? '🧘‍♂️' : '📹')}</div>
-          <h3 class="placeholder-title">${exercise.id === 'routine-warmup' ? 'คลิปวิดีโอ Warm-up (รอคลิปจากผู้พัฒนา)' : (exercise.id === 'routine-cooldown' ? 'คลิปวิดีโอ Cool Down (รอคลิปจากผู้พัฒนา)' : 'รอคลิปจากผู้พัฒนา')}</h3>
-          <p class="placeholder-desc">
-            ${exercise.id === 'routine-warmup' || exercise.id === 'routine-cooldown'
-              ? 'ขณะนี้อยู่ในระหว่างจัดทำคลิปวิดีโอสาธิตเพื่อสุขภาพ ท่านสามารถปฏิบัติตามคำแนะนำและขั้นตอนด้านล่างได้ทันที'
-              : 'ขณะนี้อยู่ในระหว่างจัดทำคลิปวิดีโอสาธิตท่าทางที่ถูกต้องสำหรับชุมชน โดยระบบจะมาพร้อมการล็อกห้ามข้ามคลิปเพื่อให้ดูและฝึกตามจนจบ'}
-          </p>
-          <div class="video-lock-badge-bar" style="margin: 12px 0;">
-            <span class="lock-icon">🔒</span>
-            <span class="lock-text">ระบบห้ามข้ามคลิป: ให้ดูคลิปจนจบเพื่อความปลอดภัยสูงสุดต่อสุขภาพ</span>
-          </div>
-          <div class="placeholder-buttons">
-            <button type="button" class="btn-direct-practice" id="btn-practice-placeholder">
-              ${practiceBtnText}
-            </button>
-          </div>
+      <!-- แถบข้อมูลสรุปเป้าหมายและความหนัก -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 14px;">
+        <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #0369a1;">
+          <strong>🎯 เป้าหมาย:</strong> ${exercise.duration || '1–2 นาที'}
         </div>
+        <div style="background: #fdf4ff; border: 1px solid #f5d0fe; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #86198f;">
+          <strong>🔄 ความถี่:</strong> ${exercise.frequency || '3–4 ครั้ง/สัปดาห์'}
+        </div>
+        <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #854d0e;">
+          <strong>👥 กลุ่มวัย:</strong> ${exercise.suitableAge || exercise.level || 'ทุกกลุ่มวัย'}
+        </div>
+      </div>
+
+      <!-- กล่องคำแนะนำและประโยชน์ -->
+      <div class="video-instructions-card" style="margin-top: 0;">
+        <h4>💡 ประโยชน์และคำแนะนำเพื่อสุขภาพ:</h4>
+        <p style="font-size: 13.5px; color: #475569; margin-bottom: 12px; line-height: 1.6;">${exercise.benefits || 'ช่วยเสริมสร้างสุขภาพและความแข็งแรงของร่างกาย'}</p>
         
-        <div class="video-instructions-card">
-          <h4>💡 ประโยชน์และคำแนะนำ:</h4>
-          <p style="font-size: 13.5px; color: #475569; margin-bottom: 12px; line-height: 1.6;">${exercise.benefits || ''}</p>
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #166534;">
-            <strong>🎯 เป้าหมายการฝึก:</strong> ${exercise.duration} | ${exercise.frequency || '3–4 ครั้งต่อสัปดาห์'}<br>
-            ${exercise.restTime ? `<strong>⏱️ เวลาพักระหว่างเซ็ต:</strong> ${exercise.restTime}` : ''}
-          </div>
-          <h4>📋 ขั้นตอนการปฏิบัติ:</h4>
-          <div class="step-guide-list">
-            ${(exercise.instructions || []).map((step, idx) => `
-              <div class="step-item">
-                <span class="step-num">${idx + 1}</span>
-                <span class="step-txt">${step}</span>
-              </div>
-            `).join('')}
-          </div>
+        <h4>📋 ขั้นตอนการปฏิบัติ:</h4>
+        <div class="step-guide-list">
+          ${(exercise.instructions || []).map((step, idx) => `
+            <div class="step-item">
+              <span class="step-num">${idx + 1}</span>
+              <span class="step-txt">${step}</span>
+            </div>
+          `).join('')}
         </div>
-      `;
+      </div>
 
-      // ผูก Event ปุ่มใน Placeholder
-      const btnPractice = container.querySelector("#btn-practice-placeholder");
-      if (btnPractice) {
-        btnPractice.addEventListener("click", () => {
-          const ex = this.currentExercise;
-          if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
-            if (!this.routineRecordedThisSession) {
-              this.routineRecordedThisSession = true;
-              this.recordRoutineTime(ex, 60);
-            }
+      <!-- ปุ่มเริ่มทำกิจกรรม & บันทึกชีพจร (ไม่มีวิดีโอค้าง ไม่ติดล็อก) -->
+      <div style="margin-top: 18px;">
+        <button type="button" class="btn-direct-practice" id="btn-practice-guide" style="width: 100%; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; border-radius: 14px; padding: 14px 20px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-family: inherit;">
+          ${practiceBtnText}
+        </button>
+      </div>
+    `;
+
+    // ผูก Event ปุ่มกดบันทึกกิจกรรม
+    const btnPractice = container.querySelector("#btn-practice-guide");
+    if (btnPractice) {
+      btnPractice.addEventListener("click", () => {
+        const ex = this.currentExercise;
+        this.closeModal();
+
+        if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
+          this.recordRoutineTime(ex, 120);
+          this.showToastNotice(`✨ บันทึกเวลา ${ex.title} เรียบร้อยแล้วครับ!`);
+          if (window.app && window.app.renderDailyStatCard) {
+            window.app.renderDailyStatCard();
           }
-          this.closeModal();
-          if (ex && ex.id !== "routine-warmup" && ex.id !== "routine-cooldown") {
-            if (window.postWorkoutModal) {
-              window.postWorkoutModal.open(ex, 60);
-            }
+          return;
+        }
+
+        if (ex) {
+          if (window.postWorkoutModal) {
+            window.postWorkoutModal.open(ex, 120);
           }
-        });
-      }
+        }
+      });
     }
   }
 
