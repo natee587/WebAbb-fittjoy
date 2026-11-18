@@ -7053,6 +7053,41 @@ body {
         </div>
       </div>
 
+      <!-- การ์ดจัดการข้อมูลและการใช้งานแบบไม่ใช้เน็ต (Offline Mode & Video Cache Manager) -->
+      <div class="profile-card offline-sync-card" style="margin-top: 18px; background: white; border-radius: var(--radius-lg); padding: 20px; border: 1.5px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 24px;">📶</span>
+            <div>
+              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-navy);">การใช้งานแบบออฟไลน์ (ไม่ใช้เน็ต)</h4>
+              <span id="network-status-badge" style="font-size: 12px; color: #16a34a; font-weight: 600;">🟢 ออนไลน์พร้อมใช้งาน</span>
+            </div>
+          </div>
+          <span id="offline-cache-count" style="font-size: 13px; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; color: #15803d;">0 / 23 คลิปในเครื่อง</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.45;">
+          ระบบแอปและข้อมูลสุขภาพทั้งหมดใช้งานแบบออฟไลน์ได้ 100% คุณสามารถกดดาวน์โหลดวิดีโอคลิปท่าออกกำลังกายเก็บไว้ในหน่วยความจำของเครื่องล่วงหน้า เพื่อเปิดดูได้ทุกคลิปแม้ไม่มีสัญญาณอินเทอร์เน็ต
+        </p>
+        <div id="offline-download-progress-wrap" style="display: none; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 6px;">
+            <span id="offline-download-label" style="color: var(--text-navy); font-weight: 600;">กำลังดาวน์โหลดคลิป...</span>
+            <span id="offline-download-percent" style="color: #0284c7; font-weight: 700;">0%</span>
+          </div>
+          <div style="width: 100%; height: 9px; background: #e2e8f0; border-radius: 6px; overflow: hidden;">
+            <div id="offline-download-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #0284c7, #10b981); transition: width 0.2s;"></div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" id="btn-download-all-offline" style="flex: 2; min-width: 200px; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 10px; padding: 11px 16px; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span id="btn-download-all-offline-text">📥 ดาวน์โหลดวิดีโอทั้งหมดไว้ดูออฟไลน์</span>
+          </button>
+          <button type="button" id="btn-clear-offline-cache" style="flex: 1; min-width: 110px; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #64748b; border-radius: 10px; padding: 11px; font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer;">
+            ล้างแคชวิดีโอ
+          </button>
+        </div>
+      </div>
+
       <!-- Modal อัปเดตน้ำหนักและส่วนสูงแบบด่วน -->
       <div class="quick-weight-modal-backdrop" id="quick-weight-modal-backdrop" style="display: none;">
         <div class="quick-weight-modal-content">
@@ -12751,8 +12786,127 @@ class FitEasyApp {
   }
 }
 
+// ====================================================================
+// ตัวจัดการโหมดออฟไลน์ & บันทึกคลิปวิดีโอเก็บไว้ในเครื่อง (Offline Video Cache Manager)
+// ====================================================================
+function initOfflineVideoManager() {
+  const statusBadge = document.getElementById("network-status-badge");
+  const countBadge = document.getElementById("offline-cache-count");
+  const btnDownload = document.getElementById("btn-download-all-offline");
+  const btnDownloadText = document.getElementById("btn-download-all-offline-text");
+  const btnClear = document.getElementById("btn-clear-offline-cache");
+  const progressWrap = document.getElementById("offline-download-progress-wrap");
+  const progressLabel = document.getElementById("offline-download-label");
+  const progressPercent = document.getElementById("offline-download-percent");
+  const progressBar = document.getElementById("offline-download-bar");
+
+  function getAllVideoUrls() {
+    const list = [];
+    if (typeof EXERCISES !== 'undefined' && Array.isArray(EXERCISES)) {
+      EXERCISES.forEach(e => {
+        if (e.videoUrl && !list.includes(e.videoUrl)) list.push(e.videoUrl);
+      });
+    }
+    if (typeof COOLDOWN_EXERCISE !== 'undefined' && COOLDOWN_EXERCISE && COOLDOWN_EXERCISE.videoUrl) {
+      if (!list.includes(COOLDOWN_EXERCISE.videoUrl)) list.push(COOLDOWN_EXERCISE.videoUrl);
+    }
+    return list;
+  }
+
+  function updateOnlineStatus() {
+    if (!statusBadge) return;
+    if (navigator.onLine) {
+      statusBadge.textContent = "🟢 ออนไลน์ (พร้อมใช้งาน)";
+      statusBadge.style.color = "#16a34a";
+    } else {
+      statusBadge.textContent = "⚪ ออฟไลน์ (ใช้งานจากเครื่อง)";
+      statusBadge.style.color = "#64748b";
+    }
+  }
+  window.addEventListener("online", updateOnlineStatus);
+  window.addEventListener("offline", updateOnlineStatus);
+  updateOnlineStatus();
+
+  async function checkCachedVideosCount() {
+    if (!('caches' in window)) return;
+    try {
+      const cache = await caches.open('fitjoy-video-cache-v3');
+      const keys = await cache.keys();
+      const allUrls = getAllVideoUrls();
+      const total = allUrls.length || 24;
+      if (countBadge) {
+        countBadge.textContent = `${keys.length} / ${total} คลิปในเครื่อง`;
+      }
+    } catch(e) {}
+  }
+  checkCachedVideosCount();
+
+  if (btnDownload) {
+    btnDownload.addEventListener("click", async () => {
+      if (!('caches' in window)) {
+        alert("เบราว์เซอร์นี้ไม่รองรับระบบแคชออฟไลน์");
+        return;
+      }
+      if (!navigator.onLine) {
+        alert("ขณะนี้ท่านกำลังอยู่ในโหมดออฟไลน์ กรุณาเชื่อมต่ออินเทอร์เน็ตเพื่อเริ่มดาวน์โหลดคลิปครับ");
+        return;
+      }
+      const allUrls = getAllVideoUrls();
+      if (allUrls.length === 0) return;
+
+      btnDownload.disabled = true;
+      if (btnDownloadText) btnDownloadText.textContent = "กำลังดาวน์โหลด...";
+      if (progressWrap) progressWrap.style.display = "block";
+
+      const cache = await caches.open('fitjoy-video-cache-v3');
+      let done = 0;
+      const total = allUrls.length;
+
+      for (let i = 0; i < total; i++) {
+        const url = allUrls[i];
+        if (progressLabel) progressLabel.textContent = `กำลังโหลด (${i + 1}/${total}): ${url.split('/').pop()}`;
+        try {
+          const match = await cache.match(url);
+          if (!match) {
+            const resp = await fetch(url);
+            if (resp.status === 200) {
+              await cache.put(url, resp);
+            }
+          }
+        } catch(err) {
+          console.warn("Could not cache video:", url, err);
+        }
+        done++;
+        const pct = Math.round((done / total) * 100);
+        if (progressBar) progressBar.style.width = `${pct}%`;
+        if (progressPercent) progressPercent.textContent = `${pct}%`;
+      }
+
+      if (progressLabel) progressLabel.textContent = "🎉 ดาวน์โหลดคลิปทั้งหมดเสร็จสิ้นแล้ว! ดูแบบออฟไลน์ได้เลย";
+      if (btnDownloadText) btnDownloadText.textContent = "✓ บันทึกคลิปในเครื่องครบแล้ว";
+      btnDownload.disabled = false;
+      await checkCachedVideosCount();
+      alert("✅ ดาวน์โหลดคลิปวิดีโอทั้งหมดเก็บไว้ในเครื่องเรียบร้อยแล้ว!\nสามารถเปิดดูวิดีโอได้ทุกคลิปแม้อยู่ในโหมดออฟไลน์ (ไม่ต่อเน็ต) ครับ");
+    });
+  }
+
+  if (btnClear) {
+    btnClear.addEventListener("click", async () => {
+      if (!('caches' in window)) return;
+      if (confirm("ต้องการล้างแคชวิดีโอในเครื่องเพื่อคืนพื้นที่ว่างหรือไม่?")) {
+        await caches.delete('fitjoy-video-cache-v3');
+        await checkCachedVideosCount();
+        if (btnDownloadText) btnDownloadText.textContent = "📥 ดาวน์โหลดวิดีโอทั้งหมดไว้ดูออฟไลน์";
+        if (progressWrap) progressWrap.style.display = "none";
+        alert("ล้างแคชวิดีโอเรียบร้อยแล้ว");
+      }
+    });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new FitEasyApp();
+  initOfflineVideoManager();
 });
 
 
