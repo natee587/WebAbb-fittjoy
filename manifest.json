@@ -1,14 +1,15 @@
 {
-  "id": "./index.html",
+  "id": "/",
   "name": "ฟิตจอย - FitJoy",
   "short_name": "ฟิตจอย",
   "description": "แอปพลิเคชันออกกำลังกายสำหรับผู้เริ่มต้น ทำตามได้ที่บ้าน ส่งเสริมกิจกรรมทางกายในชุมชน",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0284c7",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "lang": "th",
   "icons": [
     {

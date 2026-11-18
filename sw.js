@@ -1,33 +1,38 @@
 // FitJoy Service Worker (PWA Offline Support)
-const CACHE_NAME = 'fitjoy-cache-v1';
-const VIDEO_CACHE_NAME = 'fitjoy-video-cache-v1';
+const CACHE_NAME = 'fitjoy-cache-v2';
+const VIDEO_CACHE_NAME = 'fitjoy-video-cache-v2';
 
 const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './css/style.css',
-  './js/app.js',
-  './js/audio-cues.js',
-  './js/calendar.js',
-  './js/content-data.js',
-  './js/post-workout-modal.js',
-  './js/pulse-timer.js',
-  './js/user-store.js',
-  './js/video-manager.js',
-  './js/pwa-install.js',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png',
-  './icons/favicon.png'
+  'index.html',
+  'manifest.json',
+  'css/style.css',
+  'js/app.js',
+  'js/audio-cues.js',
+  'js/calendar.js',
+  'js/content-data.js',
+  'js/post-workout-modal.js',
+  'js/pulse-timer.js',
+  'js/user-store.js',
+  'js/video-manager.js',
+  'js/pwa-install.js',
+  'icons/icon-192.png',
+  'icons/icon-512.png',
+  'icons/apple-touch-icon.png',
+  'icons/favicon.png'
 ];
 
-// 1. Install Event: Cache Core Static Assets
+// 1. Install Event: Cache Core Static Assets (ใช้ Promise.allSettled เพื่อไม่ให้พังถ้ามีไฟล์ใดติดขัด)
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
       console.log('[SW] Pre-caching static assets');
-      return cache.addAll(STATIC_ASSETS);
+      for (const asset of STATIC_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          console.warn('[SW] Could not cache asset:', asset, err);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
@@ -53,7 +58,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // ตรวจสอบว่าเป็นไฟล์วิดีโอหรือไม่ (.mp4)
+  // ตรวจสอบว่าเป็นไฟล์วิดีโอ (.mp4)
   const isVideo = url.pathname.endsWith('.mp4') || request.destination === 'video';
 
   if (isVideo) {
@@ -65,7 +70,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch network in background to update cache (Stale-While-Revalidate)
+        // Fetch network in background
         fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
@@ -86,27 +91,24 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       }).catch(() => {
-        // Fallback for HTML
         if (request.headers.get('accept') && request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
+          return caches.match('index.html');
         }
       });
     })
   );
 });
 
-// จัดการ Video Fetch และ Range Requests (จำเป็นสำหรับ iOS Safari และ Chrome ในการเล่นวิดีโอจาก cache)
+// จัดการ Video Fetch และ Range Requests
 async function handleVideoRequest(request) {
   const cache = await caches.open(VIDEO_CACHE_NAME);
   const rangeHeader = request.headers.get('range');
 
-  // ลองดูว่ามีวิดีโอตัวเต็มใน cache หรือยัง
   const cleanRequest = new Request(request.url);
   let cachedResponse = await cache.match(cleanRequest);
 
   if (!cachedResponse) {
     try {
-      // โหลดจาก network แล้วเก็บใส่ cache เพื่อใช้ offline ครั้งต่อไป
       const networkResponse = await fetch(cleanRequest);
       if (networkResponse.status === 200) {
         await cache.put(cleanRequest, networkResponse.clone());
@@ -115,12 +117,10 @@ async function handleVideoRequest(request) {
         return networkResponse;
       }
     } catch (err) {
-      // ถ้า offline และไม่มีใน cache
       return new Response('Video not available offline', { status: 503, statusText: 'Service Unavailable' });
     }
   }
 
-  // ถ้า browser ขอแบบ Range (Byte range request เช่น Safari/Chrome video player)
   if (rangeHeader) {
     const arrayBuffer = await cachedResponse.clone().arrayBuffer();
     const bytes = rangeHeader.replace(/bytes=/, '').split('-');
