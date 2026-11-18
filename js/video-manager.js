@@ -152,30 +152,8 @@ class VideoManager {
     return match ? match[1] : null;
   }
 
-  openVideo(exercise, checkFirstTime = true) {
+  openVideo(exercise) {
     if (!exercise) return;
-
-    // ระบบนำทางอัตโนมัติ: หากคลิกออกกำลังกายครั้งแรกของรอบนี้ ให้เด้งไป Warm-up ก่อน
-    // เมื่อสลับบัญชีหรือสร้างบัญชีใหม่ สถานะจะถูกรีเซ็ตและเด้ง Warm-up สำหรับคนนั้นเสมอ
-    const warmupEx = window.WARMUP_EXERCISE || (typeof WARMUP_EXERCISE !== "undefined" ? WARMUP_EXERCISE : null);
-    if (checkFirstTime && exercise.id !== "routine-warmup" && exercise.id !== "routine-cooldown" && warmupEx) {
-      const activeUserId = (window.userStore && userStore.activeUserId) ? userStore.activeUserId : "default";
-
-      // หากผู้ใช้นี้ยังไม่ได้ทำ Warm-up ในรอบนี้
-      if (!this.isUserWarmedUp(activeUserId)) {
-        this.markUserWarmedUp(activeUserId);
-        this.pendingExercise = exercise; // บันทึกท่าที่ต้องการเล่นไว้
-
-        if (window.audioCues && typeof audioCues.playBeep === "function") {
-          audioCues.playBeep();
-        }
-        this.showToastNotice("🔔 เริ่มต้นออกกำลังกาย! เพื่อความปลอดภัย ระบบพาคุณมาวอร์มอัพ (Warm-up) ก่อนครับ ☀️");
-
-        // เปิดหน้าต่าง Warm-up ทันที ไม่ต้องรอหน่วงเวลา
-        this.openVideo(warmupEx, false);
-        return;
-      }
-    }
 
     this.routineRecordedThisSession = false;
     this.currentExercise = exercise;
@@ -270,121 +248,105 @@ class VideoManager {
 
     if (!container) return;
 
-    if (videoId || effectiveUrl) {
-      const playerHtml = videoId
-        ? `<div id="youtube-player-mount"></div>`
-        : `<video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" controls autoplay playsinline preload="auto"></video>`;
+    let practiceBtnText = "⏱️ ปฏิบัติกิจกรรมเสร็จแล้ว บันทึกชีพจร & เวลา";
+    if (exercise.id === "routine-warmup") {
+      practiceBtnText = "☀️ วอร์มอัพร่างกายเสร็จสิ้น บันทึกเวลา";
+    } else if (exercise.id === "routine-cooldown") {
+      practiceBtnText = "🧘‍♂️ ยืดเหยียดผ่อนคลายร่างกายเสร็จสิ้น บันทึกเวลา";
+    }
 
-      // กรณีมี YouTube URL หรือไฟล์วิดีโอ MP4 ในเครื่อง: เรนเดอร์เครื่องเล่นพร้อมแถบล็อก
-      container.innerHTML = `
-        <div class="video-ratio-box">
-          ${playerHtml}
+    const isYouTube = Boolean(videoId);
+    const hasVideo = Boolean(effectiveUrl);
+
+    let mediaHtml = "";
+    if (hasVideo && isYouTube) {
+      mediaHtml = `
+        <div class="video-iframe-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; margin-bottom: 14px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <div id="youtube-player-mount"></div>
         </div>
-        <div class="video-lock-badge-bar">
-          <span class="lock-icon">🔒</span>
-          <span class="lock-text">ระบบล็อกแถบเลื่อน: กรุณาดูคลิปและทำตามจนจบเพื่อปลดล็อกการบันทึกชีพจร</span>
-        </div>
-        <div class="video-instructions-card">
-          <h4>💡 ประโยชน์และคำแนะนำ:</h4>
-          <p style="font-size: 13.5px; color: #475569; margin-bottom: 12px; line-height: 1.6;">${exercise.benefits || ''}</p>
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #166534;">
-            <strong>🎯 เป้าหมายการฝึก:</strong> ${exercise.duration} | ${exercise.frequency || '3–4 ครั้งต่อสัปดาห์'}<br>
-            ${exercise.restTime ? `<strong>⏱️ เวลาพักระหว่างเซ็ต:</strong> ${exercise.restTime}` : ''}
-          </div>
-          <h4>📋 ขั้นตอนการปฏิบัติ:</h4>
-          <div class="step-guide-list">
-            ${(exercise.instructions || []).map((step, idx) => `
-              <div class="step-item">
-                <span class="step-num">${idx + 1}</span>
-                <span class="step-txt">${step}</span>
-              </div>
-            `).join('')}
-          </div>
+      `;
+    } else if (hasVideo) {
+      mediaHtml = `
+        <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" poster="${exercise.image ? encodeURI(exercise.image) : ''}" controls playsinline preload="metadata" style="width: 100%; max-height: 280px; display: block; margin: 0 auto; outline: none;"></video>
         </div>
       `;
     } else {
-      let practiceBtnText = "⏱️ ทำกิจกรรมจบแล้ว บันทึกชีพจร / การประเมิน";
-      if (exercise.id === "routine-warmup") {
-        practiceBtnText = this.pendingExercise 
-          ? `✨ วอร์มอัพเรียบร้อยแล้ว เข้าสู่ท่า "${this.pendingExercise.title}" เลย ▶`
-          : "✨ วอร์มอัพเรียบร้อยแล้ว พร้อมเริ่มออกกำลังกาย!";
-      } else if (exercise.id === "routine-cooldown") {
-        practiceBtnText = "🧘 ยืดเหยียดผ่อนคลายร่างกายเสร็จสิ้น";
-      }
-
-      // กรณีไม่มี URL: แสดง Placeholder ว่าง "รอคลิปจากผู้พัฒนา"
-      container.innerHTML = `
-        ${exercise.id === "routine-warmup" && this.pendingExercise ? `
-          <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #f59e0b; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(245,158,11,0.15);">
-            <span style="font-size: 26px;">☀️</span>
-            <div style="font-size: 13.5px; color: #92400e; line-height: 1.5;">
-              <strong>เริ่มออกกำลังกายรอบใหม่!</strong> เพื่อความปลอดภัยและป้องกันการบาดเจ็บ ระบบพาคุณมาวอร์มอัพ (Warm-up) ร่างกายก่อน<br>
-              เมื่อวอร์มอัพเสร็จ จะเปิดท่า <strong>"${this.pendingExercise.title}"</strong> ให้ทันทีครับ
-            </div>
-          </div>
-        ` : ''}
-        ${exercise.id === "routine-cooldown" ? `
-          <div style="background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 2px solid #10b981; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(16,185,129,0.15);">
-            <span style="font-size: 26px;">🧘‍♂️</span>
-            <div style="font-size: 13.5px; color: #065f46; line-height: 1.5;">
-              <strong>ยอดเยี่ยมมาก! วันนี้คุณออกกำลังกายครบตามเกณฑ์เป้าหมายแล้ว 🎉</strong><br>
-              เข้าสู่ช่วงการยืดเหยียดร่างกาย (Cool Down) เพื่อลดอัตราการเต้นของหัวใจและผ่อนคลายกล้ามเนื้ออย่างปลอดภัยครับ
-            </div>
-          </div>
-        ` : ''}
-        <div class="video-placeholder-card">
-          <div class="placeholder-icon">${exercise.id === 'routine-warmup' ? '☀️' : (exercise.id === 'routine-cooldown' ? '🧘‍♂️' : '📹')}</div>
-          <h3 class="placeholder-title">${exercise.id === 'routine-warmup' ? 'คลิปวิดีโอ Warm-up (รอคลิปจากผู้พัฒนา)' : (exercise.id === 'routine-cooldown' ? 'คลิปวิดีโอ Cool Down (รอคลิปจากผู้พัฒนา)' : 'รอคลิปจากผู้พัฒนา')}</h3>
-          <p class="placeholder-desc">
-            ${exercise.id === 'routine-warmup' || exercise.id === 'routine-cooldown'
-              ? 'ขณะนี้อยู่ในระหว่างจัดทำคลิปวิดีโอสาธิตเพื่อสุขภาพ ท่านสามารถปฏิบัติตามคำแนะนำและขั้นตอนด้านล่างได้ทันที'
-              : 'ขณะนี้อยู่ในระหว่างจัดทำคลิปวิดีโอสาธิตท่าทางที่ถูกต้องสำหรับชุมชน โดยระบบจะมาพร้อมการล็อกห้ามข้ามคลิปเพื่อให้ดูและฝึกตามจนจบ'}
-          </p>
-          <div class="video-lock-badge-bar" style="margin: 12px 0;">
-            <span class="lock-icon">🔒</span>
-            <span class="lock-text">ระบบห้ามข้ามคลิป: ให้ดูคลิปจนจบเพื่อความปลอดภัยสูงสุดต่อสุขภาพ</span>
-          </div>
-          <div class="placeholder-buttons">
-            <button type="button" class="btn-direct-practice" id="btn-practice-placeholder">
-              ${practiceBtnText}
-            </button>
-          </div>
-        </div>
-        
-        <div class="video-instructions-card">
-          <h4>💡 ประโยชน์และคำแนะนำ:</h4>
-          <p style="font-size: 13.5px; color: #475569; margin-bottom: 12px; line-height: 1.6;">${exercise.benefits || ''}</p>
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #166534;">
-            <strong>🎯 เป้าหมายการฝึก:</strong> ${exercise.duration} | ${exercise.frequency || '3–4 ครั้งต่อสัปดาห์'}<br>
-            ${exercise.restTime ? `<strong>⏱️ เวลาพักระหว่างเซ็ต:</strong> ${exercise.restTime}` : ''}
-          </div>
-          <h4>📋 ขั้นตอนการปฏิบัติ:</h4>
-          <div class="step-guide-list">
-            ${(exercise.instructions || []).map((step, idx) => `
-              <div class="step-item">
-                <span class="step-num">${idx + 1}</span>
-                <span class="step-txt">${step}</span>
-              </div>
-            `).join('')}
-          </div>
+      mediaHtml = `
+        <div class="exercise-guide-hero" style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #f8fafc; text-align: center; border: 1.5px solid #e2e8f0;">
+          ${exercise.image ? `
+            <img src="${encodeURI(exercise.image)}" alt="${exercise.title}" style="max-height: 260px; width: 100%; object-fit: contain; background: #ffffff; padding: 8px; border-radius: 14px;" />
+          ` : `
+            <div style="padding: 40px; font-size: 54px;">${exercise.id === 'routine-warmup' ? '☀️' : (exercise.id === 'routine-cooldown' ? '🧘‍♂️' : '🏃')}</div>
+          `}
         </div>
       `;
+    }
 
-      // ผูก Event ปุ่มใน Placeholder
-      const btnPractice = container.querySelector("#btn-practice-placeholder");
-      if (btnPractice) {
-        btnPractice.addEventListener("click", () => {
-          const ex = this.currentExercise;
-          if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
-            if (!this.routineRecordedThisSession) {
-              this.routineRecordedThisSession = true;
-              this.recordRoutineTime(ex, 60);
-            }
+    container.innerHTML = `
+      ${mediaHtml}
+
+      <!-- แถบข้อมูลสรุปเป้าหมายและความหนัก -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 14px;">
+        <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #0369a1;">
+          <strong>🎯 เป้าหมาย:</strong> ${exercise.duration || '1–2 นาที'}
+        </div>
+        <div style="background: #fdf4ff; border: 1px solid #f5d0fe; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #86198f;">
+          <strong>🔄 ความถี่:</strong> ${exercise.frequency || '3–4 ครั้ง/สัปดาห์'}
+        </div>
+        <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #854d0e;">
+          <strong>👥 กลุ่มวัย:</strong> ${exercise.suitableAge || exercise.level || 'ทุกกลุ่มวัย'}
+        </div>
+      </div>
+
+      <!-- กล่องคำแนะนำและประโยชน์ -->
+      <div class="video-instructions-card" style="margin-top: 0;">
+        <h4>💡 ประโยชน์และคำแนะนำเพื่อสุขภาพ:</h4>
+        <p style="font-size: 13.5px; color: #475569; margin-bottom: 12px; line-height: 1.6;">${exercise.benefits || 'ช่วยเสริมสร้างสุขภาพและความแข็งแรงของร่างกาย'}</p>
+        
+        <h4>📋 ขั้นตอนการปฏิบัติ:</h4>
+        <div class="step-guide-list">
+          ${(exercise.instructions || []).map((step, idx) => `
+            <div class="step-item">
+              <span class="step-num">${idx + 1}</span>
+              <span class="step-txt">${step}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- ปุ่มเริ่มทำกิจกรรม & บันทึกชีพจร (กดได้ทันที 100%) -->
+      <div style="margin-top: 18px;">
+        <button type="button" class="btn-direct-practice" id="btn-practice-guide" style="width: 100%; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; border-radius: 14px; padding: 14px 20px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-family: inherit;">
+          ${practiceBtnText}
+        </button>
+      </div>
+    `;
+
+    // ผูก Event ปุ่มกดบันทึกกิจกรรม
+    const btnPractice = container.querySelector("#btn-practice-guide");
+    if (btnPractice) {
+      btnPractice.addEventListener("click", () => {
+        const ex = this.currentExercise;
+        this.closeModal();
+
+        if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
+          this.recordRoutineTime(ex, 120);
+          this.showToastNotice(`✨ บันทึกเวลา ${ex.title} เรียบร้อยแล้วครับ!`);
+          if (window.app && window.app.renderDailyStatCard) {
+            window.app.renderDailyStatCard();
           }
-          this.closeModal();
-          if (ex && ex.id !== "routine-warmup" && ex.id !== "routine-cooldown") {
-            if (window.postWorkoutModal) {
-              window.postWorkoutModal.open(ex, 60);
+          return;
+        }
+
+        if (ex) {
+          if (window.postWorkoutModal) {
+            window.postWorkoutModal.open(ex, 120);
+          }
+        }
+      });
+    }
+  }
             }
           }
         });
@@ -393,14 +355,7 @@ class VideoManager {
   }
 
   triggerWarningNotice() {
-    const now = Date.now();
-    if (now - this.lastWarningToastTime < 2200) return;
-    this.lastWarningToastTime = now;
-
-    if (window.audioCues && typeof audioCues.playWarning === "function") {
-      audioCues.playWarning();
-    }
-    this.showToastNotice("กรุณาดูคลิปและทำตามจนจบตามเวลาจริง เพื่อความปลอดภัยและประโยชน์สูงสุดต่อสุขภาพครับ 🔒");
+    // ปิดการเตือนเพื่อไม่ให้รบกวนผู้ใช้
   }
 
   initLocalVideo() {
@@ -413,48 +368,8 @@ class VideoManager {
       this.localSeekInterval = null;
     }
 
-    // ฟังก์ชันบังคับล็อกแถบเวลา ไม่ให้ข้ามเกิน maxWatchedTime (Snap-Back)
-    const enforceTimeLock = (showWarning = false) => {
-      if (!this.localVideoEl) return;
-      const current = this.localVideoEl.currentTime;
-
-      // หากข้ามไปข้างหน้าเกินกว่าที่ดูจริง + 0.6 วินาที
-      if (current > this.maxWatchedTime + 0.6) {
-        this.localVideoEl.currentTime = this.maxWatchedTime;
-        if (showWarning) {
-          this.triggerWarningNotice();
-        }
-      } else if (!this.localVideoEl.paused && current > this.maxWatchedTime) {
-        // อัปเดตเวลาที่ดูจริงเฉพาะตอนกำลังเล่นตามปกติ
-        this.maxWatchedTime = current;
-      }
-    };
-
-    // ดักจับทุกสถานะ: เมื่อกำลังเลื่อน, เลื่อนเสร็จ, กำลังเล่น, หรืออัปเดตเวลา
-    this.localVideoEl.addEventListener("seeking", () => enforceTimeLock(true));
-    this.localVideoEl.addEventListener("seeked", () => enforceTimeLock(true));
-    this.localVideoEl.addEventListener("timeupdate", () => enforceTimeLock(false));
-    this.localVideoEl.addEventListener("play", () => enforceTimeLock(true));
-    this.localVideoEl.addEventListener("pause", () => enforceTimeLock(true));
-
-    // ตัวตรวจสอบความถี่สูง (120ms) เพื่อดักจับทุกเบราว์เซอร์ทั้งบนคอมและมือถือ แม้ขณะกดหยุด (Pause)
-    this.localSeekInterval = setInterval(() => {
-      if (!this.localVideoEl) return;
-      const current = this.localVideoEl.currentTime;
-      if (current > this.maxWatchedTime + 0.6) {
-        this.localVideoEl.currentTime = this.maxWatchedTime;
-        this.triggerWarningNotice();
-      } else if (!this.localVideoEl.paused && current > this.maxWatchedTime) {
-        this.maxWatchedTime = current;
-      }
-    }, 120);
-
-    // เมื่อดูคลิปจบ 100% -> ปลดล็อกบันทึกชีพจร/ประเมินผลอัตโนมัติ
+    // เมื่อดูคลิปจบ -> ปลดล็อกบันทึกชีพจร/ประเมินผลอัตโนมัติ
     this.localVideoEl.addEventListener("ended", () => {
-      if (this.localSeekInterval) {
-        clearInterval(this.localSeekInterval);
-        this.localSeekInterval = null;
-      }
       let durationSec = 60;
       if (this.localVideoEl) {
         const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
@@ -478,17 +393,12 @@ class VideoManager {
       }
     });
 
-    // สั่งเริ่มเล่นวิดีโอทันทีอัตโนมัติ (Autoplay)
+    // เริ่มเล่นวิดีโออย่างราบรื่น
     try {
       const playPromise = this.localVideoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch((e) => {
-          // หากเบราว์เซอร์มีนโยบายบล็อกเสียง ให้เปิดแบบปิดเสียงเริ่มต้นเพื่อให้วิดีโอวิ่งอัตโนมัติ
-          console.warn("Autoplay with audio blocked, fallback to muted:", e);
-          if (this.localVideoEl) {
-            this.localVideoEl.muted = true;
-            this.localVideoEl.play().catch(() => {});
-          }
+          console.log("Video ready for playback:", e);
         });
       }
     } catch (e) {}

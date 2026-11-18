@@ -10399,6 +10399,20 @@ class VideoManager {
       clearInterval(this.localSeekInterval);
       this.localSeekInterval = null;
     }
+    if (this.localVideoEl) {
+      try {
+        this.localVideoEl.pause();
+        this.localVideoEl.src = "";
+        this.localVideoEl.load();
+      } catch (e) {}
+      this.localVideoEl = null;
+    }
+    if (this.player && typeof this.player.destroy === "function") {
+      try {
+        this.player.destroy();
+      } catch (e) {}
+      this.player = null;
+    }
     const modal = document.getElementById("video-player-modal");
     if (modal) {
       modal.classList.remove("active");
@@ -10423,15 +10437,38 @@ class VideoManager {
       practiceBtnText = "🧘‍♂️ ยืดเหยียดผ่อนคลายร่างกายเสร็จสิ้น บันทึกเวลา";
     }
 
+    const effectiveUrl = exercise.videoUrl ? exercise.videoUrl.trim() : "";
+    const ytId = effectiveUrl ? this.extractYouTubeId(effectiveUrl) : null;
+    const isYouTube = Boolean(ytId);
+    const hasVideo = Boolean(effectiveUrl);
+
+    let mediaHtml = "";
+    if (hasVideo && isYouTube) {
+      mediaHtml = `
+        <div class="video-iframe-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; margin-bottom: 14px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <div id="youtube-player-mount"></div>
+        </div>
+      `;
+    } else if (hasVideo) {
+      mediaHtml = `
+        <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" poster="${exercise.image ? encodeURI(exercise.image) : ''}" controls playsinline preload="metadata" style="width: 100%; max-height: 280px; display: block; margin: 0 auto; outline: none;"></video>
+        </div>
+      `;
+    } else {
+      mediaHtml = `
+        <div class="exercise-guide-hero" style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #f8fafc; text-align: center; border: 1.5px solid #e2e8f0;">
+          ${exercise.image ? `
+            <img src="${encodeURI(exercise.image)}" alt="${exercise.title}" style="max-height: 260px; width: 100%; object-fit: contain; background: #ffffff; padding: 8px; border-radius: 14px;" />
+          ` : `
+            <div style="padding: 40px; font-size: 54px;">${exercise.id === 'routine-warmup' ? '☀️' : (exercise.id === 'routine-cooldown' ? '🧘‍♂️' : '🏃')}</div>
+          `}
+        </div>
+      `;
+    }
+
     container.innerHTML = `
-      <!-- รูปภาพภาพประกอบท่าทาง / สัญลักษณ์ท่าทาง (ไม่โหลดคลิปวิดีโอ 100%) -->
-      <div class="exercise-guide-hero" style="border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: #f8fafc; text-align: center; border: 1.5px solid #e2e8f0;">
-        ${exercise.image ? `
-          <img src="${encodeURI(exercise.image)}" alt="${exercise.title}" style="max-height: 280px; width: 100%; object-fit: contain; background: #ffffff; padding: 8px; border-radius: 16px;" />
-        ` : `
-          <div style="padding: 40px; font-size: 54px;">${exercise.id === 'routine-warmup' ? '☀️' : (exercise.id === 'routine-cooldown' ? '🧘‍♂️' : '🏃')}</div>
-        `}
-      </div>
+      ${mediaHtml}
 
       <!-- แถบข้อมูลสรุปเป้าหมายและความหนัก -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 14px;">
@@ -10462,7 +10499,7 @@ class VideoManager {
         </div>
       </div>
 
-      <!-- ปุ่มเริ่มทำกิจกรรม & บันทึกชีพจร (ไม่มีวิดีโอค้าง ไม่ติดล็อก) -->
+      <!-- ปุ่มเริ่มทำกิจกรรม & บันทึกชีพจร (กดได้ทันที 100%) -->
       <div style="margin-top: 18px;">
         <button type="button" class="btn-direct-practice" id="btn-practice-guide" style="width: 100%; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; border-radius: 14px; padding: 14px 20px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-family: inherit;">
           ${practiceBtnText}
@@ -10493,17 +10530,19 @@ class VideoManager {
         }
       });
     }
+
+    // เริ่มต้นตัวเล่นวิดีโอ (ถ้ามี)
+    if (hasVideo) {
+      if (isYouTube) {
+        this.initPlayer(ytId);
+      } else {
+        this.initLocalVideo();
+      }
+    }
   }
 
   triggerWarningNotice() {
-    const now = Date.now();
-    if (now - this.lastWarningToastTime < 2200) return;
-    this.lastWarningToastTime = now;
-
-    if (window.audioCues && typeof audioCues.playWarning === "function") {
-      audioCues.playWarning();
-    }
-    this.showToastNotice("กรุณาดูคลิปและทำตามจนจบตามเวลาจริง เพื่อความปลอดภัยและประโยชน์สูงสุดต่อสุขภาพครับ 🔒");
+    // ปิดการเตือนเพื่อไม่ให้รบกวนผู้ใช้
   }
 
   initLocalVideo() {
@@ -10516,48 +10555,8 @@ class VideoManager {
       this.localSeekInterval = null;
     }
 
-    // ฟังก์ชันบังคับล็อกแถบเวลา ไม่ให้ข้ามเกิน maxWatchedTime (Snap-Back)
-    const enforceTimeLock = (showWarning = false) => {
-      if (!this.localVideoEl) return;
-      const current = this.localVideoEl.currentTime;
-
-      // หากข้ามไปข้างหน้าเกินกว่าที่ดูจริง + 0.6 วินาที
-      if (current > this.maxWatchedTime + 0.6) {
-        this.localVideoEl.currentTime = this.maxWatchedTime;
-        if (showWarning) {
-          this.triggerWarningNotice();
-        }
-      } else if (!this.localVideoEl.paused && current > this.maxWatchedTime) {
-        // อัปเดตเวลาที่ดูจริงเฉพาะตอนกำลังเล่นตามปกติ
-        this.maxWatchedTime = current;
-      }
-    };
-
-    // ดักจับทุกสถานะ: เมื่อกำลังเลื่อน, เลื่อนเสร็จ, กำลังเล่น, หรืออัปเดตเวลา
-    this.localVideoEl.addEventListener("seeking", () => enforceTimeLock(true));
-    this.localVideoEl.addEventListener("seeked", () => enforceTimeLock(true));
-    this.localVideoEl.addEventListener("timeupdate", () => enforceTimeLock(false));
-    this.localVideoEl.addEventListener("play", () => enforceTimeLock(true));
-    this.localVideoEl.addEventListener("pause", () => enforceTimeLock(true));
-
-    // ตัวตรวจสอบความถี่สูง (120ms) เพื่อดักจับทุกเบราว์เซอร์ทั้งบนคอมและมือถือ แม้ขณะกดหยุด (Pause)
-    this.localSeekInterval = setInterval(() => {
-      if (!this.localVideoEl) return;
-      const current = this.localVideoEl.currentTime;
-      if (current > this.maxWatchedTime + 0.6) {
-        this.localVideoEl.currentTime = this.maxWatchedTime;
-        this.triggerWarningNotice();
-      } else if (!this.localVideoEl.paused && current > this.maxWatchedTime) {
-        this.maxWatchedTime = current;
-      }
-    }, 120);
-
-    // เมื่อดูคลิปจบ 100% -> ปลดล็อกบันทึกชีพจร/ประเมินผลอัตโนมัติ
+    // เมื่อดูคลิปจบ -> ปลดล็อกบันทึกชีพจร/ประเมินผลอัตโนมัติ
     this.localVideoEl.addEventListener("ended", () => {
-      if (this.localSeekInterval) {
-        clearInterval(this.localSeekInterval);
-        this.localSeekInterval = null;
-      }
       let durationSec = 60;
       if (this.localVideoEl) {
         const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
@@ -10574,24 +10573,18 @@ class VideoManager {
       }
 
       this.closeModal();
-      if (ex) {
-        if (window.postWorkoutModal) {
-          window.postWorkoutModal.open(ex, durationSec);
-        }
+      if (ex && window.postWorkoutModal) {
+        window.postWorkoutModal.open(ex, durationSec);
       }
     });
 
-    // สั่งเริ่มเล่นวิดีโอทันทีอัตโนมัติ (Autoplay)
+    // เริ่มเล่นวิดีโออย่างราบรื่น
     try {
       const playPromise = this.localVideoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch((e) => {
-          // หากเบราว์เซอร์มีนโยบายบล็อกเสียง ให้เปิดแบบปิดเสียงเริ่มต้นเพื่อให้วิดีโอวิ่งอัตโนมัติ
-          console.warn("Autoplay with audio blocked, fallback to muted:", e);
-          if (this.localVideoEl) {
-            this.localVideoEl.muted = true;
-            this.localVideoEl.play().catch(() => {});
-          }
+          // หากเบราว์เซอร์บล็อก autoplay ปล่อยให้ผู้ใช้กดเล่นเองได้ตามสบาย
+          console.log("Video ready for playback:", e);
         });
       }
     } catch (e) {}
@@ -10627,28 +10620,11 @@ class VideoManager {
   }
 
   checkYouTubeSeek(showWarning = true) {
-    if (!this.player || typeof this.player.getCurrentTime !== "function") return;
-    const currentTime = this.player.getCurrentTime();
-
-    if (currentTime > this.maxWatchedTime + 0.8) {
-      this.player.seekTo(this.maxWatchedTime, true);
-      if (showWarning) {
-        this.triggerWarningNotice();
-      }
-    } else if (currentTime > this.maxWatchedTime) {
-      this.maxWatchedTime = currentTime;
-    }
+    // ไม่ล็อกแถบเวลา ปล่อยให้ผู้ใช้เลื่อนดูได้อย่างอิสระ
   }
 
   onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-      this.startSeekMonitor();
-      this.checkYouTubeSeek(true);
-    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.BUFFERING) {
-      this.checkYouTubeSeek(true);
-    } else if (event.data === YT.PlayerState.ENDED) {
-      // ดูคลิปจนจบ 100% -> ปลดล็อกระบบวัดชีพจรหลังออกกำลังกายทันที!
-      this.stopSeekMonitor();
+    if (window.YT && event.data === YT.PlayerState.ENDED) {
       let durationSec = 60;
       if (this.player && typeof this.player.getDuration === "function") {
         const rawDur = this.player.getDuration();
@@ -10665,10 +10641,8 @@ class VideoManager {
       }
 
       this.closeModal();
-      if (ex) {
-        if (window.postWorkoutModal) {
-          window.postWorkoutModal.open(ex, durationSec);
-        }
+      if (ex && window.postWorkoutModal) {
+        window.postWorkoutModal.open(ex, durationSec);
       }
     }
   }
