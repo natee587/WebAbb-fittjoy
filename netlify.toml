@@ -1,3 +1,7 @@
+[build]
+  command = "git lfs install && git lfs pull"
+  publish = "."
+
 [[headers]]
   for = "/sw.js"
   [headers.values]
