@@ -1,27 +1,18 @@
-// FitJoy Service Worker (PWA Offline Support)
-const CACHE_NAME = 'fitjoy-cache-v2';
-const VIDEO_CACHE_NAME = 'fitjoy-video-cache-v2';
+// FitJoy Service Worker (PWA Offline Support - Single File Bundle Ready)
+const CACHE_NAME = 'fitjoy-cache-v3';
+const VIDEO_CACHE_NAME = 'fitjoy-video-cache-v3';
 
 const STATIC_ASSETS = [
+  './',
   'index.html',
   'manifest.json',
-  'css/style.css',
-  'js/app.js',
-  'js/audio-cues.js',
-  'js/calendar.js',
-  'js/content-data.js',
-  'js/post-workout-modal.js',
-  'js/pulse-timer.js',
-  'js/user-store.js',
-  'js/video-manager.js',
-  'js/pwa-install.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
   'icons/favicon.png'
 ];
 
-// 1. Install Event: Cache Core Static Assets (ใช้ Promise.allSettled เพื่อไม่ให้พังถ้ามีไฟล์ใดติดขัด)
+// 1. Install Event: Cache Core Static Assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
@@ -58,7 +49,6 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // ตรวจสอบว่าเป็นไฟล์วิดีโอ (.mp4)
   const isVideo = url.pathname.endsWith('.mp4') || request.destination === 'video';
 
   if (isVideo) {
@@ -66,11 +56,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // สำหรับไฟล์ทั่วไป: Cache First, fallback to Network
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch network in background
         fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {

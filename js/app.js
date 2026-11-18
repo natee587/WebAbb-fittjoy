@@ -152,9 +152,11 @@ class FitEasyApp {
 
     if (!userStore.isRegistered()) {
       onboardingEl.classList.remove("hidden");
+      onboardingEl.style.display = "flex";
       document.body.style.overflow = "hidden";
     } else {
       onboardingEl.classList.add("hidden");
+      onboardingEl.style.display = "none";
       document.body.style.overflow = "";
     }
   }
@@ -413,29 +415,74 @@ class FitEasyApp {
     `;
 
     resultBox.style.display = "block";
-    audioCues.playCelebration();
-    resultBox.scrollIntoView({ behavior: "smooth" });
+    try {
+      if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
+        audioCues.playCelebration();
+      }
+    } catch (e) {}
+    setTimeout(() => {
+      resultBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
   }
 
   bindRegistrationEvents() {
     const btnEnter = document.getElementById("btn-enter-website");
     if (btnEnter) {
       btnEnter.addEventListener("click", () => {
-        if (!this.tempRegistrationData) return;
+        try {
+          if (!this.tempRegistrationData) {
+            const firstName = (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
+            const lastName = (document.getElementById("reg-last-name")?.value || "").trim() || "สุขภาพ";
+            const age = Number(document.getElementById("reg-age")?.value) || 30;
+            const gender = document.querySelector('input[name="reg-gender"]:checked')?.value || "ชาย";
+            const weight = parseFloat(document.getElementById("reg-weight")?.value) || 60;
+            const height = parseFloat(document.getElementById("reg-height")?.value) || 165;
+            const bmiResult = userStore.calculateBMI(weight, height);
 
-        const newUser = userStore.register(this.tempRegistrationData);
-        if (window.videoManager && newUser) {
-          window.videoManager.resetSessionWarmup(newUser.id);
+            this.tempRegistrationData = {
+              firstName,
+              lastName,
+              age,
+              gender,
+              weight,
+              height,
+              bmi: bmiResult.bmi,
+              category: bmiResult.category,
+              badgeClass: bmiResult.badgeClass,
+              pingpongColor: bmiResult.pingpongColor,
+              pingpongName: bmiResult.pingpongName,
+              ageGroup: userStore.determineAgeGroup(age)
+            };
+          }
+
+          const newUser = userStore.register(this.tempRegistrationData);
+          if (window.videoManager && newUser) {
+            window.videoManager.resetSessionWarmup(newUser.id);
+          }
+
+          const onboardingEl = document.getElementById("onboarding-screen");
+          if (onboardingEl) {
+            onboardingEl.classList.add("hidden");
+            onboardingEl.style.display = "none";
+          }
+          document.body.style.overflow = "";
+
+          this.refreshAllViews();
+
+          try {
+            if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
+              audioCues.playCelebration();
+            }
+          } catch (e) {}
+        } catch (err) {
+          console.error("[Enter Website Error]", err);
+          const onboardingEl = document.getElementById("onboarding-screen");
+          if (onboardingEl) {
+            onboardingEl.classList.add("hidden");
+            onboardingEl.style.display = "none";
+          }
+          document.body.style.overflow = "";
         }
-
-        const onboardingEl = document.getElementById("onboarding-screen");
-        if (onboardingEl) {
-          onboardingEl.classList.add("hidden");
-        }
-        document.body.style.overflow = "";
-
-        this.refreshAllViews();
-        audioCues.playCelebration();
       });
     }
 
