@@ -10467,14 +10467,22 @@ class VideoManager {
     let mediaHtml = "";
     if (hasVideo && isYouTube) {
       mediaHtml = `
-        <div class="video-iframe-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; margin-bottom: 14px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div class="video-iframe-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 14px; margin-bottom: 10px; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
           <div id="youtube-player-mount"></div>
+        </div>
+        <div class="video-lock-badge-bar" style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #fef2f2; border: 1.5px solid #fecaca; color: #b91c1c; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">
+          <span class="lock-icon" style="font-size: 16px;">🔒</span>
+          <span class="lock-text">ระบบล็อกแถบเลื่อน: กรุณาดูคลิปและทำตามจนจบเพื่อปลดล็อกการประเมินผลชีพจร & คำพูด</span>
         </div>
       `;
     } else if (hasVideo) {
       mediaHtml = `
         <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 8px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
           <video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" poster="${exercise.image ? encodeURI(exercise.image) : ''}" controls playsinline preload="metadata" style="width: 100%; max-height: 280px; display: block; margin: 0 auto; outline: none;"></video>
+        </div>
+        <div class="video-lock-badge-bar" style="margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #fef2f2; border: 1.5px solid #fecaca; color: #b91c1c; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">
+          <span class="lock-icon" style="font-size: 16px;">🔒</span>
+          <span class="lock-text">ระบบล็อกแถบเลื่อน: กรุณาดูคลิปและทำตามจนจบเพื่อปลดล็อกการประเมินผลชีพจร & คำพูด</span>
         </div>
         <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
           <button type="button" id="btn-cache-current-video" style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 20px; padding: 6px 14px; font-size: 12.5px; color: #1d4ed8; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: all 0.2s;">
@@ -10527,15 +10535,22 @@ class VideoManager {
         </div>
       </div>
 
-      <!-- ปุ่มเริ่มทำกิจกรรม & บันทึกชีพจร (กดได้ทันที 100%) -->
-      <div style="margin-top: 18px;">
-        <button type="button" class="btn-direct-practice" id="btn-practice-guide" style="width: 100%; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; border-radius: 14px; padding: 14px 20px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-family: inherit;">
-          ${practiceBtnText}
-        </button>
-      </div>
+      <!-- พื้นที่ปุ่มประเมินผล: แสดงปุ่มเฉพาะกรณีไม่มีคลิปวิดีโอ (หากมีคลิประบบจะบังคับดูจนจบแล้วปลดล็อกอัตโนมัติ) -->
+      ${!hasVideo ? `
+        <div style="margin-top: 18px;">
+          <button type="button" class="btn-direct-practice" id="btn-practice-guide" style="width: 100%; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; border-radius: 14px; padding: 14px 20px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-family: inherit;">
+            ${practiceBtnText}
+          </button>
+        </div>
+      ` : `
+        <div style="margin-top: 16px; text-align: center; padding: 14px 16px; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px; color: #475569; font-size: 13.5px; line-height: 1.6;">
+          🔒 <strong>ระบบล็อกห้ามเลื่อนข้ามคลิป:</strong> กรุณาดูและฝึกตามจนจบคลิป<br>
+          <span style="color: #0284c7; font-weight: 600;">เมื่อคลิปเล่นจบ ระบบจะเปิดหน้าต่างประเมินชีพจร (15 วิ / 60 วิ) และแบบประเมินคำพูดให้อัตโนมัติครับ</span>
+        </div>
+      `}
     `;
 
-    // ผูก Event ปุ่มกดบันทึกกิจกรรม
+    // ผูก Event ปุ่มกดบันทึกกิจกรรม (สำหรับกรณีไม่มีวิดีโอ)
     const btnPractice = container.querySelector("#btn-practice-guide");
     if (btnPractice) {
       btnPractice.addEventListener("click", () => {
@@ -10613,7 +10628,14 @@ class VideoManager {
   }
 
   triggerWarningNotice() {
-    // ปิดการเตือนเพื่อไม่ให้รบกวนผู้ใช้
+    const now = Date.now();
+    if (now - this.lastWarningToastTime < 2200) return;
+    this.lastWarningToastTime = now;
+
+    if (window.audioCues && typeof audioCues.playWarning === "function") {
+      audioCues.playWarning();
+    }
+    this.showToastNotice("กรุณาดูคลิปและทำตามจนจบตามเวลาจริง เพื่อความปลอดภัยและประโยชน์สูงสุดต่อสุขภาพครับ 🔒");
   }
 
   initLocalVideo() {
@@ -10626,8 +10648,48 @@ class VideoManager {
       this.localSeekInterval = null;
     }
 
-    // เมื่อดูคลิปจบ -> ปลดล็อกบันทึกชีพจร/ประเมินผลอัตโนมัติ
+    // ฟังก์ชันบังคับล็อกแถบเวลา ไม่ให้ข้ามเกิน maxWatchedTime (Snap-Back)
+    const enforceTimeLock = (showWarning = false) => {
+      if (!this.localVideoEl) return;
+      const current = this.localVideoEl.currentTime;
+
+      // หากข้ามไปข้างหน้าเกินกว่าที่ดูจริง + 0.6 วินาที
+      if (current > this.maxWatchedTime + 0.6) {
+        this.localVideoEl.currentTime = this.maxWatchedTime;
+        if (showWarning) {
+          this.triggerWarningNotice();
+        }
+      } else if (!this.localVideoEl.paused && current > this.maxWatchedTime) {
+        // อัปเดตเวลาที่ดูจริงเฉพาะตอนกำลังเล่นตามปกติ
+        this.maxWatchedTime = current;
+      }
+    };
+
+    // ดักจับทุกสถานะ: เมื่อกำลังเลื่อน, เลื่อนเสร็จ, กำลังเล่น, หรืออัปเดตเวลา
+    this.localVideoEl.addEventListener("seeking", () => enforceTimeLock(true));
+    this.localVideoEl.addEventListener("seeked", () => enforceTimeLock(true));
+    this.localVideoEl.addEventListener("timeupdate", () => enforceTimeLock(false));
+    this.localVideoEl.addEventListener("play", () => enforceTimeLock(true));
+    this.localVideoEl.addEventListener("pause", () => enforceTimeLock(true));
+
+    // ตัวตรวจสอบความถี่สูง (120ms) เพื่อดักจับทุกเบราว์เซอร์ทั้งบนคอมและมือถือ แม้ขณะกดหยุด (Pause)
+    this.localSeekInterval = setInterval(() => {
+      if (!this.localVideoEl) return;
+      const current = this.localVideoEl.currentTime;
+      if (current > this.maxWatchedTime + 0.6) {
+        this.localVideoEl.currentTime = this.maxWatchedTime;
+        this.triggerWarningNotice();
+      } else if (!this.localVideoEl.paused && current > this.maxWatchedTime) {
+        this.maxWatchedTime = current;
+      }
+    }, 120);
+
+    // เมื่อดูคลิปจบ 100% -> ปลดล็อกบันทึกชีพจร/ประเมินผลอัตโนมัติ
     this.localVideoEl.addEventListener("ended", () => {
+      if (this.localSeekInterval) {
+        clearInterval(this.localSeekInterval);
+        this.localSeekInterval = null;
+      }
       let durationSec = 60;
       if (this.localVideoEl) {
         const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
@@ -10649,13 +10711,16 @@ class VideoManager {
       }
     });
 
-    // เริ่มเล่นวิดีโออย่างราบรื่น
+    // สั่งเริ่มเล่นวิดีโอทันทีอัตโนมัติ (Autoplay)
     try {
       const playPromise = this.localVideoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch((e) => {
-          // หากเบราว์เซอร์บล็อก autoplay ปล่อยให้ผู้ใช้กดเล่นเองได้ตามสบาย
-          console.log("Video ready for playback:", e);
+          console.warn("Autoplay with audio blocked, fallback to muted:", e);
+          if (this.localVideoEl) {
+            this.localVideoEl.muted = true;
+            this.localVideoEl.play().catch(() => {});
+          }
         });
       }
     } catch (e) {}
@@ -10691,11 +10756,27 @@ class VideoManager {
   }
 
   checkYouTubeSeek(showWarning = true) {
-    // ไม่ล็อกแถบเวลา ปล่อยให้ผู้ใช้เลื่อนดูได้อย่างอิสระ
+    if (!this.player || typeof this.player.getCurrentTime !== "function") return;
+    const currentTime = this.player.getCurrentTime();
+
+    if (currentTime > this.maxWatchedTime + 0.8) {
+      this.player.seekTo(this.maxWatchedTime, true);
+      if (showWarning) {
+        this.triggerWarningNotice();
+      }
+    } else if (currentTime > this.maxWatchedTime) {
+      this.maxWatchedTime = currentTime;
+    }
   }
 
   onPlayerStateChange(event) {
-    if (window.YT && event.data === YT.PlayerState.ENDED) {
+    if (window.YT && event.data === YT.PlayerState.PLAYING) {
+      this.startSeekMonitor();
+      this.checkYouTubeSeek(true);
+    } else if (window.YT && (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.BUFFERING)) {
+      this.checkYouTubeSeek(true);
+    } else if (window.YT && event.data === YT.PlayerState.ENDED) {
+      this.stopSeekMonitor();
       let durationSec = 60;
       if (this.player && typeof this.player.getDuration === "function") {
         const rawDur = this.player.getDuration();
