@@ -1,12 +1,13 @@
 /**
- * FitJoy PWA Installation & Service Worker Manager
- * รองรับ Android, iOS (iPhone/iPad), และ Windows (PC / Mac)
- * มี Early Capture ดักจับ Event ทันทีตั้งแต่ใน Head
+ * FitJoy Unified PWA Installation Manager
+ * รองรับ iOS, Android, Windows ในหน้าต่างเดียวจบ
  */
 
 (function () {
   let deferredPrompt = window.fitjoyDeferredPrompt || null;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isWindows = /Windows/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
   // 1. ลงทะเบียน Service Worker
@@ -22,23 +23,24 @@
     });
   }
 
-  // 2. ดักจับ Event พร้อมติดตั้ง (Android / Windows / Chrome / Edge)
+  // 2. ดักจับ Event beforeinstallprompt
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     window.fitjoyDeferredPrompt = e;
-    console.log('[PWA] beforeinstallprompt captured in script');
+    console.log('[PWA] beforeinstallprompt captured!');
     showInstallUI();
   });
 
-  // เมื่อผู้ใช้ทำการติดตั้งเสร็จสมบูรณ์
+  // 3. เมื่อติดตั้งสำเร็จ
   window.addEventListener('appinstalled', () => {
-    console.log('[PWA] FitJoy was installed successfully');
+    console.log('[PWA] FitJoy installed successfully');
     deferredPrompt = null;
     window.fitjoyDeferredPrompt = null;
     hideInstallUI();
-    closeAllModals();
-    showToast('เพิ่มแอป "ฟิตจอย" ลงหน้าจอโฮมเรียบร้อยแล้ว!');
+    const confirmModal = document.getElementById('pwa-confirm-modal');
+    if (confirmModal) confirmModal.style.display = 'none';
+    showToast('ติดตั้งแอป "ฟิตจอย" เรียบร้อยแล้ว!');
   });
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -51,50 +53,35 @@
     const btnOnboardingInstall = document.getElementById('btn-onboarding-pwa-install');
     const btnCloseBanner = document.getElementById('btn-pwa-banner-close');
 
-    // Confirm Modal Elements
     const confirmModal = document.getElementById('pwa-confirm-modal');
     const btnConfirmCancel = document.getElementById('btn-pwa-confirm-cancel');
     const btnConfirmInstall = document.getElementById('btn-pwa-confirm-install');
 
-    // Guide Modals
-    const iosModal = document.getElementById('pwa-ios-modal');
-    const btnCloseIosModal = document.getElementById('btn-close-ios-modal');
-    const desktopModal = document.getElementById('pwa-desktop-modal');
-    const btnCloseDesktopModal = document.getElementById('btn-close-desktop-modal');
-
-    // ถ้าเปิดอยู่ในโหมดแอปแล้ว ให้ซ่อนปุ่มติดตั้ง
     if (isStandalone) {
       hideInstallUI();
       return;
     }
 
-    // แสดงปุ่มและแบนเนอร์ติดตั้งเสมอ
     showInstallUI();
 
-    // เมื่อกดปุ่มติดตั้ง -> เปิดหน้าต่างถามยืนยันก่อนเสมอ!
-    if (btnInstall) {
-      btnInstall.addEventListener('click', openConfirmModal);
-    }
-    if (btnHeaderInstall) {
-      btnHeaderInstall.addEventListener('click', openConfirmModal);
-    }
-    if (btnOnboardingInstall) {
-      btnOnboardingInstall.addEventListener('click', openConfirmModal);
-    }
+    // เปิดหน้าต่างถามยืนยัน
+    if (btnInstall) btnInstall.addEventListener('click', openConfirmModal);
+    if (btnHeaderInstall) btnHeaderInstall.addEventListener('click', openConfirmModal);
+    if (btnOnboardingInstall) btnOnboardingInstall.addEventListener('click', openConfirmModal);
 
-    // กดยกเลิกในหน้าต่างถาม
+    // กดยกเลิก
     if (btnConfirmCancel && confirmModal) {
       btnConfirmCancel.addEventListener('click', () => {
         confirmModal.style.display = 'none';
       });
     }
 
-    // กด "เพิ่มลงหน้าจอโฮม" ในหน้าต่างถาม
+    // กดปุ่มติดตั้ง
     if (btnConfirmInstall) {
-      btnConfirmInstall.addEventListener('click', executeAddToHomeScreen);
+      btnConfirmInstall.addEventListener('click', handleExecuteInstall);
     }
 
-    // ปิดแบนเนอร์
+    // ปิดแบนเนอร์หน้าแรก
     if (btnCloseBanner) {
       btnCloseBanner.addEventListener('click', () => {
         const installBanner = document.getElementById('pwa-install-banner');
@@ -103,31 +90,7 @@
       });
     }
 
-    // ปิด Modal ไกด์ iOS
-    if (btnCloseIosModal && iosModal) {
-      btnCloseIosModal.addEventListener('click', () => {
-        iosModal.style.display = 'none';
-      });
-    }
-    if (iosModal) {
-      iosModal.addEventListener('click', (e) => {
-        if (e.target === iosModal) iosModal.style.display = 'none';
-      });
-    }
-
-    // ปิด Modal ไกด์ Desktop
-    if (btnCloseDesktopModal && desktopModal) {
-      btnCloseDesktopModal.addEventListener('click', () => {
-        desktopModal.style.display = 'none';
-      });
-    }
-    if (desktopModal) {
-      desktopModal.addEventListener('click', (e) => {
-        if (e.target === desktopModal) desktopModal.style.display = 'none';
-      });
-    }
-
-    // ปิด Confirm Modal เมื่อคลิกพื้นหลังสีดำ
+    // ปิดเมื่อคลิกพื้นหลังสีดำ
     if (confirmModal) {
       confirmModal.addEventListener('click', (e) => {
         if (e.target === confirmModal) confirmModal.style.display = 'none';
@@ -144,9 +107,7 @@
     }
 
     const headerBtn = document.getElementById('btn-header-pwa-install');
-    if (headerBtn) {
-      headerBtn.style.display = 'inline-flex';
-    }
+    if (headerBtn) headerBtn.style.display = 'inline-flex';
   }
 
   function hideInstallUI() {
@@ -157,73 +118,68 @@
     if (headerBtn) headerBtn.style.display = 'none';
   }
 
-  // 1. เปิดหน้าต่างถามยืนยันก่อน
+  // เปิดหน้าต่างยืนยัน
   function openConfirmModal() {
-    // ซิงค์ prompt จาก window เสมอ
     if (!deferredPrompt && window.fitjoyDeferredPrompt) {
       deferredPrompt = window.fitjoyDeferredPrompt;
     }
 
     const confirmModal = document.getElementById('pwa-confirm-modal');
+    const guideIos = document.getElementById('pwa-guide-ios');
+    const guideDesktop = document.getElementById('pwa-guide-desktop');
+    const btnText = document.getElementById('btn-pwa-confirm-install-text');
+
+    if (isIOS) {
+      if (guideIos) guideIos.style.display = 'block';
+      if (guideDesktop) guideDesktop.style.display = 'none';
+      if (btnText) btnText.textContent = 'วิธีเพิ่มลงหน้าจอโฮม (iOS)';
+    } else if (isWindows) {
+      if (guideIos) guideIos.style.display = 'none';
+      if (guideDesktop) guideDesktop.style.display = 'block';
+      if (btnText) btnText.textContent = 'ติดตั้งลงเครื่อง (Windows)';
+    } else if (isAndroid) {
+      if (guideIos) guideIos.style.display = 'none';
+      if (guideDesktop) guideDesktop.style.display = 'none';
+      if (btnText) btnText.textContent = 'เพิ่มลงหน้าจอโฮม (Android)';
+    }
+
     if (confirmModal) {
       confirmModal.style.display = 'flex';
-    } else {
-      executeAddToHomeScreen();
     }
   }
 
-  // 2. เมื่อผู้ใช้กดยืนยัน "เพิ่มลงหน้าจอโฮม"
-  async function executeAddToHomeScreen() {
-    const confirmModal = document.getElementById('pwa-confirm-modal');
-    if (confirmModal) {
-      confirmModal.style.display = 'none';
-    }
-
+  // เมื่อผู้ใช้กดปุ่ม "ติดตั้งแอปพลิเคชัน"
+  async function handleExecuteInstall() {
     const promptObj = deferredPrompt || window.fitjoyDeferredPrompt;
 
-    // กรณีที่ 1: ถ้าเบราว์เซอร์พร้อมยิง prompt ติดตั้งทันที (Android / Chrome / Edge)
     if (promptObj) {
-      console.log('[PWA] Prompting install to user...');
+      console.log('[PWA] Triggering install prompt directly...');
       try {
         promptObj.prompt();
         const choiceResult = await promptObj.userChoice;
+        console.log('[PWA] User choice outcome:', choiceResult.outcome);
         if (choiceResult.outcome === 'accepted') {
-          console.log('[PWA] User accepted install prompt');
           hideInstallUI();
-        } else {
-          console.log('[PWA] User dismissed install prompt');
+          const confirmModal = document.getElementById('pwa-confirm-modal');
+          if (confirmModal) confirmModal.style.display = 'none';
         }
       } catch (err) {
-        console.warn('[PWA] Prompt error:', err);
+        console.warn('[PWA] Install prompt failed:', err);
       }
       deferredPrompt = null;
       window.fitjoyDeferredPrompt = null;
       return;
     }
 
-    // กรณีที่ 2: ถ้าเป็น iOS (iPhone / iPad)
     if (isIOS) {
-      const iosModal = document.getElementById('pwa-ios-modal');
-      if (iosModal) {
-        iosModal.style.display = 'flex';
-      }
+      alert("วิธีติดตั้งบน iOS (iPhone/iPad):\n1. แตะปุ่มแชร์ [Share] ที่แถบด้านล่างของ Safari\n2. เลื่อนลงแล้วแตะ 'เพิ่มไปยังหน้าจอโฮม' (Add to Home Screen)");
+      const confirmModal = document.getElementById('pwa-confirm-modal');
+      if (confirmModal) confirmModal.style.display = 'none';
       return;
     }
 
-    // กรณีที่ 3: คอมพิวเตอร์ (Windows PC / Mac)
-    const desktopModal = document.getElementById('pwa-desktop-modal');
-    if (desktopModal) {
-      desktopModal.style.display = 'flex';
-    }
-  }
-
-  function closeAllModals() {
-    const confirmModal = document.getElementById('pwa-confirm-modal');
-    const iosModal = document.getElementById('pwa-ios-modal');
-    const desktopModal = document.getElementById('pwa-desktop-modal');
-    if (confirmModal) confirmModal.style.display = 'none';
-    if (iosModal) iosModal.style.display = 'none';
-    if (desktopModal) desktopModal.style.display = 'none';
+    // บน Desktop Chrome / Edge หากเบราว์เซอร์บังคับให้คลิกผ่าน URL bar
+    alert("ระบบกำลังพร้อมติดตั้ง!\n👉 โปรดคลิกที่ไอคอน 'ติดตั้ง' (รูปหน้าจอคอม 💻 หรือ ⬇️) ที่อยู่ปลายขวาสุดของแถบ URL ด้านบนของ Google Chrome เพื่อเพิ่มลงหน้าจอ Desktop ได้ทันทีครับ");
   }
 
   function showToast(msg) {
@@ -240,7 +196,7 @@
 
   window.fitjoyPWA = {
     openConfirm: openConfirmModal,
-    promptInstall: executeAddToHomeScreen,
+    promptInstall: handleExecuteInstall,
     onPromptReady: (e) => {
       deferredPrompt = e;
       showInstallUI();

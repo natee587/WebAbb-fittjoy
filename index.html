@@ -642,7 +642,7 @@
   </div>
 
   <!-- ====================================================================
-       Modal ถามยืนยันการติดตั้งแอป (Confirm Add to Home Screen Modal)
+       Unified PWA Install Modal (หน้าต่างยืนยันติดตั้งแอป รองรับ iOS, Android, Windows ในที่เดียว)
        ==================================================================== -->
   <div class="pwa-confirm-modal-overlay" id="pwa-confirm-modal" style="display: none;">
     <div class="pwa-confirm-modal-card">
@@ -650,26 +650,42 @@
         <img src="icons/icon-192.png" alt="โลโก้ฟิตจอย" class="pwa-confirm-app-icon" />
         <div class="pwa-confirm-app-meta">
           <h3 class="pwa-confirm-title">ฟิตจอย</h3>
-          <p class="pwa-confirm-author">สื่อส่งเสริมสุขภาพและกิจกรรมทางกาย</p>
+          <div class="pwa-os-compatibility-badge">
+            <span>📱 iOS</span> • <span>🤖 Android</span> • <span>💻 Windows</span>
+          </div>
         </div>
       </div>
 
       <div class="pwa-confirm-body">
-        <p class="pwa-confirm-question">ต้องการเพิ่มแอป <strong>"ฟิตจอย"</strong> ลงในหน้าจอโฮมของคุณหรือไม่?</p>
+        <h4 class="pwa-confirm-question">ต้องการติดตั้งแอปพลิเคชัน <strong>"ฟิตจอย"</strong> หรือไม่?</h4>
+        <p class="pwa-confirm-sub">ติดตั้งลงหน้าจอโฮมเพื่อเข้าใช้งานได้สะดวกรวดเร็ว โหลดไว และใช้งานได้แม้ออฟไลน์</p>
+        
         <ul class="pwa-confirm-benefits">
           <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>เข้าใช้งานได้ทันทีจากไอคอนบนหน้าจอโฮม</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>เพิ่มไอคอนลงหน้าจอโฮม / Desktop ทันที</span>
           </li>
           <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>รองรับการฝึกออกกำลังกายแม้ออฟไลน์</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>เปิดเต็มหน้าจอ ไม่มีแถบเว็บเบราว์เซอร์กวนใจ</span>
           </li>
           <li>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>เปิดเต็มหน้าจอ สวยงาม เหมือนแอปจริง</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>ฝึกออกกำลังกายตามคลิปได้แม้ไม่มีอินเทอร์เน็ต</span>
           </li>
         </ul>
+
+        <!-- ไกด์เฉพาะ iOS Safari -->
+        <div class="pwa-guide-ios-box" id="pwa-guide-ios" style="display: none;">
+          <div class="pwa-guide-ios-title">💡 วิธีติดตั้งสำหรับ iPhone / iPad (Safari):</div>
+          <div class="pwa-guide-ios-step">1. แตะปุ่มแชร์ <strong>(Share ⎋)</strong> ที่แถบด้านล่างของ Safari</div>
+          <div class="pwa-guide-ios-step">2. เลือก <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong></div>
+        </div>
+
+        <!-- ไกด์เสริมเฉพาะ Desktop กรณีเบราว์เซอร์บังคับให้คลิกแถบ URL -->
+        <div class="pwa-guide-desktop-box" id="pwa-guide-desktop" style="display: none;">
+          <span>💡 บนคอมพิวเตอร์: สามารถคลิกที่ไอคอน <strong>ติดตั้ง (💻 หรือ ⬇️)</strong> ที่ปลายขวาสุดของช่องพิมพ์ URL ด้านบนได้เช่นกัน</span>
+        </div>
       </div>
 
       <div class="pwa-confirm-actions">
@@ -680,68 +696,9 @@
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-          <span>เพิ่มลงหน้าจอโฮม</span>
+          <span id="btn-pwa-confirm-install-text">ติดตั้งแอปพลิเคชัน</span>
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal แนะนำการติดตั้งสำหรับ iOS (iPhone / iPad) -->
-  <div class="pwa-ios-modal-overlay" id="pwa-ios-modal" style="display: none;">
-    <div class="pwa-ios-modal-card">
-      <img src="icons/icon-192.png" alt="โลโก้ฟิตจอย" class="pwa-ios-modal-icon" />
-      <h3 class="pwa-ios-modal-title">ติดตั้งแอป "ฟิตจอย" บน iPhone / iPad</h3>
-      <p class="pwa-ios-modal-desc">เพิ่มไอคอนไว้ที่หน้าจอโฮมเพื่อเข้าใช้งานได้เหมือนแอปจริง</p>
-      
-      <div class="pwa-ios-steps">
-        <div class="pwa-ios-step-item">
-          <span class="pwa-step-badge">1</span>
-          <span>แตะที่ปุ่มแชร์ 
-            <svg class="pwa-step-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-              <polyline points="16 6 12 2 8 6"></polyline>
-              <line x1="12" y1="2" x2="12" y2="15"></line>
-            </svg>
-            ที่แถบด้านล่างของ Safari
-          </span>
-        </div>
-        <div class="pwa-ios-step-item">
-          <span class="pwa-step-badge">2</span>
-          <span>เลื่อนลงมาแล้วเลือก <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong></span>
-        </div>
-        <div class="pwa-ios-step-item">
-          <span class="pwa-step-badge">3</span>
-          <span>แตะ <strong>"เพิ่ม" (Add)</strong> ที่มุมขวาบน จะมีไอคอนฟิตจอยอยู่ที่หน้าโฮมทันที</span>
-        </div>
-      </div>
-
-      <button type="button" class="btn-ios-modal-close" id="btn-close-ios-modal">เข้าใจแล้ว</button>
-    </div>
-  </div>
-
-  <!-- Modal แนะนำการติดตั้งสำหรับ Windows / Desktop -->
-  <div class="pwa-ios-modal-overlay" id="pwa-desktop-modal" style="display: none;">
-    <div class="pwa-ios-modal-card">
-      <img src="icons/icon-192.png" alt="โลโก้ฟิตจอย" class="pwa-ios-modal-icon" />
-      <h3 class="pwa-ios-modal-title">ติดตั้ง "ฟิตจอย" ลงคอมพิวเตอร์</h3>
-      <p class="pwa-ios-modal-desc">เปิดใช้งานจากเดสก์ท็อปได้รวดเร็วเหมือนโปรแกรมทั่วไป</p>
-      
-      <div class="pwa-ios-steps">
-        <div class="pwa-ios-step-item">
-          <span class="pwa-step-badge">1</span>
-          <span>สังเกตที่ <strong>แถบพิมพ์ URL ด้านบนขวา</strong> ของเบราว์เซอร์ (Chrome / Edge)</span>
-        </div>
-        <div class="pwa-ios-step-item">
-          <span class="pwa-step-badge">2</span>
-          <span>คลิกที่ไอคอน <strong>ติดตั้ง (รูปหน้าจอคอม 💻 หรือเครื่องหมาย ⊕ / ⬇️)</strong></span>
-        </div>
-        <div class="pwa-ios-step-item">
-          <span class="pwa-step-badge">3</span>
-          <span>คลิกปุ่ม <strong>"ติดตั้ง" (Install)</strong> ไอคอนฟิตจอยจะไปอยู่ที่หน้าจอ Desktop ทันที!</span>
-        </div>
-      </div>
-
-      <button type="button" class="btn-ios-modal-close" id="btn-close-desktop-modal">เข้าใจแล้ว</button>
     </div>
   </div>
 
