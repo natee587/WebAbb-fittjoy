@@ -7053,21 +7053,43 @@ body {
         </div>
       </div>
 
-      <!-- การ์ดสถานะการใช้งานแบบไม่ใช้เน็ต (Offline 100% Ready) -->
-      <div class="profile-card offline-sync-card" style="margin-top: 18px; background: white; border-radius: var(--radius-lg); padding: 18px; border: 1.5px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+      <!-- การ์ดจัดการข้อมูลและการใช้งานแบบไม่ใช้เน็ต (Offline Mode & Video Cache Manager) -->
+      <div class="profile-card offline-sync-card" style="margin-top: 18px; background: white; border-radius: var(--radius-lg); padding: 20px; border: 1.5px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 24px;">📶</span>
+            <span style="font-size: 26px;">📶</span>
             <div>
-              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-navy);">การใช้งานแบบออฟไลน์ (Offline 100%)</h4>
+              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-navy);">การใช้งานแบบออฟไลน์ (ไม่ใช้เน็ต)</h4>
               <span id="network-status-badge" style="font-size: 12px; color: #16a34a; font-weight: 600;">🟢 ออนไลน์พร้อมใช้งาน</span>
             </div>
           </div>
-          <span style="font-size: 12.5px; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 20px; color: #065f46;">✓ ใช้งานได้ตลอดเวลาแม้ไม่มีเน็ต</span>
+          <span id="offline-cache-count" style="font-size: 13px; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; color: #15803d;">0 / 25 คลิปในเครื่อง</span>
         </div>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; margin-bottom: 0; line-height: 1.5;">
-          ระบบแอป ฟิตจอย, ข้อมูลสุขภาพ, คู่มือท่าทาง, การคำนวณ BMI 7 สี, ตัวจับเวลานับชีพจร และปฏิทินบันทึก ถูกบันทึกไว้ในเครื่องของคุณเรียบร้อยแล้ว สามารถเปิดใช้งานได้ทุกที่ทุกเวลาแม้ปิดสัญญาณอินเทอร์เน็ต
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+          ระบบแอป ข้อมูลสุขภาพ และคู่มือทั้งหมดใช้งานได้แบบออฟไลน์ 100% คุณสามารถกดดาวน์โหลดวิดีโอคลิปเก็บไว้ในเครื่องล่วงหน้า เพื่อเปิดดูวิดีโอออกกำลังกายได้ทันทีแม้ไม่มีสัญญาณอินเทอร์เน็ต
         </p>
+
+        <!-- แถบแสดงความคืบหน้าการดาวน์โหลด -->
+        <div id="offline-download-progress-wrap" style="display: none; margin-bottom: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 8px;">
+            <span id="offline-download-label" style="color: var(--text-navy); font-weight: 600;">กำลังดาวน์โหลดคลิป...</span>
+            <span id="offline-download-percent" style="color: #0284c7; font-weight: 700;">0%</span>
+          </div>
+          <div style="width: 100%; height: 9px; background: #e2e8f0; border-radius: 6px; overflow: hidden;">
+            <div id="offline-download-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #0284c7, #10b981); transition: width 0.2s;"></div>
+          </div>
+        </div>
+
+        <!-- ปุ่มกดดาวน์โหลดทั้งหมด & ล้างแคช -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" id="btn-download-all-offline" style="flex: 2; min-width: 220px; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 12px; padding: 12px 18px; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span id="btn-download-all-offline-text">📥 ดาวน์โหลดวิดีโอทั้งหมดไว้ดูออฟไลน์</span>
+          </button>
+          <button type="button" id="btn-clear-offline-cache" style="flex: 1; min-width: 120px; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #64748b; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;">
+            ล้างแคชวิดีโอ
+          </button>
+        </div>
       </div>
 
       <!-- Modal อัปเดตน้ำหนักและส่วนสูงแบบด่วน -->
@@ -10451,8 +10473,14 @@ class VideoManager {
       `;
     } else if (hasVideo) {
       mediaHtml = `
-        <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 8px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
           <video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" poster="${exercise.image ? encodeURI(exercise.image) : ''}" controls playsinline preload="metadata" style="width: 100%; max-height: 280px; display: block; margin: 0 auto; outline: none;"></video>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+          <button type="button" id="btn-cache-current-video" style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 20px; padding: 6px 14px; font-size: 12.5px; color: #1d4ed8; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: all 0.2s;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span id="cache-text-current">ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์</span>
+          </button>
         </div>
       `;
     } else {
@@ -10526,6 +10554,49 @@ class VideoManager {
         if (ex) {
           if (window.postWorkoutModal) {
             window.postWorkoutModal.open(ex, 120);
+          }
+        }
+      });
+    }
+
+    // ผูก Event ปุ่มดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์
+    const btnCacheCurrent = container.querySelector("#btn-cache-current-video");
+    if (btnCacheCurrent && hasVideo && !isYouTube) {
+      const videoPath = effectiveUrl;
+      if (window.offlineVideoManager) {
+        window.offlineVideoManager.isVideoCached(videoPath).then(isCached => {
+          if (isCached) {
+            btnCacheCurrent.style.background = "#f0fdf4";
+            btnCacheCurrent.style.borderColor = "#86efac";
+            btnCacheCurrent.style.color = "#15803d";
+            btnCacheCurrent.innerHTML = "<span>✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)</span>";
+          } else {
+            btnCacheCurrent.style.background = "#eff6ff";
+            btnCacheCurrent.style.borderColor = "#bfdbfe";
+            btnCacheCurrent.style.color = "#1d4ed8";
+            btnCacheCurrent.innerHTML = "<span>💾 ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์</span>";
+          }
+        });
+      }
+
+      btnCacheCurrent.addEventListener("click", async () => {
+        if (!navigator.onLine) {
+          alert("กรุณาเชื่อมต่ออินเทอร์เน็ตเพื่อเริ่มดาวน์โหลดคลิปเก็บไว้ในเครื่องครับ");
+          return;
+        }
+        btnCacheCurrent.disabled = true;
+        btnCacheCurrent.innerHTML = "<span>⏳ กำลังดาวน์โหลดคลิป...</span>";
+        if (window.offlineVideoManager) {
+          const success = await window.offlineVideoManager.cacheSingleVideo(videoPath);
+          if (success) {
+            btnCacheCurrent.style.background = "#f0fdf4";
+            btnCacheCurrent.style.borderColor = "#86efac";
+            btnCacheCurrent.style.color = "#15803d";
+            btnCacheCurrent.innerHTML = "<span>✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)</span>";
+            this.showToastNotice("✅ ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์เรียบร้อยแล้ว!");
+          } else {
+            btnCacheCurrent.disabled = false;
+            btnCacheCurrent.innerHTML = "<span>❌ ไม่สามารถดาวน์โหลดได้ ลองใหม่อีกครั้ง</span>";
           }
         }
       });
@@ -12633,6 +12704,9 @@ function initOfflineVideoManager() {
 
   function getAllVideoUrls() {
     const list = [];
+    if (typeof WARMUP_EXERCISE !== 'undefined' && WARMUP_EXERCISE && WARMUP_EXERCISE.videoUrl) {
+      if (!list.includes(WARMUP_EXERCISE.videoUrl)) list.push(WARMUP_EXERCISE.videoUrl);
+    }
     if (typeof EXERCISES !== 'undefined' && Array.isArray(EXERCISES)) {
       EXERCISES.forEach(e => {
         if (e.videoUrl && !list.includes(e.videoUrl)) list.push(e.videoUrl);
@@ -12664,13 +12738,59 @@ function initOfflineVideoManager() {
       const cache = await caches.open('fitjoy-video-cache-v4');
       const keys = await cache.keys();
       const allUrls = getAllVideoUrls();
-      const total = allUrls.length || 24;
+      const total = allUrls.length || 25;
+      const count = Math.min(keys.length, total);
       if (countBadge) {
-        countBadge.textContent = `${keys.length} / ${total} คลิปในเครื่อง`;
+        if (count >= total) {
+          countBadge.textContent = `✓ ${total} / ${total} คลิปในเครื่อง (พร้อมดูออฟไลน์ 100%)`;
+          countBadge.style.background = "#ecfdf5";
+          countBadge.style.color = "#047857";
+        } else {
+          countBadge.textContent = `${count} / ${total} คลิปในเครื่อง`;
+        }
       }
     } catch(e) {}
   }
   checkCachedVideosCount();
+
+  // Expose global manager
+  window.offlineVideoManager = {
+    checkCachedVideosCount,
+    getAllVideoUrls,
+    async isVideoCached(url) {
+      if (!('caches' in window) || !url) return false;
+      try {
+        const cache = await caches.open('fitjoy-video-cache-v4');
+        const encodedUrl = encodeURI(url);
+        const fullUrl = new URL(encodedUrl, window.location.href).href;
+        const match = (await cache.match(fullUrl)) || (await cache.match(encodedUrl)) || (await cache.match(url));
+        return !!match;
+      } catch(e) {
+        return false;
+      }
+    },
+    async cacheSingleVideo(url) {
+      if (!('caches' in window) || !url) return false;
+      try {
+        const cache = await caches.open('fitjoy-video-cache-v4');
+        const encodedUrl = encodeURI(url);
+        const fullUrl = new URL(encodedUrl, window.location.href).href;
+        const match = (await cache.match(fullUrl)) || (await cache.match(encodedUrl)) || (await cache.match(url));
+        if (match) return true;
+        const resp = await fetch(encodedUrl);
+        if (resp.status === 200 || resp.ok) {
+          await cache.put(fullUrl, resp.clone());
+          await cache.put(encodedUrl, resp);
+          await checkCachedVideosCount();
+          return true;
+        }
+        return false;
+      } catch(e) {
+        console.warn("Error caching single video:", e);
+        return false;
+      }
+    }
+  };
 
   if (btnDownload) {
     btnDownload.addEventListener("click", async () => {
@@ -12695,13 +12815,17 @@ function initOfflineVideoManager() {
 
       for (let i = 0; i < total; i++) {
         const url = allUrls[i];
-        if (progressLabel) progressLabel.textContent = `กำลังโหลด (${i + 1}/${total}): ${url.split('/').pop()}`;
+        const rawFileName = url.split('/').pop();
+        if (progressLabel) progressLabel.textContent = `กำลังโหลด (${i + 1}/${total}): ${decodeURIComponent(rawFileName)}`;
         try {
-          const match = await cache.match(url);
+          const encodedUrl = encodeURI(url);
+          const fullUrl = new URL(encodedUrl, window.location.href).href;
+          const match = (await cache.match(fullUrl)) || (await cache.match(encodedUrl)) || (await cache.match(url));
           if (!match) {
-            const resp = await fetch(url);
-            if (resp.status === 200) {
-              await cache.put(url, resp);
+            const resp = await fetch(encodedUrl);
+            if (resp.status === 200 || resp.ok) {
+              await cache.put(fullUrl, resp.clone());
+              await cache.put(encodedUrl, resp);
             }
           }
         } catch(err) {

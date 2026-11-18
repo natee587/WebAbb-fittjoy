@@ -267,8 +267,14 @@ class VideoManager {
       `;
     } else if (hasVideo) {
       mediaHtml = `
-        <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div class="video-player-wrapper" style="border-radius: 14px; overflow: hidden; margin-bottom: 8px; background: #000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
           <video id="html5-video-player" class="native-video-player" src="${encodeURI(effectiveUrl)}" poster="${exercise.image ? encodeURI(exercise.image) : ''}" controls playsinline preload="metadata" style="width: 100%; max-height: 280px; display: block; margin: 0 auto; outline: none;"></video>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+          <button type="button" id="btn-cache-current-video" style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 20px; padding: 6px 14px; font-size: 12.5px; color: #1d4ed8; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: all 0.2s;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span id="cache-text-current">ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์</span>
+          </button>
         </div>
       `;
     } else {
@@ -346,10 +352,56 @@ class VideoManager {
         }
       });
     }
-  }
-            }
+
+    // ผูก Event ปุ่มดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์
+    const btnCacheCurrent = container.querySelector("#btn-cache-current-video");
+    if (btnCacheCurrent && hasVideo && !isYouTube) {
+      const videoPath = effectiveUrl;
+      if (window.offlineVideoManager) {
+        window.offlineVideoManager.isVideoCached(videoPath).then(isCached => {
+          if (isCached) {
+            btnCacheCurrent.style.background = "#f0fdf4";
+            btnCacheCurrent.style.borderColor = "#86efac";
+            btnCacheCurrent.style.color = "#15803d";
+            btnCacheCurrent.innerHTML = "<span>✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)</span>";
+          } else {
+            btnCacheCurrent.style.background = "#eff6ff";
+            btnCacheCurrent.style.borderColor = "#bfdbfe";
+            btnCacheCurrent.style.color = "#1d4ed8";
+            btnCacheCurrent.innerHTML = "<span>💾 ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์</span>";
           }
         });
+      }
+
+      btnCacheCurrent.addEventListener("click", async () => {
+        if (!navigator.onLine) {
+          alert("กรุณาเชื่อมต่ออินเทอร์เน็ตเพื่อเริ่มดาวน์โหลดคลิปเก็บไว้ในเครื่องครับ");
+          return;
+        }
+        btnCacheCurrent.disabled = true;
+        btnCacheCurrent.innerHTML = "<span>⏳ กำลังดาวน์โหลดคลิป...</span>";
+        if (window.offlineVideoManager) {
+          const success = await window.offlineVideoManager.cacheSingleVideo(videoPath);
+          if (success) {
+            btnCacheCurrent.style.background = "#f0fdf4";
+            btnCacheCurrent.style.borderColor = "#86efac";
+            btnCacheCurrent.style.color = "#15803d";
+            btnCacheCurrent.innerHTML = "<span>✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)</span>";
+            this.showToastNotice("✅ ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์เรียบร้อยแล้ว!");
+          } else {
+            btnCacheCurrent.disabled = false;
+            btnCacheCurrent.innerHTML = "<span>❌ ไม่สามารถดาวน์โหลดได้ ลองใหม่อีกครั้ง</span>";
+          }
+        }
+      });
+    }
+
+    // เริ่มต้นตัวเล่นวิดีโอ (ถ้ามี)
+    if (hasVideo) {
+      if (isYouTube) {
+        this.initPlayer(videoId);
+      } else {
+        this.initLocalVideo();
       }
     }
   }
