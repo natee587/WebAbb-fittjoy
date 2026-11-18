@@ -10440,6 +10440,26 @@ class VideoManager {
       this.initPlayer(videoId);
     } else if (effectiveUrl) {
       this.initLocalVideo();
+
+      // บันทึกคลิปวิดีโอเข้าแคชออฟไลน์อัตโนมัติในพื้นหลัง (Auto-Cache for Offline 100%)
+      if ('caches' in window) {
+        try {
+          const vCacheName = 'fitjoy-video-cache-v4';
+          caches.open(vCacheName).then(cache => {
+            const fullUrl = new URL(encodeURI(effectiveUrl), window.location.href).href;
+            cache.match(fullUrl).then(existing => {
+              if (!existing) {
+                fetch(fullUrl).then(res => {
+                  if (res && res.status === 200) {
+                    cache.put(fullUrl, res);
+                    console.log('[Auto-Cache] Saved video for offline:', effectiveUrl);
+                  }
+                }).catch(() => {});
+              }
+            });
+          }).catch(() => {});
+        } catch(e) {}
+      }
     }
   }
 
@@ -12830,7 +12850,7 @@ function initOfflineVideoManager() {
   async function checkCachedVideosCount() {
     if (!('caches' in window)) return;
     try {
-      const cache = await caches.open('fitjoy-video-cache-v3');
+      const cache = await caches.open('fitjoy-video-cache-v4');
       const keys = await cache.keys();
       const allUrls = getAllVideoUrls();
       const total = allUrls.length || 24;
@@ -12858,7 +12878,7 @@ function initOfflineVideoManager() {
       if (btnDownloadText) btnDownloadText.textContent = "กำลังดาวน์โหลด...";
       if (progressWrap) progressWrap.style.display = "block";
 
-      const cache = await caches.open('fitjoy-video-cache-v3');
+      const cache = await caches.open('fitjoy-video-cache-v4');
       let done = 0;
       const total = allUrls.length;
 
@@ -12894,7 +12914,7 @@ function initOfflineVideoManager() {
     btnClear.addEventListener("click", async () => {
       if (!('caches' in window)) return;
       if (confirm("ต้องการล้างแคชวิดีโอในเครื่องเพื่อคืนพื้นที่ว่างหรือไม่?")) {
-        await caches.delete('fitjoy-video-cache-v3');
+        await caches.delete('fitjoy-video-cache-v4');
         await checkCachedVideosCount();
         if (btnDownloadText) btnDownloadText.textContent = "📥 ดาวน์โหลดวิดีโอทั้งหมดไว้ดูออฟไลน์";
         if (progressWrap) progressWrap.style.display = "none";

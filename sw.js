@@ -1,6 +1,6 @@
 // FitJoy Service Worker (PWA Offline Support - Single File Bundle Ready)
-const CACHE_NAME = 'fitjoy-cache-v3';
-const VIDEO_CACHE_NAME = 'fitjoy-video-cache-v3';
+const CACHE_NAME = 'fitjoy-cache-v4';
+const VIDEO_CACHE_NAME = 'fitjoy-video-cache-v4';
 
 const STATIC_ASSETS = [
   './',
@@ -87,46 +87,55 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// จัดการ Video Fetch และ Range Requests
+// จัดการ Video Fetch และ Range Requests: เล่นได้ทันทีขณะออนไลน์ + เล่นจากแคชได้ 100% ขณะออฟไลน์
 async function handleVideoRequest(request) {
   const cache = await caches.open(VIDEO_CACHE_NAME);
-  const rangeHeader = request.headers.get('range');
 
-  const cleanRequest = new Request(request.url);
-  let cachedResponse = await cache.match(cleanRequest);
-
+  // 1. ตรวจสอบว่าวิดีโอนี้มีในแคชแล้วหรือไม่
+  let cachedResponse = await cache.match(request.url);
   if (!cachedResponse) {
-    try {
-      const networkResponse = await fetch(cleanRequest);
-      if (networkResponse.status === 200) {
-        await cache.put(cleanRequest, networkResponse.clone());
-        cachedResponse = networkResponse;
-      } else {
-        return networkResponse;
-      }
-    } catch (err) {
-      return new Response('Video not available offline', { status: 503, statusText: 'Service Unavailable' });
-    }
+    cachedResponse = await cache.match(new Request(request.url));
   }
 
-  if (rangeHeader) {
-    const arrayBuffer = await cachedResponse.clone().arrayBuffer();
-    const bytes = rangeHeader.replace(/bytes=/, '').split('-');
-    const start = parseInt(bytes[0], 10);
-    const end = bytes[1] ? parseInt(bytes[1], 10) : arrayBuffer.byteLength - 1;
-    const chunk = arrayBuffer.slice(start, end + 1);
+  // ถ้ามีในแคช (ไม่ว่าจะออนไลน์หรือออฟไลน์) ให้เล่นจากแคชเครื่องทันที พร้อมตัด Range 206 Partial Content
+  if (cachedResponse) {
+    const rangeHeader = request.headers.get('range');
+    if (rangeHeader) {
+      try {
+        const arrayBuffer = await cachedResponse.clone().arrayBuffer();
+        const bytes = rangeHeader.replace(/bytes=/, '').split('-');
+        const start = parseInt(bytes[0], 10);
+        const end = bytes[1] ? parseInt(bytes[1], 10) : arrayBuffer.byteLength - 1;
+        const chunk = arrayBuffer.slice(start, end + 1);
 
-    return new Response(chunk, {
-      status: 206,
-      statusText: 'Partial Content',
-      headers: {
-        'Content-Range': `bytes ${start}-${end}/${arrayBuffer.byteLength}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunk.byteLength,
-        'Content-Type': cachedResponse.headers.get('Content-Type') || 'video/mp4'
+        return new Response(chunk, {
+          status: 206,
+          statusText: 'Partial Content',
+          headers: {
+            'Content-Range': `bytes ${start}-${end}/${arrayBuffer.byteLength}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunk.byteLength,
+            'Content-Type': cachedResponse.headers.get('Content-Type') || 'video/mp4'
+          }
+        });
+      } catch (err) {
+        console.warn('[SW] Error slicing cached video:', err);
       }
+    }
+    return cachedResponse;
+  }
+
+  // 2. ถ้ายังไม่มีในแคช: ให้ส่งตรงไปยัง Network ทันที (Direct Range Streaming จาก Netlify) 
+  // วิดีโอจะเริ่มเล่นทันทีในเสี้ยววินาที ไม่ต้องรอโหลดทั้งไฟล์ 20MB!
+  try {
+    const networkResponse = await fetch(request);
+    return networkResponse;
+  } catch (err) {
+    // 3. ถ้าไม่มีสัญญาณอินเทอร์เน็ต และคลิปนี้ยังไม่เคยถูกเปิดดูมาก่อน
+    return new Response('Video not available offline', {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
     });
   }
-
-  return cachedResponse;
 }
