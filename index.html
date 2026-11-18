@@ -6635,7 +6635,7 @@ body {
       </div>
 
       <!-- ฟอร์มกรอกข้อมูล -->
-      <form id="onboarding-form" onsubmit="event.preventDefault(); window.app.handleRegistrationSubmit();">
+      <form id="onboarding-form" onsubmit="event.preventDefault(); (window.app && typeof window.app.handleRegistrationSubmit === 'function') ? window.app.handleRegistrationSubmit() : window.fitjoyEnterApp();">
         <div class="form-grid-2">
           <div class="form-group">
             <label class="form-label" for="reg-first-name">ชื่อ <span class="req">*</span></label>
@@ -6723,7 +6723,7 @@ body {
 
         <div class="guideline-summary-card" id="res-guideline-card"></div>
 
-        <button type="button" class="btn-enter-website" id="btn-enter-website">
+        <button type="button" class="btn-enter-website" id="btn-enter-website" onclick="window.fitjoyEnterApp();">
           🎉 บันทึกและเข้าสู่ฟิตจอย
         </button>
       </div>
@@ -7267,6 +7267,58 @@ body {
 
   <!-- JavaScript Single Bundle -->
 <script id="fitjoy-bundle-script">
+
+// ====================================================================
+// Global Entry & Registration Controllers (ป้องกันการค้าง 100%)
+// ====================================================================
+window.fitjoyEnterApp = function() {
+  try {
+    const firstName = (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
+    const lastName = (document.getElementById("reg-last-name")?.value || "").trim() || "สุขภาพ";
+    const ageVal = document.getElementById("reg-age")?.value;
+    const age = Number(ageVal) || 30;
+    const genderEl = document.querySelector('input[name="reg-gender"]:checked');
+    const gender = genderEl ? genderEl.value : "ชาย";
+    const weightVal = document.getElementById("reg-weight")?.value;
+    const weight = parseFloat(weightVal) || 65;
+    const heightVal = document.getElementById("reg-height")?.value;
+    const height = parseFloat(heightVal) || 165;
+
+    if (typeof userStore !== 'undefined' && userStore.register) {
+      userStore.register({
+        firstName,
+        lastName,
+        age,
+        gender,
+        weight,
+        height
+      });
+    }
+
+    localStorage.setItem("fitjoy_onboarded", "true");
+    sessionStorage.setItem("fitjoy_onboarded", "true");
+
+    const screen = document.getElementById("onboarding-screen");
+    if (screen) {
+      screen.style.setProperty("display", "none", "important");
+      screen.classList.add("hidden");
+    }
+    document.body.style.overflow = "auto";
+
+    if (window.app && typeof window.app.refreshAllViews === 'function') {
+      window.app.refreshAllViews();
+    }
+    console.log("✅ Successfully entered FitJoy!");
+  } catch (err) {
+    console.error("Enter App Error:", err);
+    const screen = document.getElementById("onboarding-screen");
+    if (screen) {
+      screen.style.setProperty("display", "none", "important");
+      screen.classList.add("hidden");
+    }
+    document.body.style.overflow = "auto";
+  }
+};
 
 /* ===== FILE: content-data.js ===== */
 /**
@@ -11798,7 +11850,9 @@ class FitEasyApp {
     const onboardingEl = document.getElementById("onboarding-screen");
     if (!onboardingEl) return;
 
-    if (!userStore.isRegistered()) {
+    const isOnboarded = userStore.isRegistered() || localStorage.getItem("fitjoy_onboarded") === "true";
+
+    if (!isOnboarded) {
       onboardingEl.classList.remove("hidden");
       onboardingEl.style.display = "flex";
       document.body.style.overflow = "hidden";
