@@ -11,6 +11,7 @@ class FitEasyApp {
     this.searchQuery = "";
     this.isMobileFrame = false;
     this.tempRegistrationData = null;
+    this.isEditingUser = false;
 
     this.init();
   }
@@ -150,15 +151,101 @@ class FitEasyApp {
     const onboardingEl = document.getElementById("onboarding-screen");
     if (!onboardingEl) return;
 
-    if (!userStore.isRegistered()) {
-      onboardingEl.classList.remove("hidden");
-      onboardingEl.style.display = "flex";
-      document.body.style.overflow = "hidden";
+    const isOnboarded = userStore.isRegistered() || localStorage.getItem("fitjoy_onboarded") === "true";
+
+    if (!isOnboarded) {
+      this.openOnboardingModal("register");
     } else {
-      onboardingEl.classList.add("hidden");
-      onboardingEl.style.display = "none";
-      document.body.style.overflow = "";
+      this.closeOnboardingModal();
     }
+  }
+
+  openOnboardingModal(mode = "register") {
+    const onboardingEl = document.getElementById("onboarding-screen");
+    const form = document.getElementById("onboarding-form");
+    const resultBox = document.getElementById("onboarding-result-box");
+    const titleEl = document.getElementById("onboarding-title");
+    const descEl = document.getElementById("onboarding-desc");
+    const btnEnter = document.getElementById("btn-enter-website");
+    const btnClose = document.getElementById("btn-close-onboarding-edit");
+    const existingUsersBar = document.getElementById("onboarding-existing-users-bar");
+    const btnSubmit = document.getElementById("btn-submit-registration");
+    if (!onboardingEl) return;
+
+    this.isEditingUser = (mode === "edit");
+    this.tempRegistrationData = null;
+
+    const allUsers = userStore.getAllUsers();
+    const hasUsers = allUsers.length > 0;
+    const activeUser = userStore.activeUserId ? userStore.getActiveUser() : null;
+
+    if (this.isEditingUser) {
+      const p = userStore.profile || {};
+      if (titleEl) titleEl.textContent = "✏️ แก้ไขข้อมูลสุขภาพของคุณ";
+      if (descEl) descEl.textContent = "แก้ไขชื่อ นามสกุล อายุ น้ำหนัก และส่วนสูง เพื่อคำนวณช่วงวัย ค่าดัชนีมวลกาย (BMI) และช่วงชีพจรใหม่";
+      if (btnEnter) btnEnter.innerHTML = "✓ บันทึกการแก้ไขข้อมูล";
+      if (btnSubmit) btnSubmit.innerHTML = "⚡ คำนวณผลใหม่";
+      if (btnClose) btnClose.style.display = "inline-flex";
+      if (existingUsersBar) existingUsersBar.style.display = "none";
+
+      const fnInput = document.getElementById("reg-first-name");
+      const lnInput = document.getElementById("reg-last-name");
+      const ageInput = document.getElementById("reg-age");
+      const wInput = document.getElementById("reg-weight");
+      const hInput = document.getElementById("reg-height");
+
+      if (fnInput) fnInput.value = p.firstName || "";
+      if (lnInput) lnInput.value = p.lastName || "";
+      if (ageInput) ageInput.value = p.age || "";
+      if (wInput) wInput.value = p.weight || "";
+      if (hInput) hInput.value = p.height || "";
+
+      const radioGender = document.querySelectorAll('input[name="reg-gender"]');
+      radioGender.forEach(r => {
+        if (r.value === p.gender) r.checked = true;
+      });
+
+      this.handleRegistrationSubmit(false);
+    } else {
+      if (form) form.reset();
+      if (resultBox) resultBox.style.display = "none";
+      if (titleEl) titleEl.textContent = "ลงทะเบียนประเมินสุขภาพเบื้องต้น";
+      if (descEl) descEl.textContent = "กรุณากรอกข้อมูลเพื่อคำนวณช่วงวัย ค่าดัชนีมวลกาย (BMI) และกำหนดช่วงอัตราการเต้นของหัวใจที่ปลอดภัยและเหมาะสมกับคุณก่อนเข้าสู่เว็บไซต์";
+      if (btnEnter) btnEnter.innerHTML = "🎉 บันทึกและเข้าสู่ฟิตจอย";
+      if (btnSubmit) btnSubmit.innerHTML = "⚡ คำนวณช่วงวัย & อัตราการเต้นของหัวใจ";
+
+      if (btnClose) btnClose.style.display = activeUser ? "inline-flex" : "none";
+      if (existingUsersBar) existingUsersBar.style.display = hasUsers ? "block" : "none";
+
+      const bmiCard = document.getElementById("res-bmi-metric-card");
+      if (bmiCard) bmiCard.className = "metric-card reg-bmi-card";
+      const pingpongTag = document.getElementById("res-bmi-pingpong-tag");
+      if (pingpongTag) {
+        pingpongTag.style.display = "none";
+        pingpongTag.innerHTML = "";
+      }
+    }
+
+    onboardingEl.style.removeProperty("display");
+    onboardingEl.style.display = "flex";
+    onboardingEl.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  closeOnboardingModal() {
+    this.isEditingUser = false;
+    this.tempRegistrationData = null;
+    const onboardingEl = document.getElementById("onboarding-screen");
+    if (onboardingEl) {
+      onboardingEl.style.removeProperty("display");
+      onboardingEl.style.display = "none";
+      onboardingEl.classList.add("hidden");
+    }
+    document.body.style.overflow = "";
+  }
+
+  openRegistrationForNewUser() {
+    this.openOnboardingModal("register");
   }
 
   updateUserHeaderDisplay() {
@@ -241,14 +328,19 @@ class FitEasyApp {
     if (btnRegisterNew) {
       btnRegisterNew.addEventListener("click", () => {
         this.closeSwitchUserModal();
-        this.openRegistrationForNewUser();
+        this.openOnboardingModal("register");
       });
     }
 
     if (btnLogout) {
       btnLogout.addEventListener("click", () => {
-        userStore.logout();
-        this.openRegistrationForNewUser();
+        if (confirm("คุณต้องการออกจากระบบเพื่อสลับหรือลงทะเบียนผู้ใช้ใหม่หรือไม่?")) {
+          userStore.logout();
+          this.openOnboardingModal("register");
+          if (window.videoManager) {
+            window.videoManager.showToastNotice("🚪 ออกจากระบบเรียบร้อยแล้ว");
+          }
+        }
       });
     }
   }
@@ -303,67 +395,61 @@ class FitEasyApp {
 
   handleSelectUser(userId) {
     if (userStore.switchUser(userId)) {
+      localStorage.setItem("fitjoy_onboarded", "true");
       this.closeSwitchUserModal();
       if (window.videoManager) {
         window.videoManager.resetSessionWarmup(userId);
+        const u = userStore.getActiveUser();
+        window.videoManager.showToastNotice(`👋 สลับไปยังบัญชี "${u ? u.name : ''}" เรียบร้อยแล้ว`);
       }
       if (this.sessionCooldownPromptedUsers) {
         delete this.sessionCooldownPromptedUsers[userId];
       }
       this.refreshAllViews();
-      audioCues.playCelebration();
+      try {
+        if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
+          audioCues.playCelebration();
+        }
+      } catch (e) {}
     }
   }
 
   handleDeleteUser(userId) {
+    const targetUser = userStore.users.find(u => u.id === userId);
+    const targetName = targetUser ? targetUser.name : "ผู้ใช้";
+    if (!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี "${targetName}" ออกจากเครื่องนี้?`)) {
+      return;
+    }
     const remainingCount = userStore.deleteUser(userId);
 
     if (remainingCount === 0) {
+      userStore.logout();
       this.closeSwitchUserModal();
-      this.openRegistrationForNewUser();
-      window.videoManager.showToastNotice("ลบบัญชีเรียบร้อยแล้ว ไม่พบบัญชีผู้ใช้ในเครื่อง กรุณาลงทะเบียนใหม่ครับ");
+      this.openOnboardingModal("register");
+      if (window.videoManager) {
+        window.videoManager.showToastNotice("ลบบัญชีเรียบร้อยแล้ว กรุณาลงทะเบียนใหม่ครับ");
+      }
     } else {
       this.openSwitchUserModal();
       this.refreshAllViews();
-      window.videoManager.showToastNotice("ลบบัญชีผู้ใช้เรียบร้อยแล้ว");
+      if (window.videoManager) {
+        window.videoManager.showToastNotice("ลบบัญชีผู้ใช้เรียบร้อยแล้ว");
+      }
     }
   }
 
-  openRegistrationForNewUser() {
-    const onboardingEl = document.getElementById("onboarding-screen");
-    const form = document.getElementById("onboarding-form");
-    const resultBox = document.getElementById("onboarding-result-box");
-    if (!onboardingEl) return;
-
-    if (form) form.reset();
-    if (resultBox) resultBox.style.display = "none";
-    this.tempRegistrationData = null;
-
-    // รีเซ็ตกรอบผลประเมิน BMI กลับสู่ค่าเริ่มต้น
-    const bmiCard = document.getElementById("res-bmi-metric-card");
-    if (bmiCard) {
-      bmiCard.className = "metric-card reg-bmi-card";
-    }
-    const pingpongTag = document.getElementById("res-bmi-pingpong-tag");
-    if (pingpongTag) {
-      pingpongTag.style.display = "none";
-      pingpongTag.innerHTML = "";
-    }
-
-    onboardingEl.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
-  }
-
-  handleRegistrationSubmit() {
-    const firstName = document.getElementById("reg-first-name").value.trim();
-    const lastName = document.getElementById("reg-last-name").value.trim();
-    const age = Number(document.getElementById("reg-age").value);
-    const gender = document.querySelector('input[name="reg-gender"]:checked').value;
-    const weight = parseFloat(document.getElementById("reg-weight").value);
-    const height = parseFloat(document.getElementById("reg-height").value);
+  handleRegistrationSubmit(shouldScroll = true) {
+    const firstName = (document.getElementById("reg-first-name")?.value || "").trim();
+    const lastName = (document.getElementById("reg-last-name")?.value || "").trim();
+    const age = Number(document.getElementById("reg-age")?.value);
+    const gender = (document.querySelector('input[name="reg-gender"]:checked')?.value) || "ชาย";
+    const weight = parseFloat(document.getElementById("reg-weight")?.value);
+    const height = parseFloat(document.getElementById("reg-height")?.value);
 
     if (!firstName || !lastName || !age || !weight || !height) {
-      alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องครับ");
+      if (shouldScroll) {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องครับ");
+      }
       return;
     }
 
@@ -375,6 +461,7 @@ class FitEasyApp {
     this.tempRegistrationData = {
       firstName,
       lastName,
+      name: `${firstName} ${lastName}`.trim(),
       age,
       gender,
       weight,
@@ -388,13 +475,19 @@ class FitEasyApp {
     };
 
     const resultBox = document.getElementById("onboarding-result-box");
-    document.getElementById("res-age-group-label").textContent = criteria.label;
-    document.getElementById("res-bmi-val").textContent = `${bmiResult.bmi}`;
-    document.getElementById("res-bmi-category").textContent = `(${bmiResult.category})`;
-    document.getElementById("res-target-hr-val").textContent = criteria.targetHRText;
-    document.getElementById("res-hr-recommendation").textContent = criteria.intensityLabel;
+    const ageGroupLabel = document.getElementById("res-age-group-label");
+    const bmiVal = document.getElementById("res-bmi-val");
+    const bmiCategory = document.getElementById("res-bmi-category");
+    const targetHrVal = document.getElementById("res-target-hr-val");
+    const hrRecommendation = document.getElementById("res-hr-recommendation");
 
-    // อัปเดตสีกรอบของ BMI ตามเกณฑ์ปิงปองจราจร 7 สี (ยกเว้นสีขาว ให้เป็นสีน้ำเงินเพื่อความชัดเจน)
+    if (ageGroupLabel) ageGroupLabel.textContent = criteria.label;
+    if (bmiVal) bmiVal.textContent = `${bmiResult.bmi}`;
+    if (bmiCategory) bmiCategory.textContent = `(${bmiResult.category})`;
+    if (targetHrVal) targetHrVal.textContent = criteria.targetHRText;
+    if (hrRecommendation) hrRecommendation.textContent = criteria.intensityLabel;
+
+    // อัปเดตสีกรอบของ BMI ตามเกณฑ์ปิงปองจราจร 7 สี
     const bmiCard = document.getElementById("res-bmi-metric-card");
     if (bmiCard) {
       bmiCard.className = `metric-card reg-bmi-card reg-bmi-${activeColor.key}`;
@@ -407,105 +500,114 @@ class FitEasyApp {
     }
 
     const guidelineCard = document.getElementById("res-guideline-card");
-    guidelineCard.innerHTML = `
-      <strong>💡 ข้อแนะนำสำหรับกลุ่มวัยของคุณ:</strong><br>
-      • <strong>กิจกรรม:</strong> ${criteria.recommendation}<br>
-      • <strong>ช่วงชีพจรที่ปลอดภัย:</strong> ${criteria.targetHRText}<br>
-      • <strong>ประโยชน์หลัก:</strong> ${criteria.healthBenefit}
-    `;
+    if (guidelineCard) {
+      guidelineCard.innerHTML = `
+        <strong>💡 ข้อแนะนำสำหรับกลุ่มวัยของคุณ:</strong><br>
+        • <strong>กิจกรรม:</strong> ${criteria.recommendation}<br>
+        • <strong>ช่วงชีพจรที่ปลอดภัย:</strong> ${criteria.targetHRText}<br>
+        • <strong>ประโยชน์หลัก:</strong> ${criteria.healthBenefit}
+      `;
+    }
 
-    resultBox.style.display = "block";
+    if (resultBox) {
+      resultBox.style.display = "block";
+    }
+
+    if (shouldScroll) {
+      try {
+        if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
+          audioCues.playCelebration();
+        }
+      } catch (e) {}
+      setTimeout(() => {
+        resultBox?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+    }
+  }
+
+  handleEnterApp() {
     try {
-      if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
-        audioCues.playCelebration();
+      const firstName = (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
+      const lastName = (document.getElementById("reg-last-name")?.value || "").trim() || "สุขภาพ";
+      const age = Number(document.getElementById("reg-age")?.value) || 30;
+      const gender = (document.querySelector('input[name="reg-gender"]:checked')?.value) || "ชาย";
+      const weight = parseFloat(document.getElementById("reg-weight")?.value) || 60;
+      const height = parseFloat(document.getElementById("reg-height")?.value) || 165;
+      const bmiResult = userStore.calculateBMI(weight, height);
+      const ageGroup = userStore.determineAgeGroup(age);
+
+      const regData = {
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`.trim(),
+        age,
+        gender,
+        weight,
+        height,
+        bmi: bmiResult.bmi,
+        category: bmiResult.category,
+        badgeClass: bmiResult.badgeClass,
+        pingpongColor: bmiResult.pingpongColor,
+        pingpongName: bmiResult.pingpongName,
+        ageGroup
+      };
+
+      if (this.isEditingUser && userStore.activeUserId) {
+        userStore.saveProfile(regData);
+        if (window.videoManager) {
+          window.videoManager.showToastNotice("✅ แก้ไขข้อมูลส่วนตัวเรียบร้อยแล้ว");
+        }
+      } else {
+        const newUser = userStore.register(regData);
+        if (window.videoManager && newUser) {
+          window.videoManager.resetSessionWarmup(newUser.id);
+          window.videoManager.showToastNotice(`🎉 ยินดีต้อนรับ ${newUser.name} เข้าสู่ฟิตจอย!`);
+        }
       }
-    } catch (e) {}
-    setTimeout(() => {
-      resultBox.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 80);
+
+      localStorage.setItem("fitjoy_onboarded", "true");
+      this.closeOnboardingModal();
+      this.refreshAllViews();
+
+      try {
+        if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
+          audioCues.playCelebration();
+        }
+      } catch (e) {}
+    } catch (err) {
+      console.error("[Enter App Error]", err);
+      this.closeOnboardingModal();
+    }
   }
 
   bindRegistrationEvents() {
     const btnEnter = document.getElementById("btn-enter-website");
     if (btnEnter) {
-      btnEnter.addEventListener("click", () => {
-        try {
-          if (!this.tempRegistrationData) {
-            const firstName = (document.getElementById("reg-first-name")?.value || "").trim() || "ผู้รัก";
-            const lastName = (document.getElementById("reg-last-name")?.value || "").trim() || "สุขภาพ";
-            const age = Number(document.getElementById("reg-age")?.value) || 30;
-            const gender = document.querySelector('input[name="reg-gender"]:checked')?.value || "ชาย";
-            const weight = parseFloat(document.getElementById("reg-weight")?.value) || 60;
-            const height = parseFloat(document.getElementById("reg-height")?.value) || 165;
-            const bmiResult = userStore.calculateBMI(weight, height);
+      btnEnter.onclick = (e) => {
+        e.preventDefault();
+        this.handleEnterApp();
+      };
+    }
 
-            this.tempRegistrationData = {
-              firstName,
-              lastName,
-              age,
-              gender,
-              weight,
-              height,
-              bmi: bmiResult.bmi,
-              category: bmiResult.category,
-              badgeClass: bmiResult.badgeClass,
-              pingpongColor: bmiResult.pingpongColor,
-              pingpongName: bmiResult.pingpongName,
-              ageGroup: userStore.determineAgeGroup(age)
-            };
-          }
+    const btnCloseOnboarding = document.getElementById("btn-close-onboarding-edit");
+    if (btnCloseOnboarding) {
+      btnCloseOnboarding.addEventListener("click", () => {
+        this.closeOnboardingModal();
+      });
+    }
 
-          const newUser = userStore.register(this.tempRegistrationData);
-          if (window.videoManager && newUser) {
-            window.videoManager.resetSessionWarmup(newUser.id);
-          }
-
-          const onboardingEl = document.getElementById("onboarding-screen");
-          if (onboardingEl) {
-            onboardingEl.classList.add("hidden");
-            onboardingEl.style.display = "none";
-          }
-          document.body.style.overflow = "";
-
-          this.refreshAllViews();
-
-          try {
-            if (typeof audioCues !== 'undefined' && audioCues.playCelebration) {
-              audioCues.playCelebration();
-            }
-          } catch (e) {}
-        } catch (err) {
-          console.error("[Enter Website Error]", err);
-          const onboardingEl = document.getElementById("onboarding-screen");
-          if (onboardingEl) {
-            onboardingEl.classList.add("hidden");
-            onboardingEl.style.display = "none";
-          }
-          document.body.style.overflow = "";
-        }
+    const btnSwitchExisting = document.getElementById("btn-onboarding-switch-existing");
+    if (btnSwitchExisting) {
+      btnSwitchExisting.addEventListener("click", () => {
+        this.closeOnboardingModal();
+        this.openSwitchUserModal();
       });
     }
 
     const btnEdit = document.getElementById("btn-edit-registration");
     if (btnEdit) {
       btnEdit.addEventListener("click", () => {
-        const p = userStore.profile;
-        const onboardingEl = document.getElementById("onboarding-screen");
-        if (!onboardingEl) return;
-
-        document.getElementById("reg-first-name").value = p.firstName || "";
-        document.getElementById("reg-last-name").value = p.lastName || "";
-        document.getElementById("reg-age").value = p.age || "";
-        document.getElementById("reg-weight").value = p.weight || "";
-        document.getElementById("reg-height").value = p.height || "";
-
-        const radioGender = document.querySelectorAll('input[name="reg-gender"]');
-        radioGender.forEach(r => {
-          if (r.value === p.gender) r.checked = true;
-        });
-
-        onboardingEl.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
+        this.openOnboardingModal("edit");
       });
     }
   }

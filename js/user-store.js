@@ -158,6 +158,10 @@ class UserStore {
     return this.users.find(u => u.id === id);
   }
 
+  getActiveUser() {
+    return this.getUserById(this.activeUserId);
+  }
+
   get profile() {
     const u = this.getUserById(this.activeUserId);
     if (u) {
@@ -377,6 +381,8 @@ class UserStore {
   logout() {
     this.activeUserId = null;
     localStorage.removeItem(STORAGE_KEYS.ACTIVE_USER_ID);
+    localStorage.removeItem("fitjoy_onboarded");
+    sessionStorage.removeItem("fitjoy_onboarded");
   }
 
   saveProfile(updated) {
@@ -384,6 +390,11 @@ class UserStore {
     if (!u) return;
 
     Object.assign(u, updated);
+    if (updated.firstName || updated.lastName) {
+      const f = (updated.firstName !== undefined ? updated.firstName : u.firstName) || "";
+      const l = (updated.lastName !== undefined ? updated.lastName : u.lastName) || "";
+      u.name = `${f} ${l}`.trim() || u.name;
+    }
     if (updated.age) {
       u.ageGroup = this.determineAgeGroup(updated.age);
     }
