@@ -626,7 +626,7 @@ const COOLDOWN_EXERCISE = {
   frequency: "หลังออกกำลังกายเสร็จสิ้นทุกครั้ง",
   equipment: "ไม่ใช้อุปกรณ์",
   level: "ทุกระดับ / ทุกวัย",
-  image: "คูลดาว11/Screenshot 2026-11-18 172604.mp4",
+  image: "คูลดาว11/Screenshot 2026-11-18 172604.jpg",
   videoUrl:"คูลดาว11/คูลดดาวน์.mp4",
   suitableAge: "ทุกกลุ่มวัย (เด็ก, ผู้ใหญ่, ผู้สูงอายุ)",
   intensity: "เบา (ผ่อนคลายกล้ามเนื้อ)",

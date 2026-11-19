@@ -96,6 +96,16 @@ async function handleVideoRequest(request) {
   if (!cachedResponse) {
     cachedResponse = await cache.match(new Request(request.url));
   }
+  if (!cachedResponse) {
+    try {
+      cachedResponse = await cache.match(decodeURI(request.url));
+    } catch(e) {}
+  }
+  if (!cachedResponse) {
+    try {
+      cachedResponse = await cache.match(encodeURI(request.url));
+    } catch(e) {}
+  }
 
   // ถ้ามีในแคช (ไม่ว่าจะออนไลน์หรือออฟไลน์) ให้เล่นจากแคชเครื่องทันที พร้อมตัด Range 206 Partial Content
   if (cachedResponse) {

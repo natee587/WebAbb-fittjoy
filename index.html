@@ -6864,8 +6864,14 @@ body {
             <h4 class="routine-title">ท่าบริหารร่างกาย (Warm-up)</h4>
             <p class="routine-desc">เตรียมกล้ามเนื้อและข้อต่อ ป้องกันการบาดเจ็บ (5–10 นาที)</p>
           </div>
-          <div class="routine-play-btn">
-            <span class="play-icon">▶</span> ดูคลิป
+          <div class="routine-actions-group" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0;">
+            <div class="routine-play-btn">
+              <span class="play-icon">▶</span> ดูคลิป
+            </div>
+            <button type="button" class="btn-card-offline-dl" id="btn-dl-warmup-card" title="บันทึกคลิปวอร์มอัพไว้ดูออฟไลน์" style="background: white; border: 1.5px solid #f59e0b; color: #b45309; border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span class="dl-status-text">💾 โหลดออฟไลน์</span>
+            </button>
           </div>
         </div>
 
@@ -6877,8 +6883,14 @@ body {
             <h4 class="routine-title">ท่ายืดเหยียดร่างกาย (Cool Down)</h4>
             <p class="routine-desc">คลายกล้ามเนื้อ ลดความเมื่อยล้าและลดชีพจร (5–10 นาที)</p>
           </div>
-          <div class="routine-play-btn">
-            <span class="play-icon">▶</span> ดูคลิป
+          <div class="routine-actions-group" style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0;">
+            <div class="routine-play-btn">
+              <span class="play-icon">▶</span> ดูคลิป
+            </div>
+            <button type="button" class="btn-card-offline-dl" id="btn-dl-cooldown-card" title="บันทึกคลิปคูลดาวน์ไว้ดูออฟไลน์" style="background: white; border: 1.5px solid #10b981; color: #047857; border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span class="dl-status-text">💾 โหลดออฟไลน์</span>
+            </button>
           </div>
         </div>
       </section>
@@ -7066,8 +7078,41 @@ body {
           <span id="offline-cache-count" style="font-size: 13px; font-weight: 700; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; color: #15803d;">0 / 25 คลิปในเครื่อง</span>
         </div>
         <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
-          ระบบแอป ข้อมูลสุขภาพ และคู่มือทั้งหมดใช้งานได้แบบออฟไลน์ 100% คุณสามารถกดดาวน์โหลดวิดีโอคลิปเก็บไว้ในเครื่องล่วงหน้า เพื่อเปิดดูวิดีโอออกกำลังกายได้ทันทีแม้ไม่มีสัญญาณอินเทอร์เน็ต
+          ระบบแอป ข้อมูลสุขภาพ และคู่มือทั้งหมดใช้งานได้แบบออฟไลน์ 100% คุณสามารถกดดาวน์โหลดวิดีโอคลิปเก็บไว้ในเครื่องล่วงหน้า เพื่อเปิดดูวิดีโอออกกำลังกายได้ทันทีแม้ไม่มีสัญญาณอินเทอร์เน็ต (ครอบคลุมครบ 25 คลิป รวมคลิปวอร์มอัพ ☀️, คูลดาวน์ 🧘‍♂️ และท่าหลัก 23 ท่า)
         </p>
+
+        <!-- กล่องดาวน์โหลดคลิปวอร์มอัพ & คูลดาวน์แยกแบบชัดเจน -->
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;">
+          <div style="font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+            <span>📌</span> รายการคลิปเริ่มต้น & สรุปการดาวน์โหลด:
+          </div>
+          
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">☀️</span>
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b;">คลิปวอร์มอัพ (Warm-up Routine)</div>
+                <div style="font-size: 11.5px; color: #64748b;">ท่าบริหารร่างกายก่อนเริ่มออกกำลังกาย</div>
+              </div>
+            </div>
+            <button type="button" id="btn-download-warmup-profile" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px; padding: 6px 12px; font-size: 12px; color: #b45309; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit;">
+              <span>💾 ดาวน์โหลดคลิปวอร์มอัพ</span>
+            </button>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">🧘‍♂️</span>
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b;">คลิปคูลดาวน์ (Cool Down Routine)</div>
+                <div style="font-size: 11.5px; color: #64748b;">ยืดเหยียดผ่อนคลายกล้ามเนื้อหลังออกกำลังกาย</div>
+              </div>
+            </div>
+            <button type="button" id="btn-download-cooldown-profile" style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 6px 12px; font-size: 12px; color: #15803d; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit;">
+              <span>💾 ดาวน์โหลดคลิปคูลดาวน์</span>
+            </button>
+          </div>
+        </div>
 
         <!-- แถบแสดงความคืบหน้าการดาวน์โหลด -->
         <div id="offline-download-progress-wrap" style="display: none; margin-bottom: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px;">
@@ -7988,7 +8033,7 @@ const COOLDOWN_EXERCISE = {
   frequency: "หลังออกกำลังกายเสร็จสิ้นทุกครั้ง",
   equipment: "ไม่ใช้อุปกรณ์",
   level: "ทุกระดับ / ทุกวัย",
-  image: "คูลดาว11/Screenshot 2026-11-18 172604.mp4",
+  image: "คูลดาว11/Screenshot 2026-11-18 172604.jpg",
   videoUrl:"คูลดาว11/คูลดดาวน์.mp4",
   suitableAge: "ทุกกลุ่มวัย (เด็ก, ผู้ใหญ่, ผู้สูงอายุ)",
   intensity: "เบา (ผ่อนคลายกล้ามเนื้อ)",
@@ -10344,7 +10389,8 @@ class VideoManager {
     const btnWarmup = document.getElementById("btn-open-warmup");
     const btnCooldown = document.getElementById("btn-open-cooldown");
     if (btnWarmup) {
-      btnWarmup.addEventListener("click", () => {
+      btnWarmup.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("#btn-dl-warmup-card")) return;
         const warmupEx = window.WARMUP_EXERCISE || (typeof WARMUP_EXERCISE !== "undefined" ? WARMUP_EXERCISE : null);
         if (warmupEx) {
           this.pendingExercise = null;
@@ -10353,7 +10399,8 @@ class VideoManager {
       });
     }
     if (btnCooldown) {
-      btnCooldown.addEventListener("click", () => {
+      btnCooldown.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("#btn-dl-cooldown-card")) return;
         const cooldownEx = window.COOLDOWN_EXERCISE || (typeof COOLDOWN_EXERCISE !== "undefined" ? COOLDOWN_EXERCISE : null);
         if (cooldownEx) {
           this.openVideo(cooldownEx, false);
@@ -10464,6 +10511,12 @@ class VideoManager {
     const isYouTube = Boolean(ytId);
     const hasVideo = Boolean(effectiveUrl);
 
+    const isWarmupRoutine = exercise.id === "routine-warmup";
+    const isCooldownRoutine = exercise.id === "routine-cooldown";
+    const routineDlLabel = isWarmupRoutine ? "ดาวน์โหลดคลิปวอร์มอัพไว้ดูออฟไลน์" : (isCooldownRoutine ? "ดาวน์โหลดคลิปคูลดาวน์ไว้ดูออฟไลน์" : "ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์");
+    const routineDlSavedLabel = isWarmupRoutine ? "✓ บันทึกคลิปวอร์มอัพในเครื่องแล้ว (ดูออฟไลน์ได้)" : (isCooldownRoutine ? "✓ บันทึกคลิปคูลดาวน์ในเครื่องแล้ว (ดูออฟไลน์ได้)" : "✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)");
+    const routineSuccessNotice = isWarmupRoutine ? "✅ ดาวน์โหลดคลิปวอร์มอัพไว้ดูออฟไลน์เรียบร้อยแล้ว!" : (isCooldownRoutine ? "✅ ดาวน์โหลดคลิปคูลดาวน์ไว้ดูออฟไลน์เรียบร้อยแล้ว!" : "✅ ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์เรียบร้อยแล้ว!");
+
     let mediaHtml = "";
     if (hasVideo && isYouTube) {
       mediaHtml = `
@@ -10487,7 +10540,7 @@ class VideoManager {
         <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
           <button type="button" id="btn-cache-current-video" style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 20px; padding: 6px 14px; font-size: 12.5px; color: #1d4ed8; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: all 0.2s;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span id="cache-text-current">ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์</span>
+            <span id="cache-text-current">${routineDlLabel}</span>
           </button>
         </div>
       `;
@@ -10584,12 +10637,12 @@ class VideoManager {
             btnCacheCurrent.style.background = "#f0fdf4";
             btnCacheCurrent.style.borderColor = "#86efac";
             btnCacheCurrent.style.color = "#15803d";
-            btnCacheCurrent.innerHTML = "<span>✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)</span>";
+            btnCacheCurrent.innerHTML = `<span>${routineDlSavedLabel}</span>`;
           } else {
             btnCacheCurrent.style.background = "#eff6ff";
             btnCacheCurrent.style.borderColor = "#bfdbfe";
             btnCacheCurrent.style.color = "#1d4ed8";
-            btnCacheCurrent.innerHTML = "<span>💾 ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์</span>";
+            btnCacheCurrent.innerHTML = `<span>💾 ${routineDlLabel}</span>`;
           }
         });
       }
@@ -10607,8 +10660,11 @@ class VideoManager {
             btnCacheCurrent.style.background = "#f0fdf4";
             btnCacheCurrent.style.borderColor = "#86efac";
             btnCacheCurrent.style.color = "#15803d";
-            btnCacheCurrent.innerHTML = "<span>✓ บันทึกคลิปในเครื่องแล้ว (ดูออฟไลน์ได้)</span>";
-            this.showToastNotice("✅ ดาวน์โหลดคลิปนี้ไว้ดูออฟไลน์เรียบร้อยแล้ว!");
+            btnCacheCurrent.innerHTML = `<span>${routineDlSavedLabel}</span>`;
+            this.showToastNotice(routineSuccessNotice);
+            if (window.offlineVideoManager.checkCachedVideosCount) {
+              window.offlineVideoManager.checkCachedVideosCount();
+            }
           } else {
             btnCacheCurrent.disabled = false;
             btnCacheCurrent.innerHTML = "<span>❌ ไม่สามารถดาวน์โหลดได้ ลองใหม่อีกครั้ง</span>";
@@ -12337,12 +12393,33 @@ class FitEasyApp {
     }
   }
 
+  getExerciseById(id) {
+    if (typeof WARMUP_EXERCISE !== 'undefined' && WARMUP_EXERCISE && WARMUP_EXERCISE.id === id) return WARMUP_EXERCISE;
+    if (typeof COOLDOWN_EXERCISE !== 'undefined' && COOLDOWN_EXERCISE && COOLDOWN_EXERCISE.id === id) return COOLDOWN_EXERCISE;
+    if (typeof EXERCISES !== 'undefined' && Array.isArray(EXERCISES)) {
+      return EXERCISES.find(e => e.id === id) || null;
+    }
+    return null;
+  }
+
   renderHomeExercises() {
     const container = document.getElementById("home-exercises-grid");
     const countBadge = document.getElementById("home-exercises-count");
     if (!container) return;
 
-    let filtered = EXERCISES.filter(ex => {
+    let allSearchable = [...EXERCISES];
+    if (typeof WARMUP_EXERCISE !== 'undefined' && WARMUP_EXERCISE) {
+      if (!allSearchable.some(e => e.id === WARMUP_EXERCISE.id)) {
+        allSearchable.unshift(WARMUP_EXERCISE);
+      }
+    }
+    if (typeof COOLDOWN_EXERCISE !== 'undefined' && COOLDOWN_EXERCISE) {
+      if (!allSearchable.some(e => e.id === COOLDOWN_EXERCISE.id)) {
+        allSearchable.push(COOLDOWN_EXERCISE);
+      }
+    }
+
+    let filtered = (this.searchQuery ? allSearchable : EXERCISES).filter(ex => {
       const matchCat = (this.currentCategory === "ทั้งหมด") || (ex.category && ex.category.includes(this.currentCategory));
       const matchSearch = !this.searchQuery || 
         ex.title.toLowerCase().includes(this.searchQuery) ||
@@ -12369,7 +12446,7 @@ class FitEasyApp {
     }
 
     container.innerHTML = filtered.map(ex => `
-      <div class="exercise-card" data-id="${ex.id}" onclick="window.videoManager.openVideo(EXERCISES.find(e => e.id === '${ex.id}'))" style="cursor: pointer;">
+      <div class="exercise-card" data-id="${ex.id}" onclick="window.videoManager.openVideo(window.app.getExerciseById('${ex.id}'))" style="cursor: pointer;">
         <div class="card-img-wrapper">
           ${ex.image ? `
             <img src="${encodeURI(ex.image)}" alt="${ex.title}" loading="lazy" class="exercise-photo" />
@@ -12393,7 +12470,7 @@ class FitEasyApp {
           <h3 class="card-thai-title">${ex.title}</h3>
           <div class="card-footer-info">
             <span class="info-duration">⏱️ ${ex.duration} | ${ex.frequency || '3–4 ครั้งต่อสัปดาห์'}</span>
-            <button type="button" class="btn-card-play" title="กดดูรายละเอียดและออกกำลังกายตาม" onclick="event.stopPropagation(); window.videoManager.openVideo(EXERCISES.find(e => e.id === '${ex.id}'))">
+            <button type="button" class="btn-card-play" title="กดดูรายละเอียดและออกกำลังกายตาม" onclick="event.stopPropagation(); window.videoManager.openVideo(window.app.getExerciseById('${ex.id}'))">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
@@ -12813,6 +12890,79 @@ function initOfflineVideoManager() {
   window.addEventListener("offline", updateOnlineStatus);
   updateOnlineStatus();
 
+  async function updateRoutineCardsStatus() {
+    if (!('caches' in window) || !window.offlineVideoManager) return;
+    try {
+      const warmupUrl = (typeof WARMUP_EXERCISE !== 'undefined' && WARMUP_EXERCISE && WARMUP_EXERCISE.videoUrl) || "วอร์มอัพ/ท่าวอร์มอัพ นุช.mp4";
+      const cooldownUrl = (typeof COOLDOWN_EXERCISE !== 'undefined' && COOLDOWN_EXERCISE && COOLDOWN_EXERCISE.videoUrl) || "คูลดาว11/คูลดดาวน์.mp4";
+
+      const isWarmupCached = await window.offlineVideoManager.isVideoCached(warmupUrl);
+      const isCooldownCached = await window.offlineVideoManager.isVideoCached(cooldownUrl);
+
+      // 1. ปุ่มบนการ์ดแบนเนอร์หน้าแรก
+      const btnDlWarmupCard = document.getElementById("btn-dl-warmup-card");
+      if (btnDlWarmupCard) {
+        if (isWarmupCached) {
+          btnDlWarmupCard.style.background = "#ecfdf5";
+          btnDlWarmupCard.style.borderColor = "#86efac";
+          btnDlWarmupCard.style.color = "#047857";
+          btnDlWarmupCard.innerHTML = `<span>✓ ดูออฟไลน์ได้</span>`;
+        } else {
+          btnDlWarmupCard.style.background = "white";
+          btnDlWarmupCard.style.borderColor = "#f59e0b";
+          btnDlWarmupCard.style.color = "#b45309";
+          btnDlWarmupCard.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span>💾 โหลดออฟไลน์</span>`;
+        }
+      }
+
+      const btnDlCooldownCard = document.getElementById("btn-dl-cooldown-card");
+      if (btnDlCooldownCard) {
+        if (isCooldownCached) {
+          btnDlCooldownCard.style.background = "#ecfdf5";
+          btnDlCooldownCard.style.borderColor = "#86efac";
+          btnDlCooldownCard.style.color = "#047857";
+          btnDlCooldownCard.innerHTML = `<span>✓ ดูออฟไลน์ได้</span>`;
+        } else {
+          btnDlCooldownCard.style.background = "white";
+          btnDlCooldownCard.style.borderColor = "#10b981";
+          btnDlCooldownCard.style.color = "#047857";
+          btnDlCooldownCard.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span>💾 โหลดออฟไลน์</span>`;
+        }
+      }
+
+      // 2. ปุ่มในหน้าโปรไฟล์
+      const btnDlWarmupProfile = document.getElementById("btn-download-warmup-profile");
+      if (btnDlWarmupProfile) {
+        if (isWarmupCached) {
+          btnDlWarmupProfile.style.background = "#ecfdf5";
+          btnDlWarmupProfile.style.borderColor = "#86efac";
+          btnDlWarmupProfile.style.color = "#047857";
+          btnDlWarmupProfile.innerHTML = `<span>✓ บันทึกในเครื่องแล้ว</span>`;
+        } else {
+          btnDlWarmupProfile.style.background = "#fffbeb";
+          btnDlWarmupProfile.style.borderColor = "#fde68a";
+          btnDlWarmupProfile.style.color = "#b45309";
+          btnDlWarmupProfile.innerHTML = `<span>💾 ดาวน์โหลดคลิปวอร์มอัพ</span>`;
+        }
+      }
+
+      const btnDlCooldownProfile = document.getElementById("btn-download-cooldown-profile");
+      if (btnDlCooldownProfile) {
+        if (isCooldownCached) {
+          btnDlCooldownProfile.style.background = "#ecfdf5";
+          btnDlCooldownProfile.style.borderColor = "#86efac";
+          btnDlCooldownProfile.style.color = "#047857";
+          btnDlCooldownProfile.innerHTML = `<span>✓ บันทึกในเครื่องแล้ว</span>`;
+        } else {
+          btnDlCooldownProfile.style.background = "#f0fdf4";
+          btnDlCooldownProfile.style.borderColor = "#bbf7d0";
+          btnDlCooldownProfile.style.color = "#15803d";
+          btnDlCooldownProfile.innerHTML = `<span>💾 ดาวน์โหลดคลิปคูลดาวน์</span>`;
+        }
+      }
+    } catch(e) {}
+  }
+
   async function checkCachedVideosCount() {
     if (!('caches' in window)) return;
     try {
@@ -12830,6 +12980,7 @@ function initOfflineVideoManager() {
           countBadge.textContent = `${count} / ${total} คลิปในเครื่อง`;
         }
       }
+      await updateRoutineCardsStatus();
     } catch(e) {}
   }
   checkCachedVideosCount();
@@ -12936,6 +13087,72 @@ function initOfflineVideoManager() {
         if (progressWrap) progressWrap.style.display = "none";
         alert("ล้างแคชวิดีโอเรียบร้อยแล้ว");
       }
+    });
+  }
+
+  // ตัวจัดการปุ่มดาวน์โหลดคลิปวอร์มอัพ และ คูลดาวน์ โดยตรง
+  const handleRoutineDownload = async (type, btnEl) => {
+    if (!('caches' in window)) {
+      alert("เบราว์เซอร์นี้ไม่รองรับระบบแคชออฟไลน์");
+      return;
+    }
+    if (!navigator.onLine) {
+      alert("ขณะนี้ท่านกำลังอยู่ในโหมดออฟไลน์ กรุณาเชื่อมต่ออินเทอร์เน็ตเพื่อดาวน์โหลดคลิปครับ");
+      return;
+    }
+    const isWarmup = type === 'warmup';
+    const targetUrl = isWarmup 
+      ? ((window.WARMUP_EXERCISE && window.WARMUP_EXERCISE.videoUrl) || "วอร์มอัพ/ท่าวอร์มอัพ นุช.mp4")
+      : ((window.COOLDOWN_EXERCISE && window.COOLDOWN_EXERCISE.videoUrl) || "คูลดาว11/คูลดดาวน์.mp4");
+    const title = isWarmup ? "คลิปวอร์มอัพ" : "คลิปคูลดาวน์";
+
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<span>⏳ กำลังโหลด...</span>`;
+    }
+
+    const success = await window.offlineVideoManager.cacheSingleVideo(targetUrl);
+    if (success) {
+      if (window.videoManager && window.videoManager.showToastNotice) {
+        window.videoManager.showToastNotice(`✅ ดาวน์โหลด${title}ไว้ดูออฟไลน์เรียบร้อยแล้ว!`);
+      } else {
+        alert(`✅ ดาวน์โหลด${title}เก็บไว้ในเครื่องเรียบร้อยแล้ว สามารถดูแบบออฟไลน์ได้ทันทีครับ`);
+      }
+    } else {
+      alert(`❌ ไม่สามารถดาวน์โหลด${title}ได้ กรุณาตรวจสอบสัญญาณอินเทอร์เน็ตแล้วลองใหม่อีกครั้งครับ`);
+    }
+
+    if (btnEl) btnEl.disabled = false;
+    await checkCachedVideosCount();
+  };
+
+  const btnDlWarmupCard = document.getElementById("btn-dl-warmup-card");
+  if (btnDlWarmupCard) {
+    btnDlWarmupCard.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleRoutineDownload('warmup', btnDlWarmupCard);
+    });
+  }
+
+  const btnDlCooldownCard = document.getElementById("btn-dl-cooldown-card");
+  if (btnDlCooldownCard) {
+    btnDlCooldownCard.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleRoutineDownload('cooldown', btnDlCooldownCard);
+    });
+  }
+
+  const btnDlWarmupProfile = document.getElementById("btn-download-warmup-profile");
+  if (btnDlWarmupProfile) {
+    btnDlWarmupProfile.addEventListener("click", (e) => {
+      handleRoutineDownload('warmup', btnDlWarmupProfile);
+    });
+  }
+
+  const btnDlCooldownProfile = document.getElementById("btn-download-cooldown-profile");
+  if (btnDlCooldownProfile) {
+    btnDlCooldownProfile.addEventListener("click", (e) => {
+      handleRoutineDownload('cooldown', btnDlCooldownProfile);
     });
   }
 }
