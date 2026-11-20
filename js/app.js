@@ -227,6 +227,21 @@ class FitJoyApp {
       }
     }
 
+    // จัดการการแสดงผลของแบนเนอร์ติดตั้งแอปบนหน้าลงทะเบียน (ซ่อนทันทีหากติดตั้งแล้ว หรือกำลังแก้ไขข้อมูล)
+    const obInstallBanner = document.getElementById("onboarding-install-banner");
+    const isInstalled = (typeof window.fitjoyIsAppInstalled === 'function')
+      ? window.fitjoyIsAppInstalled()
+      : (localStorage.getItem('fitjoy_pwa_installed') === 'true' || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
+    const isDismissed = sessionStorage.getItem('fitjoy_dismiss_onboarding_install') === 'true';
+
+    if (obInstallBanner) {
+      if (this.isEditingUser || isInstalled || isDismissed) {
+        obInstallBanner.style.display = "none";
+      } else {
+        obInstallBanner.style.display = "flex";
+      }
+    }
+
     onboardingEl.style.removeProperty("display");
     onboardingEl.style.display = "flex";
     onboardingEl.classList.remove("hidden");
