@@ -1,12 +1,12 @@
-/**
- * FitEasy - Audio Cues (Web Audio API Synthesizer)
+﻿/**
+ * ฟิตจอย - Audio Cues (Web Audio API Synthesizer)
  * ระบบเสียงสัญญาณสังเคราะห์ ทำงานได้แม้ออฟไลน์ ไม่ต้องโหลดไฟล์เสียงภายนอก
  */
 
 class AudioCueManager {
   constructor() {
     this.audioCtx = null;
-    this.isEnabled = localStorage.getItem("fiteasy_sound_enabled") !== "false";
+    this.isEnabled = (localStorage.getItem("fitjoy_sound_enabled") || localStorage.getItem("fiteasy_sound_enabled")) !== "false";
   }
 
   initContext() {
@@ -23,7 +23,7 @@ class AudioCueManager {
 
   toggleSound() {
     this.isEnabled = !this.isEnabled;
-    localStorage.setItem("fiteasy_sound_enabled", this.isEnabled);
+    localStorage.setItem("fitjoy_sound_enabled", this.isEnabled);
     return this.isEnabled;
   }
 

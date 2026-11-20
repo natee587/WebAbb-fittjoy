@@ -1,5 +1,5 @@
 ﻿/**
- * FitEasy - Content & Health Guidelines Database
+ * ฟิตจอย - Content & Health Guidelines Database
  * สื่อกลางส่งเสริมสุขภาพและกิจกรรมทางกายในชุมชน "ฟิตจอย"
  */
 

@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FitEasy | สื่อกลางส่งเสริมสุขภาพและกิจกรรมทางกายในชุมชน "ฟิตจอย"</title>
+  <title>ฟิตจอย | สื่อกลางส่งเสริมสุขภาพและกิจกรรมทางกายในชุมชน</title>
   <meta name="description" content="เรียนรู้ท่าออกกำลังกายสำหรับผู้เริ่มต้น ทำตามได้ที่บ้าน ไม่ต้องใช้อุปกรณ์ และส่งเสริมกิจกรรมทางกายในชุมชน">
   
   <style id="fitjoy-bundle-style">
 /* ==========================================================================
-   FitEasy - Mobile Health Web Application Stylesheet
+   ฟิตจอย - Mobile Health Web Application Stylesheet
    ออกแบบตามต้นแบบ Framer (บ้านหม้อแข็งแรง) โทนสีฟ้า-ขาว สะอาดตา มินิมอล
    ========================================================================== */
 
@@ -6767,11 +6767,8 @@ body {
   <!-- กรอบแอปพลิเคชันหลัก (App Shell) -->
   <div class="app-container" id="app-main-shell">
 
-    <!-- แถบควบคุมมุมมองและระบบเสียง (Top Controls) -->
-    <div class="top-control-bar">
-      <button type="button" class="top-control-btn" id="btn-toggle-viewport">
-        📱 สลับมุมมองจำลองมือถือ (Mobile View)
-      </button>
+    <!-- แถบควบคุมระบบเสียงและสลับผู้ใช้ (Top Controls) -->
+    <div class="top-control-bar" style="justify-content: flex-end;">
       <div style="display: flex; gap: 6px;">
         <button type="button" class="top-control-btn" id="btn-open-user-switcher" title="สลับผู้ใช้หรือลงทะเบียนคนใหม่">
           👥 <span id="top-bar-user-name">สลับผู้ใช้</span>
@@ -7421,7 +7418,7 @@ window.fitjoyEnterApp = function() {
 
 /* ===== FILE: content-data.js ===== */
 /**
- * FitEasy - Content & Health Guidelines Database
+ * ฟิตจอย - Content & Health Guidelines Database
  * สื่อกลางส่งเสริมสุขภาพและกิจกรรมทางกายในชุมชน "ฟิตจอย"
  */
 
@@ -8317,14 +8314,14 @@ const COMMUNITY_INFO = {
 
 /* ===== FILE: audio-cues.js ===== */
 /**
- * FitEasy - Audio Cues (Web Audio API Synthesizer)
+ * ฟิตจอย - Audio Cues (Web Audio API Synthesizer)
  * ระบบเสียงสัญญาณสังเคราะห์ ทำงานได้แม้ออฟไลน์ ไม่ต้องโหลดไฟล์เสียงภายนอก
  */
 
 class AudioCueManager {
   constructor() {
     this.audioCtx = null;
-    this.isEnabled = localStorage.getItem("fiteasy_sound_enabled") !== "false";
+    this.isEnabled = (localStorage.getItem("fitjoy_sound_enabled") || localStorage.getItem("fiteasy_sound_enabled")) !== "false";
   }
 
   initContext() {
@@ -8341,7 +8338,7 @@ class AudioCueManager {
 
   toggleSound() {
     this.isEnabled = !this.isEnabled;
-    localStorage.setItem("fiteasy_sound_enabled", this.isEnabled);
+    localStorage.setItem("fitjoy_sound_enabled", this.isEnabled);
     return this.isEnabled;
   }
 
@@ -8460,17 +8457,16 @@ class AudioCueManager {
 
 const audioCues = new AudioCueManager();
 
-
 /* ===== FILE: user-store.js ===== */
 /**
- * FitEasy - User Store & Multi-Profile Manager
+ * ฟิตจอย - User Store & Multi-Profile Manager
  * รองรับการลงทะเบียนหลายผู้ใช้ (Multi-User Switcher), การลบบัญชี,
  * ประวัติการวัดชีพจรแบบระบุวันที่สำหรับระบบปฏิทิน และการคำนวณสถิติสะสมประจำวัน (Daily Reset)
  */
 
 const STORAGE_KEYS = {
-  USERS_ROSTER: "fiteasy_users_roster_v2",
-  ACTIVE_USER_ID: "fiteasy_active_user_id_v2"
+  USERS_ROSTER: "fitjoy_users_roster_v2",
+  ACTIVE_USER_ID: "fitjoy_active_user_id_v2"
 };
 
 // เกณฑ์ปิงปองจราจร 7 สี (ดัชนีมวลกาย BMI เพื่อการเฝ้าระวังโรคไม่ติดต่อเรื้อรัง NCDs)
@@ -8564,7 +8560,7 @@ const BMI_7_COLORS = [
 class UserStore {
   constructor() {
     this.users = this.loadAllUsers();
-    this.activeUserId = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER_ID);
+    this.activeUserId = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER_ID) || localStorage.getItem("fiteasy_active_user_id_v2"); if (this.activeUserId) { localStorage.setItem(STORAGE_KEYS.ACTIVE_USER_ID, this.activeUserId); }
 
     if ((!this.activeUserId || !this.getUserById(this.activeUserId)) && this.users.length > 0) {
       this.activeUserId = this.users[0].id;
@@ -8639,7 +8635,13 @@ class UserStore {
   }
 
   loadAllUsers() {
-    const raw = localStorage.getItem(STORAGE_KEYS.USERS_ROSTER);
+    let raw = localStorage.getItem(STORAGE_KEYS.USERS_ROSTER);
+    if (!raw) {
+      raw = localStorage.getItem("fiteasy_users_roster_v2");
+      if (raw) {
+        localStorage.setItem(STORAGE_KEYS.USERS_ROSTER, raw);
+      }
+    }
     if (raw) {
       try {
         return JSON.parse(raw);
@@ -9278,7 +9280,7 @@ class UserStore {
       <html lang="th">
       <head>
         <meta charset="utf-8">
-        <title>สมุดสุขภาพดิจิทัล - FitEasy ชุมชนบ้านหม้อแข็งแรง</title>
+        <title>สมุดสุขภาพดิจิทัล - ฟิตจอย ชุมชนบ้านหม้อแข็งแรง</title>
         <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
           body { font-family: 'Anuphan', sans-serif; padding: 24px; color: #1e293b; line-height: 1.5; }
@@ -9360,7 +9362,7 @@ window.userStore = userStore;
 
 /* ===== FILE: pulse-timer.js ===== */
 /**
- * FitEasy - Pulse Timer & Counter Tool
+ * ฟิตจอย - Pulse Timer & Counter Tool
  * เครื่องมือจับเวลานับชีพจร 60 วินาที และ 15 วินาที x 4 พร้อมเสียงสัญญาณ
  */
 
@@ -10277,7 +10279,7 @@ class PulseTimer {
 
 /* ===== FILE: post-workout-modal.js ===== */
 /**
- * FitEasy - Post-Workout Heart Rate Modal
+ * ฟิตจอย - Post-Workout Heart Rate Modal
  * ปลดล็อกทันทีเมื่อดูคลิปจบ 100% เพื่อประเมินชีพจรตาม 3 กลุ่มวัย
  */
 
@@ -10585,7 +10587,7 @@ class PostWorkoutModal {
           if (window.userStore && window.videoManager && cooldownEx) {
             const todayStats = userStore.getTodayStats();
             const activeUserId = userStore.activeUserId || "default";
-            const cooldownStorageKey = `fiteasy_cooldown_done_${activeUserId}`;
+            const cooldownStorageKey = `fitjoy_cooldown_done_${activeUserId}`;
             const cooldownDoneDate = localStorage.getItem(cooldownStorageKey);
             if (todayStats.isGoalReached && cooldownDoneDate !== todayStats.todayIso) {
               window.videoManager.showToastNotice("🎉 ยอดเยี่ยมมาก! วันนี้ออกกำลังกายครบตามเกณฑ์แล้ว ระบบกำลังพาไปยืดเหยียดร่างกาย (Cool Down) 🧘‍♂️");
@@ -10610,7 +10612,7 @@ let postWorkoutModal = null;
 
 /* ===== FILE: video-manager.js ===== */
 /**
- * FitEasy - YouTube Video Player & Anti-Seek Lock Manager
+ * ฟิตจอย - YouTube Video Player & Anti-Seek Lock Manager
  * ควบคุมการเล่นวิดีโอ YouTube ในสัดส่วน 16:9 ขอบมน 16px และล็อกห้ามเลื่อนข้าม 100%
  */
 
@@ -10627,7 +10629,7 @@ class VideoManager {
     this.pendingExercise = null;
     this.sessionWarmedUpUsers = {};
     this.routineRecordedThisSession = false;
-    this.customUrls = JSON.parse(localStorage.getItem("fiteasy_custom_video_urls") || "{}");
+    this.customUrls = JSON.parse(localStorage.getItem((localStorage.getItem("fitjoy_custom_video_urls") ? "fitjoy_custom_video_urls" : "fiteasy_custom_video_urls")) || "{}");
 
     window.videoManager = this;
 
@@ -10835,7 +10837,7 @@ class VideoManager {
       if (this.currentExercise.id === "routine-cooldown" && window.userStore) {
         const activeUserId = userStore.activeUserId || "default";
         const todayStats = userStore.getTodayStats();
-        localStorage.setItem(`fiteasy_cooldown_done_${activeUserId}`, todayStats.todayIso);
+        localStorage.setItem(`fitjoy_cooldown_done_${activeUserId}`, todayStats.todayIso);
         if (routineTimeFormatted) {
           this.showToastNotice(`🧘‍♂️ บันทึกเวลายืดเหยียด Cool Down (+${routineTimeFormatted}) เรียบร้อยแล้ว สุขภาพดีเยี่ยมครับ!`);
         }
@@ -11251,10 +11253,10 @@ class VideoManager {
   }
 
   showToastNotice(msg) {
-    let toast = document.getElementById("fiteasy-toast-notice");
+    let toast = document.getElementById("fitjoy-toast-notice");
     if (!toast) {
       toast = document.createElement("div");
-      toast.id = "fiteasy-toast-notice";
+      toast.id = "fitjoy-toast-notice";
       toast.className = "toast-notice-box";
       document.body.appendChild(toast);
     }
@@ -11271,7 +11273,7 @@ let videoManager = window.videoManager || null;
 
 /* ===== FILE: calendar.js ===== */
 /**
- * FitEasy - Interactive Workout Calendar Module
+ * ฟิตจอย - Interactive Workout Calendar Module
  * ปฏิทินบันทึกผลเวลาการออกกำลังกายในแต่ละวัน & สรุปผลรายสัปดาห์
  * - เกณฑ์รายวัน: ผู้ใหญ่/สูงอายุ >= 30 นาที (เขียว ผ่าน), < 30 นาที (แดง ไม่ผ่าน) | วัยรุ่น 60 นาที
  * - เกณฑ์รายสัปดาห์: ผ่าน >= 3 วันต่อสัปดาห์ = สัปดาห์ผ่าน (เขียว), < 3 วัน = ยังไม่ผ่าน (แดง)
@@ -12152,12 +12154,13 @@ let workoutCalendar = null;
 
 /* ===== FILE: app.js ===== */
 /**
- * FitEasy - Main Application Controller
+ * ฟิตจอย - Main Application Controller
  * ควบคุมการเปลี่ยนแท็บ 5 หน้า, การลงทะเบียน Onboarding, การ์ดสถิติเวลาสะสมประจำวัน (Daily Stat Card),
  * แนะนำท่าเฉพาะบุคคล (Personalized Recommendation), ปฏิทินบันทึกผลการออกกำลังกาย, ระบบสลับบัญชี และออกจากระบบ
  */
 
-class FitEasyApp {
+class FitJoyApp {
+
   constructor() {
     this.currentTab = "home";
     this.currentCategory = "ทั้งหมด";
@@ -12248,7 +12251,7 @@ class FitEasyApp {
 
     if (stats.isGoalReached) {
       const activeUserId = userStore.activeUserId || "default";
-      const cooldownStorageKey = `fiteasy_cooldown_done_${activeUserId}`;
+      const cooldownStorageKey = `fitjoy_cooldown_done_${activeUserId}`;
       const isCooldownDone = localStorage.getItem(cooldownStorageKey) === stats.todayIso;
 
       if (!isCooldownDone) {
@@ -12842,20 +12845,7 @@ class FitEasyApp {
   }
 
   bindViewportSwitcher() {
-    const switcher = document.getElementById("btn-toggle-viewport");
-    const appShell = document.getElementById("app-main-shell");
-    if (switcher && appShell) {
-      switcher.addEventListener("click", () => {
-        this.isMobileFrame = !this.isMobileFrame;
-        if (this.isMobileFrame) {
-          appShell.classList.add("mobile-frame-mode");
-          switcher.textContent = "💻 สลับมุมมองเต็มจอ (Wide View)";
-        } else {
-          appShell.classList.remove("mobile-frame-mode");
-          switcher.textContent = "📱 สลับมุมมองจำลองมือถือ (Mobile View)";
-        }
-      });
-    }
+    // ลบการสลับมุมมองจำลองมือถือออกตามความต้องการของผู้ใช้
   }
 
   bindSoundToggle() {
@@ -13637,7 +13627,7 @@ function initOfflineVideoManager() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  window.app = new FitEasyApp();
+  window.FitEasyApp = FitJoyApp; window.app = new FitJoyApp();
   initOfflineVideoManager();
 });
 

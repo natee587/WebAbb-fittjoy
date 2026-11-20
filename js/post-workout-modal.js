@@ -1,5 +1,5 @@
-/**
- * FitEasy - Post-Workout Heart Rate Modal
+﻿/**
+ * ฟิตจอย - Post-Workout Heart Rate Modal
  * ปลดล็อกทันทีเมื่อดูคลิปจบ 100% เพื่อประเมินชีพจรตาม 3 กลุ่มวัย
  */
 
@@ -307,7 +307,7 @@ class PostWorkoutModal {
           if (window.userStore && window.videoManager && cooldownEx) {
             const todayStats = userStore.getTodayStats();
             const activeUserId = userStore.activeUserId || "default";
-            const cooldownStorageKey = `fiteasy_cooldown_done_${activeUserId}`;
+            const cooldownStorageKey = `fitjoy_cooldown_done_${activeUserId}`;
             const cooldownDoneDate = localStorage.getItem(cooldownStorageKey);
             if (todayStats.isGoalReached && cooldownDoneDate !== todayStats.todayIso) {
               window.videoManager.showToastNotice("🎉 ยอดเยี่ยมมาก! วันนี้ออกกำลังกายครบตามเกณฑ์แล้ว ระบบกำลังพาไปยืดเหยียดร่างกาย (Cool Down) 🧘‍♂️");

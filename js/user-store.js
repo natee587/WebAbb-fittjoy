@@ -1,12 +1,12 @@
-/**
- * FitEasy - User Store & Multi-Profile Manager
+﻿/**
+ * ฟิตจอย - User Store & Multi-Profile Manager
  * รองรับการลงทะเบียนหลายผู้ใช้ (Multi-User Switcher), การลบบัญชี,
  * ประวัติการวัดชีพจรแบบระบุวันที่สำหรับระบบปฏิทิน และการคำนวณสถิติสะสมประจำวัน (Daily Reset)
  */
 
 const STORAGE_KEYS = {
-  USERS_ROSTER: "fiteasy_users_roster_v2",
-  ACTIVE_USER_ID: "fiteasy_active_user_id_v2"
+  USERS_ROSTER: "fitjoy_users_roster_v2",
+  ACTIVE_USER_ID: "fitjoy_active_user_id_v2"
 };
 
 // เกณฑ์ปิงปองจราจร 7 สี (ดัชนีมวลกาย BMI เพื่อการเฝ้าระวังโรคไม่ติดต่อเรื้อรัง NCDs)
@@ -100,7 +100,7 @@ const BMI_7_COLORS = [
 class UserStore {
   constructor() {
     this.users = this.loadAllUsers();
-    this.activeUserId = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER_ID);
+    this.activeUserId = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER_ID) || localStorage.getItem("fiteasy_active_user_id_v2"); if (this.activeUserId) { localStorage.setItem(STORAGE_KEYS.ACTIVE_USER_ID, this.activeUserId); }
 
     if ((!this.activeUserId || !this.getUserById(this.activeUserId)) && this.users.length > 0) {
       this.activeUserId = this.users[0].id;
@@ -175,7 +175,13 @@ class UserStore {
   }
 
   loadAllUsers() {
-    const raw = localStorage.getItem(STORAGE_KEYS.USERS_ROSTER);
+    let raw = localStorage.getItem(STORAGE_KEYS.USERS_ROSTER);
+    if (!raw) {
+      raw = localStorage.getItem("fiteasy_users_roster_v2");
+      if (raw) {
+        localStorage.setItem(STORAGE_KEYS.USERS_ROSTER, raw);
+      }
+    }
     if (raw) {
       try {
         return JSON.parse(raw);
@@ -814,7 +820,7 @@ class UserStore {
       <html lang="th">
       <head>
         <meta charset="utf-8">
-        <title>สมุดสุขภาพดิจิทัล - FitEasy ชุมชนบ้านหม้อแข็งแรง</title>
+        <title>สมุดสุขภาพดิจิทัล - ฟิตจอย ชุมชนบ้านหม้อแข็งแรง</title>
         <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
           body { font-family: 'Anuphan', sans-serif; padding: 24px; color: #1e293b; line-height: 1.5; }

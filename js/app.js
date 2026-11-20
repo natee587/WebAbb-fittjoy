@@ -1,15 +1,16 @@
-/**
- * FitEasy - Main Application Controller
+﻿/**
+ * ฟิตจอย - Main Application Controller
  * ควบคุมการเปลี่ยนแท็บ 5 หน้า, การลงทะเบียน Onboarding, การ์ดสถิติเวลาสะสมประจำวัน (Daily Stat Card),
  * แนะนำท่าเฉพาะบุคคล (Personalized Recommendation), ปฏิทินบันทึกผลการออกกำลังกาย, ระบบสลับบัญชี และออกจากระบบ
  */
 
-class FitEasyApp {
+class FitJoyApp {
+
   constructor() {
     this.currentTab = "home";
     this.currentCategory = "ทั้งหมด";
     this.searchQuery = "";
-    this.isMobileFrame = false;
+    // isMobileFrame removed
     this.tempRegistrationData = null;
     this.isEditingUser = false;
 
@@ -95,7 +96,7 @@ class FitEasyApp {
 
     if (stats.isGoalReached) {
       const activeUserId = userStore.activeUserId || "default";
-      const cooldownStorageKey = `fiteasy_cooldown_done_${activeUserId}`;
+      const cooldownStorageKey = `fitjoy_cooldown_done_${activeUserId}`;
       const isCooldownDone = localStorage.getItem(cooldownStorageKey) === stats.todayIso;
 
       if (!isCooldownDone) {
@@ -689,20 +690,7 @@ class FitEasyApp {
   }
 
   bindViewportSwitcher() {
-    const switcher = document.getElementById("btn-toggle-viewport");
-    const appShell = document.getElementById("app-main-shell");
-    if (switcher && appShell) {
-      switcher.addEventListener("click", () => {
-        this.isMobileFrame = !this.isMobileFrame;
-        if (this.isMobileFrame) {
-          appShell.classList.add("mobile-frame-mode");
-          switcher.textContent = "💻 สลับมุมมองเต็มจอ (Wide View)";
-        } else {
-          appShell.classList.remove("mobile-frame-mode");
-          switcher.textContent = "📱 สลับมุมมองจำลองมือถือ (Mobile View)";
-        }
-      });
-    }
+    // ลบการสลับมุมมองจำลองมือถือออกตามความต้องการของผู้ใช้
   }
 
   bindSoundToggle() {
@@ -1151,6 +1139,7 @@ class FitEasyApp {
   }
 }
 
+window.FitEasyApp = FitJoyApp;
 document.addEventListener("DOMContentLoaded", () => {
-  window.app = new FitEasyApp();
+  window.app = new FitJoyApp();
 });

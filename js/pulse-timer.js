@@ -1,5 +1,5 @@
-/**
- * FitEasy - Pulse Timer & Counter Tool
+﻿/**
+ * ฟิตจอย - Pulse Timer & Counter Tool
  * เครื่องมือจับเวลานับชีพจร 60 วินาที และ 15 วินาที x 4 พร้อมเสียงสัญญาณ
  */
 

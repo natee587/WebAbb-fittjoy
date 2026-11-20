@@ -1,5 +1,5 @@
-/**
- * FitEasy - YouTube Video Player & Anti-Seek Lock Manager
+﻿/**
+ * ฟิตจอย - YouTube Video Player & Anti-Seek Lock Manager
  * ควบคุมการเล่นวิดีโอ YouTube ในสัดส่วน 16:9 ขอบมน 16px และล็อกห้ามเลื่อนข้าม 100%
  */
 
@@ -16,7 +16,7 @@ class VideoManager {
     this.pendingExercise = null;
     this.sessionWarmedUpUsers = {};
     this.routineRecordedThisSession = false;
-    this.customUrls = JSON.parse(localStorage.getItem("fiteasy_custom_video_urls") || "{}");
+    this.customUrls = JSON.parse(localStorage.getItem((localStorage.getItem("fitjoy_custom_video_urls") ? "fitjoy_custom_video_urls" : "fiteasy_custom_video_urls")) || "{}");
 
     window.videoManager = this;
 
@@ -224,7 +224,7 @@ class VideoManager {
       if (this.currentExercise.id === "routine-cooldown" && window.userStore) {
         const activeUserId = userStore.activeUserId || "default";
         const todayStats = userStore.getTodayStats();
-        localStorage.setItem(`fiteasy_cooldown_done_${activeUserId}`, todayStats.todayIso);
+        localStorage.setItem(`fitjoy_cooldown_done_${activeUserId}`, todayStats.todayIso);
         if (routineTimeFormatted) {
           this.showToastNotice(`🧘‍♂️ บันทึกเวลายืดเหยียด Cool Down (+${routineTimeFormatted}) เรียบร้อยแล้ว สุขภาพดีเยี่ยมครับ!`);
         }
@@ -640,10 +640,10 @@ class VideoManager {
   }
 
   showToastNotice(msg) {
-    let toast = document.getElementById("fiteasy-toast-notice");
+    let toast = document.getElementById("fitjoy-toast-notice");
     if (!toast) {
       toast = document.createElement("div");
-      toast.id = "fiteasy-toast-notice";
+      toast.id = "fitjoy-toast-notice";
       toast.className = "toast-notice-box";
       document.body.appendChild(toast);
     }
