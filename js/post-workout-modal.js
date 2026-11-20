@@ -146,6 +146,7 @@ class PostWorkoutModal {
     // สร้าง Quick Timer
     this.timerInstance = new PulseTimer("modal-quick-timer-container", {
       defaultMode: 15, // หลังออกกำลังกาย 15s x 4 เหมาะสมและรวดเร็ว
+      allowSaveHealthLog: true,
       onComplete: () => {
         const inp = document.getElementById("modal-post-hr-input");
         if (inp) inp.focus();

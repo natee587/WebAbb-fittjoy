@@ -40,7 +40,8 @@ class FitJoyApp {
     this.refreshAllViews();
 
     new PulseTimer("practice-pulse-timer-container", {
-      defaultMode: 60
+      defaultMode: 60,
+      allowSaveHealthLog: false
     });
   }
 

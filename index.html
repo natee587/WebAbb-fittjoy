@@ -8704,7 +8704,7 @@ class UserStore {
         u.history = u.history.filter(r => {
           if (r.isDemo === true) return false;
           if (r.id && (String(r.id).startsWith("sample-") || String(r.id).startsWith("demo-"))) return false;
-          if (r.method === "talk-test" || (r.exerciseTitle && (r.exerciseTitle.includes("Talk Test") || r.exerciseTitle.includes("ประเมินการพูด")))) return false;
+          if (r.exerciseTitle === "การประเมินการพูด (Talk Test)" || r.isPractice === true) return false;
           if (r.exerciseTitle && demoTitles.includes(r.exerciseTitle) && (r.durationMinutes === 25 || r.durationMinutes === 30 || r.durationMinutes === 35 || r.durationMinutes === 40)) return false;
           return true;
         });
@@ -9457,6 +9457,7 @@ class PulseTimer {
     this.options = {
       defaultMode: 60, // 60 หรือ 15
       onComplete: null,
+      allowSaveHealthLog: (containerId === "modal-quick-timer-container"),
       ...options
     };
 
@@ -10241,18 +10242,133 @@ class PulseTimer {
       if (c.dataset.level === level) c.classList.add("selected");
     });
 
+    const isPostWorkout = (this.options && this.options.allowSaveHealthLog) ||
+                          (this.container && this.container.id === "modal-quick-timer-container") ||
+                          (window.postWorkoutModal && window.postWorkoutModal.modalEl && window.postWorkoutModal.modalEl.classList.contains("active"));
+
     if (footer) {
       footer.style.display = "block";
-      footer.innerHTML = `
-        <div style="display: flex; gap: 10px; width: 100%;">
-          <button type="button" class="btn-timer-secondary" id="btn-back-to-questionnaire" style="flex: 1; padding: 12px 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; cursor: pointer;">
-            ← เลือกข้อใหม่
-          </button>
-          <button type="button" class="btn-primary-blue" id="btn-dismiss-talk-popup" style="flex: 1; padding: 12px 14px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px; cursor: pointer; background: #0284c7; color: white; border: none; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);">
-            ปิดหน้าต่าง
-          </button>
-        </div>
-      `;
+      if (isPostWorkout) {
+        footer.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+            <button type="button" class="btn-save-health-log" id="btn-save-talk-result" style="width: 100%; padding: 12px 18px; border-radius: var(--radius-md); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #0284c7; color: white; border: none; cursor: pointer; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);">
+              💾 บันทึกในสมุดสุขภาพดิจิทัล
+            </button>
+            <div style="display: flex; gap: 10px; width: 100%;">
+              <button type="button" class="btn-timer-secondary" id="btn-back-to-questionnaire" style="flex: 1; padding: 11px; border-radius: var(--radius-md); font-weight: 600; font-size: 13.5px; cursor: pointer;">
+                ← เลือกข้อใหม่
+              </button>
+              <button type="button" class="btn-timer-secondary" id="btn-dismiss-talk-popup" style="flex: 1; padding: 11px; border-radius: var(--radius-md); font-weight: 600; font-size: 13.5px; cursor: pointer;">
+                ปิดหน้าต่าง
+              </button>
+            </div>
+          </div>
+        `;
+
+        const btnSave = footer.querySelector("#btn-save-talk-result");
+        if (btnSave) {
+          btnSave.addEventListener("click", () => {
+            const currentEx = window.postWorkoutModal?.currentExercise || window.videoManager?.currentExercise;
+            const exTitle = currentEx?.title || "ออกกำลังกายตามคลิป";
+            
+            const exact = (typeof getExactExerciseDuration === 'function')
+              ? getExactExerciseDuration(currentEx)
+              : null;
+            const durSec = (window.postWorkoutModal && window.postWorkoutModal.recordedDurationSeconds)
+              || exact?.durationSeconds
+              || currentEx?.durationSeconds
+              || 60;
+            const durMins = Math.floor(durSec / 60);
+            const durRemSec = durSec % 60;
+            const durFormatted = exact?.durationFormatted 
+              || (durRemSec > 0 ? `${durMins} น. ${durRemSec} วิ.` : `${durMins} น.`);
+            const durDisplay = exact?.durationDisplay 
+              || (durRemSec > 0 ? `${durMins} นาที ${durRemSec} วินาที` : `${durMins} นาที`);
+
+            const levelLabel = level === "light" 
+              ? "ระดับเบา (พูดได้สบาย)" 
+              : (level === "moderate" ? "ระดับปานกลาง (เหนื่อย/หายใจเร็ว)" : "ระดับหนัก (เหนื่อยมาก/หอบ)");
+
+            // บันทึกลง User Store
+            userStore.addRecord({
+              exerciseTitle: exTitle,
+              durationSeconds: durSec,
+              durationMinutes: durSec / 60,
+              durationFormatted: durFormatted,
+              durationDisplay: durDisplay,
+              ageGroup: ageKey,
+              ageGroupLabel: (typeof AGE_CRITERIA !== "undefined" && AGE_CRITERIA[ageKey]) ? AGE_CRITERIA[ageKey].label : ageGroupText,
+              heartRate: levelLabel,
+              status: isPassed ? `ผ่านเกณฑ์! (${title}) 🟢` : `ยังไม่ถึงเกณฑ์ (${title}) 🔴`,
+              badgeClass: isPassed ? "badge-success" : "badge-warning",
+              recommendation: advice,
+              method: "talk-test",
+              talkLevel: level
+            });
+
+            // บันทึกกลุ่มวัย
+            userStore.saveProfile({ ageGroup: ageKey });
+
+            audioCues.playCelebration();
+            btnSave.innerHTML = "✓ บันทึกสำเร็จแล้ว!";
+            btnSave.disabled = true;
+            btnSave.style.background = "#10b981";
+
+            setTimeout(() => {
+              closeModal();
+              // ปิด postWorkoutModal ด้วยหากเปิดซ้อนอยู่
+              if (window.postWorkoutModal && typeof window.postWorkoutModal.close === "function") {
+                window.postWorkoutModal.close();
+              }
+              // รีเฟรชส่วนต่างๆ ในแอป
+              if (window.app && window.app.refreshAllViews) {
+                window.app.refreshAllViews();
+              } else {
+                if (window.app && window.app.renderProfileView) {
+                  window.app.renderProfileView();
+                }
+                if (window.app && window.app.renderDailyStatCard) {
+                  window.app.renderDailyStatCard();
+                }
+                if (window.workoutCalendar && window.workoutCalendar.render) {
+                  window.workoutCalendar.render();
+                }
+              }
+
+              // ตรวจสอบระบบ Cool Down อัตโนมัติ: หากเวลาสะสมวันนี้ถึงเป้าหมายแล้ว ให้เด้งคลิป Cool Down สำหรับผู้ใช้นี้
+              const cooldownEx = window.COOLDOWN_EXERCISE || (typeof COOLDOWN_EXERCISE !== "undefined" ? COOLDOWN_EXERCISE : null);
+              if (window.userStore && window.videoManager && cooldownEx) {
+                const todayStats = userStore.getTodayStats();
+                const activeUserId = userStore.activeUserId || "default";
+                const cooldownStorageKey = `fitjoy_cooldown_done_${activeUserId}`;
+                const targetMinutes = (window.userStore.profile && window.userStore.profile.dailyGoalMinutes) || 30;
+                const hasDoneCooldownToday = localStorage.getItem(cooldownStorageKey) === new Date().toISOString().slice(0, 10);
+                
+                if (todayStats.minutes >= targetMinutes && !hasDoneCooldownToday) {
+                  setTimeout(() => {
+                    if (confirm("🎉 ยินดีด้วยครับ! คุณออกกำลังกายสะสมครบเป้าหมายประจำวันแล้ว\nต้องการทำท่ายืดเหยียดร่างกายหลังออกกำลังกาย (Cool-down) ทันทีเลยหรือไม่?")) {
+                      localStorage.setItem(cooldownStorageKey, new Date().toISOString().slice(0, 10));
+                      window.videoManager.openVideo(cooldownEx);
+                    }
+                  }, 400);
+                }
+              }
+            }, 1200);
+          });
+        }
+      } else {
+        // หน้าฝึกปฏิบัติ (Practice Guide) ไม่ต้องแสดงปุ่มบันทึกลงสมุดสุขภาพดิจิทัล
+        footer.innerHTML = `
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <button type="button" class="btn-timer-secondary" id="btn-back-to-questionnaire" style="flex: 1; padding: 12px 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; cursor: pointer;">
+              ← เลือกข้อใหม่
+            </button>
+            <button type="button" class="btn-primary-blue" id="btn-dismiss-talk-popup" style="flex: 1; padding: 12px 14px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px; cursor: pointer; background: #0284c7; color: white; border: none; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);">
+              ปิดหน้าต่าง
+            </button>
+          </div>
+        `;
+      }
 
       const btnBack = footer.querySelector("#btn-back-to-questionnaire");
       if (btnBack) {
@@ -10435,6 +10551,7 @@ class PostWorkoutModal {
     // สร้าง Quick Timer
     this.timerInstance = new PulseTimer("modal-quick-timer-container", {
       defaultMode: 15, // หลังออกกำลังกาย 15s x 4 เหมาะสมและรวดเร็ว
+      allowSaveHealthLog: true,
       onComplete: () => {
         const inp = document.getElementById("modal-post-hr-input");
         if (inp) inp.focus();
@@ -12272,7 +12389,8 @@ class FitJoyApp {
     this.refreshAllViews();
 
     new PulseTimer("practice-pulse-timer-container", {
-      defaultMode: 60
+      defaultMode: 60,
+      allowSaveHealthLog: false
     });
   }
 
