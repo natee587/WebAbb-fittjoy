@@ -160,6 +160,7 @@ class UserStore {
         u.history = u.history.filter(r => {
           if (r.isDemo === true) return false;
           if (r.id && (String(r.id).startsWith("sample-") || String(r.id).startsWith("demo-"))) return false;
+          if (r.method === "talk-test" || (r.exerciseTitle && (r.exerciseTitle.includes("Talk Test") || r.exerciseTitle.includes("ประเมินการพูด")))) return false;
           if (r.exerciseTitle && demoTitles.includes(r.exerciseTitle) && (r.durationMinutes === 25 || r.durationMinutes === 30 || r.durationMinutes === 35 || r.durationMinutes === 40)) return false;
           return true;
         });

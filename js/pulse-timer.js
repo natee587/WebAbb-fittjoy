@@ -796,91 +796,15 @@ class PulseTimer {
     if (footer) {
       footer.style.display = "block";
       footer.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-          <button type="button" class="btn-save-health-log" id="btn-save-talk-result" style="width: 100%; padding: 12px 18px; border-radius: var(--radius-md); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #0284c7; color: white; border: none; cursor: pointer; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);">
-            💾 บันทึกในสมุดสุขภาพดิจิทัล
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <button type="button" class="btn-timer-secondary" id="btn-back-to-questionnaire" style="flex: 1; padding: 12px 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; cursor: pointer;">
+            ← เลือกข้อใหม่
           </button>
-          <div style="display: flex; gap: 10px; width: 100%;">
-            <button type="button" class="btn-timer-secondary" id="btn-back-to-questionnaire" style="flex: 1; padding: 11px; border-radius: var(--radius-md); font-weight: 600; font-size: 13.5px; cursor: pointer;">
-              ← เลือกข้อใหม่
-            </button>
-            <button type="button" class="btn-timer-secondary" id="btn-dismiss-talk-popup" style="flex: 1; padding: 11px; border-radius: var(--radius-md); font-weight: 600; font-size: 13.5px; cursor: pointer;">
-              ปิดหน้าต่าง
-            </button>
-          </div>
+          <button type="button" class="btn-primary-blue" id="btn-dismiss-talk-popup" style="flex: 1; padding: 12px 14px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px; cursor: pointer; background: #0284c7; color: white; border: none; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);">
+            ปิดหน้าต่าง
+          </button>
         </div>
       `;
-
-      const btnSave = footer.querySelector("#btn-save-talk-result");
-      if (btnSave) {
-        btnSave.addEventListener("click", () => {
-          const currentEx = window.postWorkoutModal?.currentExercise || window.videoManager?.currentExercise;
-          const exTitle = currentEx?.title 
-            ? `${currentEx.title} (ประเมินด้วยการพูด)` 
-            : "การประเมินการพูด (Talk Test)";
-          
-          const exact = (typeof getExactExerciseDuration === 'function')
-            ? getExactExerciseDuration(currentEx)
-            : null;
-          const durSec = (window.postWorkoutModal && window.postWorkoutModal.recordedDurationSeconds)
-            || exact?.durationSeconds
-            || currentEx?.durationSeconds
-            || 60;
-          const durFormatted = exact?.durationFormatted || `${Math.floor(durSec / 60)} น.`;
-          const durDisplay = exact?.durationDisplay || `${Math.floor(durSec / 60)} นาที`;
-
-          const levelLabel = level === "light" 
-            ? "ระดับเบา (พูดได้สบาย)" 
-            : (level === "moderate" ? "ระดับปานกลาง (เหนื่อย/หายใจเร็ว)" : "ระดับหนัก (เหนื่อยมาก/หอบ)");
-
-          // บันทึกลง User Store
-          userStore.addRecord({
-            exerciseTitle: exTitle,
-            durationSeconds: durSec,
-            durationMinutes: durSec / 60,
-            durationFormatted: durFormatted,
-            durationDisplay: durDisplay,
-            ageGroup: ageKey,
-            ageGroupLabel: (typeof AGE_CRITERIA !== "undefined" && AGE_CRITERIA[ageKey]) ? AGE_CRITERIA[ageKey].label : ageGroupText,
-            heartRate: levelLabel,
-            status: isPassed ? `ผ่านเกณฑ์! (${title}) 🟢` : `ยังไม่ถึงเกณฑ์ (${title}) 🔴`,
-            badgeClass: isPassed ? "badge-success" : "badge-warning",
-            recommendation: advice,
-            method: "talk-test",
-            talkLevel: level
-          });
-
-          // บันทึกกลุ่มวัย
-          userStore.saveProfile({ ageGroup: ageKey });
-
-          audioCues.playCelebration();
-          btnSave.innerHTML = "✓ บันทึกสำเร็จแล้ว!";
-          btnSave.disabled = true;
-          btnSave.style.background = "#10b981";
-
-          setTimeout(() => {
-            closeModal();
-            // ปิด postWorkoutModal ด้วยหากเปิดซ้อนอยู่
-            if (window.postWorkoutModal && typeof window.postWorkoutModal.close === "function") {
-              window.postWorkoutModal.close();
-            }
-            // รีเฟรชส่วนต่างๆ ในแอป
-            if (window.app && window.app.refreshAllViews) {
-              window.app.refreshAllViews();
-            } else {
-              if (window.app && window.app.renderProfileView) {
-                window.app.renderProfileView();
-              }
-              if (window.app && window.app.renderDailyStatCard) {
-                window.app.renderDailyStatCard();
-              }
-              if (window.workoutCalendar && window.workoutCalendar.render) {
-                window.workoutCalendar.render();
-              }
-            }
-          }, 1200);
-        });
-      }
 
       const btnBack = footer.querySelector("#btn-back-to-questionnaire");
       if (btnBack) {
