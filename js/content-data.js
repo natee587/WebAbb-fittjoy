@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FitEasy - Content & Health Guidelines Database
  * สื่อกลางส่งเสริมสุขภาพและกิจกรรมทางกายในชุมชน "ฟิตจอย"
  */
@@ -49,6 +49,77 @@ const AGE_CRITERIA = {
   }
 };
 
+// ========================================================================
+// ตารางระยะเวลาความยาวคลิปวิดีโอที่แม่นยำตามเวลาจริง (หน่วย: วินาที)
+// ========================================================================
+const EXERCISE_EXACT_DURATIONS = {
+  "routine-warmup": { id: "routine-warmup", title: "ท่าบริหารร่างกายก่อนออกกำลังกาย (Warm-up)", durationSeconds: 168, durationMinutes: 168 / 60, durationFormatted: "2 น. 48 วิ.", durationDisplay: "2 นาที 48 วินาที" },
+  "routine-cooldown": { id: "routine-cooldown", title: "ท่ายืดเหยียดร่างกายหลังออกกำลังกาย (Cool Down)", durationSeconds: 131, durationMinutes: 131 / 60, durationFormatted: "2 น. 11 วิ.", durationDisplay: "2 นาที 11 วินาที" },
+  "jumping-jacks-youth": { id: "jumping-jacks-youth", title: "ท่ากระโดดตบ", durationSeconds: 180, durationMinutes: 3, durationFormatted: "3 น.", durationDisplay: "3 นาที" },
+  "squat-youth": { id: "squat-youth", title: "ท่าย่อตัว", durationSeconds: 138, durationMinutes: 138 / 60, durationFormatted: "2 น. 18 วิ.", durationDisplay: "2 นาที 18 วินาที" },
+  "wall-pushup": { id: "wall-pushup", title: "ท่าวิดพื้นกับกำแพง", durationSeconds: 36, durationMinutes: 36 / 60, durationFormatted: "36 วิ.", durationDisplay: "36 วินาที" },
+  "running-in-place-youth": { id: "running-in-place-youth", title: "ท่าวิ่งอยู่กับที่", durationSeconds: 197, durationMinutes: 197 / 60, durationFormatted: "3 น. 17 วิ.", durationDisplay: "3 นาที 17 วินาที" },
+  "single-leg-hop-youth": { id: "single-leg-hop-youth", title: "ท่ากระโดดขาเดียวสลับข้าง", durationSeconds: 174, durationMinutes: 174 / 60, durationFormatted: "2 น. 54 วิ.", durationDisplay: "2 นาที 54 วินาที" },
+  "reverse-lunge-adult": { id: "reverse-lunge-adult", title: "ท่าก้าวขาถอยหลัง", durationSeconds: 162, durationMinutes: 162 / 60, durationFormatted: "2 น. 42 วิ.", durationDisplay: "2 นาที 42 วินาที" },
+  "glute-bridge-adult": { id: "glute-bridge-adult", title: "ท่ายกสะโพก", durationSeconds: 194, durationMinutes: 194 / 60, durationFormatted: "3 น. 14 วิ.", durationDisplay: "3 นาที 14 วินาที" },
+  "calf-raises": { id: "calf-raises", title: "ท่าเขย่งปลายเท้า", durationSeconds: 181, durationMinutes: 181 / 60, durationFormatted: "3 น. 1 วิ.", durationDisplay: "3 นาที 1 วินาที" },
+  "lateral-raise-adult": { id: "lateral-raise-adult", title: "ท่ากางแขนยกขวดน้ำ", durationSeconds: 83, durationMinutes: 83 / 60, durationFormatted: "1 น. 23 วิ.", durationDisplay: "1 นาที 23 วินาที" },
+  "bird-dog-adult": { id: "bird-dog-adult", title: "ท่าเหยียดแขนและขาสลับกัน", durationSeconds: 159, durationMinutes: 159 / 60, durationFormatted: "2 น. 39 วิ.", durationDisplay: "2 นาที 39 วินาที" },
+  "sit-to-stand-senior": { id: "sit-to-stand-senior", title: "ท่าลุก–นั่งจากเก้าอี้", durationSeconds: 184, durationMinutes: 184 / 60, durationFormatted: "3 น. 4 วิ.", durationDisplay: "3 นาที 4 วินาที" },
+  "side-leg-raise-senior": { id: "side-leg-raise-senior", title: "ท่ากางขาออกด้านข้าง", durationSeconds: 176, durationMinutes: 176 / 60, durationFormatted: "2 น. 56 วิ.", durationDisplay: "2 นาที 56 วินาที" },
+  "knee-extension-senior": { id: "knee-extension-senior", title: "ท่าเหยียดเข่าขณะนั่ง", durationSeconds: 216, durationMinutes: 216 / 60, durationFormatted: "3 น. 36 วิ.", durationDisplay: "3 นาที 36 วินาที" },
+  "seated-torso-twist-senior": { id: "seated-torso-twist-senior", title: "ท่าบิดลำตัวซ้าย–ขวาขณะนั่ง", durationSeconds: 48, durationMinutes: 48 / 60, durationFormatted: "48 วิ.", durationDisplay: "48 วินาที" },
+  "balance-stance-senior": { id: "balance-stance-senior", title: "ท่าฝึกยืนทรงตัว", durationSeconds: 176, durationMinutes: 176 / 60, durationFormatted: "2 น. 56 วิ.", durationDisplay: "2 นาที 56 วินาที" },
+  "pasolob-community-dance": { id: "pasolob-community-dance", title: "การเต้นบาสโลบเพื่อสุขภาพ", durationSeconds: 228, durationMinutes: 228 / 60, durationFormatted: "3 น. 48 วิ.", durationDisplay: "3 นาที 48 วินาที" },
+  "jump-rope-cardio": { id: "jump-rope-cardio", title: "ท่ากระโดดเชือก", durationSeconds: 197, durationMinutes: 197 / 60, durationFormatted: "3 น. 17 วิ.", durationDisplay: "3 นาที 17 วินาที" },
+  "sit-up": { id: "sit-up", title: "ท่าซิทอัพ", durationSeconds: 200, durationMinutes: 200 / 60, durationFormatted: "3 น. 20 วิ.", durationDisplay: "3 นาที 20 วินาที" },
+  "high-knees": { id: "high-knees", title: "ยกเข่าสูงแตะมือ High Knees", durationSeconds: 193, durationMinutes: 193 / 60, durationFormatted: "3 น. 13 วิ.", durationDisplay: "3 นาที 13 วินาที" },
+  "knee-strike": { id: "knee-strike", title: "ท่าตีเข่า", durationSeconds: 200, durationMinutes: 200 / 60, durationFormatted: "3 น. 20 วิ.", durationDisplay: "3 นาที 20 วินาที" },
+  "plank": { id: "plank", title: "แพลงก์", durationSeconds: 171, durationMinutes: 171 / 60, durationFormatted: "2 น. 51 วิ.", durationDisplay: "2 นาที 51 วินาที" },
+  "side-step-jack": { id: "side-step-jack", title: "ท่าก้าวขาด้านข้างพร้อมยกแขนเหนือศีรษะ", durationSeconds: 87, durationMinutes: 87 / 60, durationFormatted: "1 น. 27 วิ.", durationDisplay: "1 นาที 27 วินาที" },
+  "squat-punch": { id: "squat-punch", title: "ย่อลุกชก", durationSeconds: 140, durationMinutes: 140 / 60, durationFormatted: "2 น. 20 วิ.", durationDisplay: "2 นาที 20 วินาที" }
+};
+window.EXERCISE_EXACT_DURATIONS = EXERCISE_EXACT_DURATIONS;
+
+function getExactExerciseDuration(exerciseOrIdOrTitle) {
+  if (!exerciseOrIdOrTitle) return { durationSeconds: 60, durationMinutes: 1, durationFormatted: "1 น.", durationDisplay: "1 นาที" };
+  if (typeof exerciseOrIdOrTitle === "string") {
+    if (EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle]) {
+      return EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle];
+    }
+    for (const key in EXERCISE_EXACT_DURATIONS) {
+      const item = EXERCISE_EXACT_DURATIONS[key];
+      if (item.title === exerciseOrIdOrTitle || exerciseOrIdOrTitle.startsWith(item.title) || item.title.startsWith(exerciseOrIdOrTitle)) {
+        return item;
+      }
+    }
+  } else if (typeof exerciseOrIdOrTitle === "object") {
+    if (exerciseOrIdOrTitle.id && EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle.id]) {
+      return EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle.id];
+    }
+    if (exerciseOrIdOrTitle.title) {
+      for (const key in EXERCISE_EXACT_DURATIONS) {
+        const item = EXERCISE_EXACT_DURATIONS[key];
+        if (item.title === exerciseOrIdOrTitle.title || exerciseOrIdOrTitle.title.startsWith(item.title) || item.title.startsWith(exerciseOrIdOrTitle.title)) {
+          return item;
+        }
+      }
+    }
+    if (exerciseOrIdOrTitle.durationSeconds) {
+      const s = exerciseOrIdOrTitle.durationSeconds;
+      const m = Math.floor(s / 60);
+      const rem = s % 60;
+      return {
+        durationSeconds: s,
+        durationMinutes: s / 60,
+        durationFormatted: rem > 0 ? (m > 0 ? (m + " น. " + rem + " วิ.") : (rem + " วิ.")) : (m + " น."),
+        durationDisplay: rem > 0 ? (m > 0 ? (m + " นาที " + rem + " วินาที") : (rem + " วินาที")) : (m + " นาที")
+      };
+    }
+  }
+  return { durationSeconds: 60, durationMinutes: 1, durationFormatted: "1 น.", durationDisplay: "1 นาที" };
+}
+window.getExactExerciseDuration = getExactExerciseDuration;
 // 2. คลังท่าออกกำลังกายแยกตาม 3 กลุ่มวัย (รวม 23 ท่า)
 const EXERCISES = [
   // ==========================================
@@ -59,7 +130,10 @@ const EXERCISES = [
     title: "ท่ากระโดดตบ",
     englishTitle: "Jumping Jacks",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "1–2 นาที",
+    duration: "3 นาที",
+    durationSeconds: 180,
+    durationFormatted: "3 น.",
+    durationDisplay: "3 นาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -82,7 +156,10 @@ const EXERCISES = [
     title: "ท่าย่อตัว",
     englishTitle: "Squat",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "10–15 ครั้ง",
+    duration: "2 นาที 18 วินาที",
+    durationSeconds: 138,
+    durationFormatted: "2 น. 18 วิ.",
+    durationDisplay: "2 นาที 18 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -105,7 +182,10 @@ const EXERCISES = [
     title: "ท่าวิดพื้นกับกำแพง",
     englishTitle: "Wall Push-up",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–15 ครั้ง (ทำ 2–3 เซ็ต)",
+    duration: "36 วินาที",
+    durationSeconds: 36,
+    durationFormatted: "36 วิ.",
+    durationDisplay: "36 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "กำแพงห้อง",
@@ -128,7 +208,10 @@ const EXERCISES = [
     title: "ท่าวิ่งอยู่กับที่",
     englishTitle: "Running in Place",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "2–3 นาที",
+    duration: "3 นาที 17 วินาที",
+    durationSeconds: 197,
+    durationFormatted: "3 น. 17 วิ.",
+    durationDisplay: "3 นาที 17 วินาที",
     restTime: "พัก 20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -151,7 +234,10 @@ const EXERCISES = [
     title: "ท่ากระโดดขาเดียวสลับข้าง",
     englishTitle: "Single-Leg Hop",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "1–2 นาที",
+    duration: "2 นาที 54 วินาที",
+    durationSeconds: 174,
+    durationFormatted: "2 น. 54 วิ.",
+    durationDisplay: "2 นาที 54 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -178,7 +264,10 @@ const EXERCISES = [
     title: "ท่าก้าวขาถอยหลัง",
     englishTitle: "Reverse Lunge",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "8–10 ครั้งต่อข้าง",
+    duration: "2 นาที 42 วินาที",
+    durationSeconds: 162,
+    durationFormatted: "2 น. 42 วิ.",
+    durationDisplay: "2 นาที 42 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -201,7 +290,10 @@ const EXERCISES = [
     title: "ท่ายกสะโพก",
     englishTitle: "Glute Bridge",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "12–15 ครั้ง",
+    duration: "3 นาที 14 วินาที",
+    durationSeconds: 194,
+    durationFormatted: "3 น. 14 วิ.",
+    durationDisplay: "3 นาที 14 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เบาะรองนอน / เสื่อโยคะ",
@@ -224,7 +316,10 @@ const EXERCISES = [
     title: "ท่าเขย่งปลายเท้า",
     englishTitle: "Calf Raises / Heel Raise",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "12–15 ครั้ง (1–2 รอบ)",
+    duration: "3 นาที 1 วินาที",
+    durationSeconds: 181,
+    durationFormatted: "3 น. 1 วิ.",
+    durationDisplay: "3 นาที 1 วินาที",
     restTime: "พัก 15–30 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์ (หรือใช้เก้าอี้ช่วยพยุง)",
@@ -247,7 +342,10 @@ const EXERCISES = [
     title: "ท่ากางแขนยกขวดน้ำ",
     englishTitle: "Lateral Raise",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–12 ครั้ง",
+    duration: "1 นาที 23 วินาที",
+    durationSeconds: 83,
+    durationFormatted: "1 น. 23 วิ.",
+    durationDisplay: "1 นาที 23 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "ขวดน้ำขนาดเล็ก 2 ขวด",
@@ -270,7 +368,10 @@ const EXERCISES = [
     title: "ท่าเหยียดแขนและขาสลับกัน",
     englishTitle: "Bird Dog",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10 ครั้งต่อข้าง",
+    duration: "2 นาที 39 วินาที",
+    durationSeconds: 159,
+    durationFormatted: "2 น. 39 วิ.",
+    durationDisplay: "2 นาที 39 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เบาะรองนอน / เสื่อโยคะ",
@@ -297,7 +398,10 @@ const EXERCISES = [
     title: "ท่าลุก–นั่งจากเก้าอี้",
     englishTitle: "Sit to Stand",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "8–10 ครั้ง (1–2 รอบ)",
+    duration: "3 นาที 4 วินาที",
+    durationSeconds: 184,
+    durationFormatted: "3 น. 4 วิ.",
+    durationDisplay: "3 นาที 4 วินาที",
     restTime: "พัก 30–60 วินาทีระหว่างรอบ",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เก้าอี้มั่นคงไม่มีล้อ",
@@ -320,7 +424,10 @@ const EXERCISES = [
     title: "ท่ากางขาออกด้านข้าง",
     englishTitle: "Side Leg Raise",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "10 ครั้งต่อข้าง",
+    duration: "2 นาที 56 วินาที",
+    durationSeconds: 176,
+    durationFormatted: "2 น. 56 วิ.",
+    durationDisplay: "2 นาที 56 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เก้าอี้สำหรับช่วยพยุง",
@@ -343,7 +450,10 @@ const EXERCISES = [
     title: "ท่าเหยียดเข่าขณะนั่ง",
     englishTitle: "Knee Extension",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "10 ครั้งต่อข้าง",
+    duration: "3 นาที 36 วินาที",
+    durationSeconds: 216,
+    durationFormatted: "3 น. 36 วิ.",
+    durationDisplay: "3 นาที 36 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "เก้าอี้มีพนักพิง",
@@ -366,7 +476,10 @@ const EXERCISES = [
     title: "ท่าบิดลำตัวซ้าย–ขวาขณะนั่ง",
     englishTitle: "Seated Torso Twist",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "8–10 ครั้ง",
+    duration: "48 วินาที",
+    durationSeconds: 48,
+    durationFormatted: "48 วิ.",
+    durationDisplay: "48 วินาที",
     restTime: "พัก 10–15 วินาที",
     frequency: "ทำได้ทุกวัน",
     equipment: "เก้าอี้มีพนักพิง",
@@ -389,7 +502,10 @@ const EXERCISES = [
     title: "ท่าฝึกยืนทรงตัว",
     englishTitle: "Balance Stance",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "2–3 รอบ",
+    duration: "2 นาที 56 วินาที",
+    durationSeconds: 176,
+    durationFormatted: "2 น. 56 วิ.",
+    durationDisplay: "2 นาที 56 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "ทำได้ทุกวัน",
     equipment: "เก้าอี้สำหรับช่วยพยุง",
@@ -412,7 +528,10 @@ const EXERCISES = [
     title: "การเต้นบาสโลบเพื่อสุขภาพ",
     englishTitle: "Community Pasolob Dance",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "15–30 นาที (3–5 เพลง)",
+    duration: "3 นาที 48 วินาที",
+    durationSeconds: 228,
+    durationFormatted: "3 น. 48 วิ.",
+    durationDisplay: "3 นาที 48 วินาที",
     restTime: "พัก 30–60 วินาทีระหว่างเพลง",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์ (เปิดดนตรีจังหวะบาสโลบ)",
@@ -435,7 +554,10 @@ const EXERCISES = [
     title: "ท่ากระโดดเชือก",
     englishTitle: "Jump Rope",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "1–2 นาที (หรือ 50–100 ครั้ง)",
+    duration: "3 นาที 17 วินาที",
+    durationSeconds: 197,
+    durationFormatted: "3 น. 17 วิ.",
+    durationDisplay: "3 นาที 17 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "เชือกกระโดด (หรือเชือกไร้สาย)",
@@ -458,7 +580,10 @@ const EXERCISES = [
     title: "ท่าซิทอัพ",
     englishTitle: "Sit-up",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–15 ครั้ง (ทำ 2–3 เซ็ต)",
+    duration: "3 นาที 20 วินาที",
+    durationSeconds: 200,
+    durationFormatted: "3 น. 20 วิ.",
+    durationDisplay: "3 นาที 20 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "เสื่อโยคะหรือเบาะรองนอน",
@@ -481,7 +606,10 @@ const EXERCISES = [
     title: "ยกเข่าสูงแตะมือ High Knees",
     englishTitle: "High Knees",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "30–45 วินาที (ทำ 3 เซ็ต)",
+    duration: "3 นาที 13 วินาที",
+    durationSeconds: 193,
+    durationFormatted: "3 น. 13 วิ.",
+    durationDisplay: "3 นาที 13 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -504,7 +632,10 @@ const EXERCISES = [
     title: "ท่าตีเข่า",
     englishTitle: "Standing Knee Strike",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "ข้างละ 12–15 ครั้ง (ทำ 2–3 เซ็ต)",
+    duration: "3 นาที 20 วินาที",
+    durationSeconds: 200,
+    durationFormatted: "3 น. 20 วิ.",
+    durationDisplay: "3 นาที 20 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -527,7 +658,10 @@ const EXERCISES = [
     title: "แพลงก์",
     englishTitle: "Plank",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "20–45 วินาที (ทำ 2–3 เซ็ต)",
+    duration: "2 นาที 51 วินาที",
+    durationSeconds: 171,
+    durationFormatted: "2 น. 51 วิ.",
+    durationDisplay: "2 นาที 51 วินาที",
     restTime: "พัก 30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "เสื่อโยคะหรือเบาะรองนอน",
@@ -550,7 +684,10 @@ const EXERCISES = [
     title: "ท่าก้าวขาด้านข้างพร้อมยกแขนเหนือศีรษะ",
     englishTitle: "Side Step Jack",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "30–60 วินาที (ทำ 3 เซ็ต)",
+    duration: "1 นาที 27 วินาที",
+    durationSeconds: 87,
+    durationFormatted: "1 น. 27 วิ.",
+    durationDisplay: "1 นาที 27 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -573,7 +710,10 @@ const EXERCISES = [
     title: "ย่อลุกชก",
     englishTitle: "Squat to Punch",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–12 ครั้ง (ทำ 3 เซ็ต)",
+    duration: "2 นาที 20 วินาที",
+    durationSeconds: 140,
+    durationFormatted: "2 น. 20 วิ.",
+    durationDisplay: "2 นาที 20 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -598,7 +738,10 @@ const WARMUP_EXERCISE = {
   id: "routine-warmup",
   title: "ท่าบริหารร่างกายก่อนออกกำลังกาย (Warm-up)",
   englishTitle: "Warm-up Routine",
-  duration: "5–10 นาที",
+  duration: "2 นาที 48 วินาที",
+    durationSeconds: 168,
+    durationFormatted: "2 น. 48 วิ.",
+    durationDisplay: "2 นาที 48 วินาที",
   restTime: "ไม่จำเป็นต้องพักนาน",
   frequency: "ก่อนออกกำลังกายทุกครั้ง",
   equipment: "ไม่ใช้อุปกรณ์",
@@ -621,7 +764,10 @@ const COOLDOWN_EXERCISE = {
   id: "routine-cooldown",
   title: "ท่ายืดเหยียดร่างกายหลังออกกำลังกาย (Cool Down)",
   englishTitle: "Cool Down & Static Stretch",
-  duration: "5–10 นาที",
+  duration: "2 นาที 11 วินาที",
+    durationSeconds: 131,
+    durationFormatted: "2 น. 11 วิ.",
+    durationDisplay: "2 นาที 11 วินาที",
   restTime: "ค้างแต่ละท่า 15–20 วินาที",
   frequency: "หลังออกกำลังกายเสร็จสิ้นทุกครั้ง",
   equipment: "ไม่ใช้อุปกรณ์",

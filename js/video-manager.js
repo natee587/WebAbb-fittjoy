@@ -28,24 +28,31 @@ class VideoManager {
   recordRoutineTime(routineExercise, customSec = null) {
     if (!routineExercise || !window.userStore) return "";
     
-    // ดึงเวลาจริงจากคลิปวิดีโอ หรือ customSec
+    // ดึงเวลาจริงจากตาราง EXERCISE_EXACT_DURATIONS หรือคลิปวิดีโอ หรือ customSec
     let durSec = customSec;
     if (durSec === null) {
-      if (this.localVideoEl && this.localVideoEl.duration) {
+      const exact = (typeof getExactExerciseDuration === 'function')
+        ? getExactExerciseDuration(routineExercise)
+        : null;
+      if (exact && exact.durationSeconds) {
+        durSec = exact.durationSeconds;
+      } else if (routineExercise.durationSeconds) {
+        durSec = routineExercise.durationSeconds;
+      } else if (this.localVideoEl && this.localVideoEl.duration) {
         durSec = Math.round(this.localVideoEl.duration);
       } else if (this.player && typeof this.player.getDuration === "function" && this.player.getDuration() > 0) {
         durSec = Math.round(this.player.getDuration());
       } else {
-        durSec = 60; // ขั้นต่ำ 1 นาที (60 วินาที) หากยังไม่มีคลิป
+        durSec = 60;
       }
     }
 
-    // หากความยาวคลิปไม่ถึง 1 นาที ให้ปัดขึ้นเป็น 1 นาทีเต็ม (60 วินาที)
-    durSec = Math.max(60, Math.round(durSec || 60));
+    durSec = Math.round(durSec || 60);
 
     const mins = Math.floor(durSec / 60);
     const secs = durSec % 60;
     const durFormatted = secs > 0 ? `${mins} น. ${secs} วิ.` : `${mins} น.`;
+    const durDisplay = secs > 0 ? `${mins} นาที ${secs} วินาที` : `${mins} นาที`;
 
     const isWarmup = routineExercise.id === "routine-warmup";
     const title = isWarmup 
@@ -57,6 +64,7 @@ class VideoManager {
       durationSeconds: durSec,
       durationMinutes: durSec / 60,
       durationFormatted: durFormatted,
+      durationDisplay: durDisplay,
       ageGroup: userStore.profile ? userStore.profile.ageGroup || "adult" : "adult",
       ageGroupLabel: isWarmup ? "อบอุ่นร่างกาย" : "ยืดเหยียดผ่อนคลาย",
       heartRate: "-",
@@ -67,7 +75,9 @@ class VideoManager {
         : "ช่วยคลายกล้ามเนื้อ ลดอาการปวดเมื่อย และปรับอัตราการเต้นของหัวใจสู่สภาวะปกติ"
     });
 
-    if (window.app && window.app.renderDailyStatCard) {
+    if (window.app && window.app.refreshAllViews) {
+      window.app.refreshAllViews();
+    } else if (window.app && window.app.renderDailyStatCard) {
       window.app.renderDailyStatCard();
     }
 
@@ -495,12 +505,15 @@ class VideoManager {
         clearInterval(this.localSeekInterval);
         this.localSeekInterval = null;
       }
-      let durationSec = 60;
-      if (this.localVideoEl) {
-        const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
-        durationSec = Math.max(60, Math.round(rawDur));
-      }
       const ex = this.currentExercise;
+      const exact = (typeof getExactExerciseDuration === 'function')
+        ? getExactExerciseDuration(ex)
+        : null;
+      let durationSec = exact?.durationSeconds || ex?.durationSeconds || 60;
+      if (this.localVideoEl && (!exact || !exact.durationSeconds)) {
+        const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
+        if (rawDur > 0) durationSec = Math.round(rawDur);
+      }
       if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
         if (!this.routineRecordedThisSession) {
           this.routineRecordedThisSession = true;
@@ -585,12 +598,15 @@ class VideoManager {
     } else if (event.data === YT.PlayerState.ENDED) {
       // ดูคลิปจนจบ 100% -> ปลดล็อกระบบวัดชีพจรหลังออกกำลังกายทันที!
       this.stopSeekMonitor();
-      let durationSec = 60;
-      if (this.player && typeof this.player.getDuration === "function") {
-        const rawDur = this.player.getDuration();
-        durationSec = Math.max(60, Math.round(rawDur || 0));
-      }
       const ex = this.currentExercise;
+      const exact = (typeof getExactExerciseDuration === 'function')
+        ? getExactExerciseDuration(ex)
+        : null;
+      let durationSec = exact?.durationSeconds || ex?.durationSeconds || 60;
+      if (this.player && typeof this.player.getDuration === "function" && (!exact || !exact.durationSeconds)) {
+        const rawDur = this.player.getDuration();
+        if (rawDur > 0) durationSec = Math.round(rawDur);
+      }
       if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
         if (!this.routineRecordedThisSession) {
           this.routineRecordedThisSession = true;

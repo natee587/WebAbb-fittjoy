@@ -818,9 +818,16 @@ class PulseTimer {
           const exTitle = currentEx?.title 
             ? `${currentEx.title} (ประเมินด้วยการพูด)` 
             : "การประเมินการพูด (Talk Test)";
-          const durationMins = currentEx?.duration 
-            ? (parseInt(currentEx.duration) || 10) 
-            : 5;
+          
+          const exact = (typeof getExactExerciseDuration === 'function')
+            ? getExactExerciseDuration(currentEx)
+            : null;
+          const durSec = (window.postWorkoutModal && window.postWorkoutModal.recordedDurationSeconds)
+            || exact?.durationSeconds
+            || currentEx?.durationSeconds
+            || 60;
+          const durFormatted = exact?.durationFormatted || `${Math.floor(durSec / 60)} น.`;
+          const durDisplay = exact?.durationDisplay || `${Math.floor(durSec / 60)} นาที`;
 
           const levelLabel = level === "light" 
             ? "ระดับเบา (พูดได้สบาย)" 
@@ -829,7 +836,10 @@ class PulseTimer {
           // บันทึกลง User Store
           userStore.addRecord({
             exerciseTitle: exTitle,
-            durationMinutes: durationMins,
+            durationSeconds: durSec,
+            durationMinutes: durSec / 60,
+            durationFormatted: durFormatted,
+            durationDisplay: durDisplay,
             ageGroup: ageKey,
             ageGroupLabel: (typeof AGE_CRITERIA !== "undefined" && AGE_CRITERIA[ageKey]) ? AGE_CRITERIA[ageKey].label : ageGroupText,
             heartRate: levelLabel,
@@ -855,14 +865,18 @@ class PulseTimer {
               window.postWorkoutModal.close();
             }
             // รีเฟรชส่วนต่างๆ ในแอป
-            if (window.app && window.app.renderProfileView) {
-              window.app.renderProfileView();
-            }
-            if (window.app && window.app.renderDailyStatCard) {
-              window.app.renderDailyStatCard();
-            }
-            if (window.workoutCalendar && window.workoutCalendar.render) {
-              window.workoutCalendar.render();
+            if (window.app && window.app.refreshAllViews) {
+              window.app.refreshAllViews();
+            } else {
+              if (window.app && window.app.renderProfileView) {
+                window.app.renderProfileView();
+              }
+              if (window.app && window.app.renderDailyStatCard) {
+                window.app.renderDailyStatCard();
+              }
+              if (window.workoutCalendar && window.workoutCalendar.render) {
+                window.workoutCalendar.render();
+              }
             }
           }, 1200);
         });

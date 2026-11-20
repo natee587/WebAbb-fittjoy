@@ -31,14 +31,18 @@ class PostWorkoutModal {
     });
   }
 
-  open(exerciseData, durationSec = 60) {
+  open(exerciseData, durationSec = null) {
     this.currentExercise = exerciseData || {
       title: "ออกกำลังกายตามคลิป",
       duration: "10 นาที"
     };
 
-    // คิดเวลาสะสมจากความยาวคลิปจริง (ปัดขึ้นเป็น 60 วินาที หากไม่ถึง 1 นาที)
-    this.recordedDurationSeconds = Math.max(60, Math.round(durationSec || 60));
+    // คิดเวลาสะสมจากความยาวคลิปจริงตาม EXERCISE_EXACT_DURATIONS
+    const exact = (typeof getExactExerciseDuration === 'function')
+      ? getExactExerciseDuration(exerciseData)
+      : null;
+    const finalDurSec = durationSec || exact?.durationSeconds || exerciseData?.durationSeconds || 60;
+    this.recordedDurationSeconds = Math.round(finalDurSec);
 
     audioCues.playCelebration();
     this.selectedAgeGroup = userStore.profile.ageGroup || "adult";
@@ -283,12 +287,19 @@ class PostWorkoutModal {
 
         setTimeout(() => {
           this.close();
-          // รีเฟรชหน้าโปรไฟล์หากเปิดอยู่
-          if (window.app && window.app.renderProfileView) {
-            window.app.renderProfileView();
-          }
-          if (window.app && window.app.renderDailyStatCard) {
-            window.app.renderDailyStatCard();
+          // รีเฟรชหน้าทั้งหมดในแอป (หน้าแรก, ปฏิทิน, โปรไฟล์)
+          if (window.app && window.app.refreshAllViews) {
+            window.app.refreshAllViews();
+          } else {
+            if (window.app && window.app.renderProfileView) {
+              window.app.renderProfileView();
+            }
+            if (window.app && window.app.renderDailyStatCard) {
+              window.app.renderDailyStatCard();
+            }
+            if (window.workoutCalendar && window.workoutCalendar.render) {
+              window.workoutCalendar.render();
+            }
           }
 
           // ตรวจสอบระบบ Cool Down อัตโนมัติ: หากเวลาสะสมวันนี้ถึงเป้าหมายแล้ว ให้เด้งคลิป Cool Down สำหรับผู้ใช้นี้

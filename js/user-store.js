@@ -109,6 +109,40 @@ class UserStore {
 
     // ล้างข้อมูลจำลองโหมดทดสอบออกอัตโนมัติ เพื่อให้แสดงเฉพาะประวัติจริงของผู้ใช้
     this.cleanupAllDemoData();
+    this.normalizeHistoryDurations();
+  }
+
+  // ปรับปรุงประวัติเก่าให้ตรงกับเวลาจริงของคลิปวิดีโอ (แก้ปัญหาเดิมที่เคยบันทึกผิดเป็น 15 นาที หรือไม่มี durationSeconds)
+  normalizeHistoryDurations() {
+    let modified = false;
+    this.users.forEach(u => {
+      if (!u.history || !Array.isArray(u.history)) return;
+      u.history.forEach(r => {
+        const exact = (typeof getExactExerciseDuration === 'function')
+          ? getExactExerciseDuration(r.exerciseTitle)
+          : (window.EXERCISE_EXACT_DURATIONS && Object.values(window.EXERCISE_EXACT_DURATIONS).find(item => r.exerciseTitle && (r.exerciseTitle === item.title || r.exerciseTitle.startsWith(item.title) || item.title.startsWith(r.exerciseTitle))));
+
+        if (exact) {
+          // ถ้าไม่มี durationSeconds หรือเคยเป็น 15 นาที (จากบั๊กเดิม) หรือค่าไม่ตรงกับเวลาคลิป
+          if (!r.durationSeconds || (r.durationMinutes === 15 && exact.durationSeconds !== 900) || Math.abs((r.durationSeconds || 0) - exact.durationSeconds) > 2) {
+            r.durationSeconds = exact.durationSeconds;
+            r.durationMinutes = exact.durationMinutes;
+            r.durationFormatted = exact.durationFormatted;
+            r.durationDisplay = exact.durationDisplay;
+            modified = true;
+          }
+        } else if (r.durationSeconds && !r.durationFormatted) {
+          const m = Math.floor(r.durationSeconds / 60);
+          const s = r.durationSeconds % 60;
+          r.durationFormatted = s > 0 ? (m > 0 ? `${m} น. ${s} วิ.` : `${s} วิ.`) : `${m} น.`;
+          r.durationDisplay = s > 0 ? (m > 0 ? `${m} นาที ${s} วินาที` : `${s} วินาที`) : `${m} นาที`;
+          modified = true;
+        }
+      });
+    });
+    if (modified) {
+      this.saveAllUsers();
+    }
   }
 
   cleanupAllDemoData() {
@@ -424,6 +458,38 @@ class UserStore {
     const d = String(now.getDate()).padStart(2, '0');
     const isoDate = `${y}-${m}-${d}`;
 
+    // ดึงเวลาจริงที่ถูกต้องจากฐานข้อมูลกลาง EXERCISE_EXACT_DURATIONS
+    let durSec = record.durationSeconds;
+    let durFormatted = record.durationFormatted;
+    let durDisplay = record.durationDisplay;
+
+    const exact = (typeof getExactExerciseDuration === 'function')
+      ? getExactExerciseDuration(record.exerciseTitle)
+      : (window.EXERCISE_EXACT_DURATIONS && Object.values(window.EXERCISE_EXACT_DURATIONS).find(item => record.exerciseTitle && (record.exerciseTitle === item.title || record.exerciseTitle.startsWith(item.title) || item.title.startsWith(record.exerciseTitle))));
+
+    if (exact) {
+      if (!durSec || Math.abs(durSec - exact.durationSeconds) > 2) {
+        durSec = exact.durationSeconds;
+      }
+      durFormatted = durFormatted || exact.durationFormatted;
+      durDisplay = durDisplay || exact.durationDisplay;
+    }
+
+    if (!durSec) {
+      if (record.durationMinutes) {
+        durSec = Math.round(Number(record.durationMinutes) * 60);
+      } else {
+        durSec = 60;
+      }
+    }
+
+    if (!durFormatted) {
+      const mNum = Math.floor(durSec / 60);
+      const sNum = durSec % 60;
+      durFormatted = sNum > 0 ? (mNum > 0 ? `${mNum} น. ${sNum} วิ.` : `${sNum} วิ.`) : `${mNum} น.`;
+      durDisplay = sNum > 0 ? (mNum > 0 ? `${mNum} นาที ${sNum} วินาที` : `${sNum} วินาที`) : `${mNum} นาที`;
+    }
+
     const newRecord = {
       id: "rec-" + Date.now(),
       isoDate: isoDate,
@@ -435,7 +501,11 @@ class UserStore {
         minute: "2-digit"
       }) + " น.",
       timeStr: now.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) + " น.",
-      ...record
+      ...record,
+      durationSeconds: durSec,
+      durationMinutes: durSec / 60,
+      durationFormatted: durFormatted,
+      durationDisplay: durDisplay || durFormatted
     };
 
     u.history.unshift(newRecord);
@@ -448,16 +518,12 @@ class UserStore {
     return (this.history || []).filter(item => item.isoDate === isoDateStr);
   }
 
-  // คำนวณสถิติสะสมสำหรับ "วันนี้" โดยจะรีเซ็ตอัตโนมัติเมื่อขึ้นวันใหม่ (Daily Reset)
-  getTodayStats() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const todayIso = `${y}-${m}-${d}`;
-
-    const todayRecords = this.getRecordsByDate(todayIso);
-    const totalSeconds = todayRecords.reduce((sum, r) => {
+  // ตรวจสอบผลสถานะของวันใดวันหนึ่ง (isoDate: YYYY-MM-DD)
+  // เกณฑ์รายวัน: ผู้ใหญ่/ผู้สูงอายุ 30 นาที, วัยรุ่น 60 นาที
+  // < เกณฑ์ = สีแดง (failed), >= เกณฑ์ = สีเขียว (passed)
+  getDayStatus(isoDateStr) {
+    const records = this.getRecordsByDate(isoDateStr);
+    const totalSeconds = records.reduce((sum, r) => {
       if (r.durationSeconds) return sum + Number(r.durationSeconds);
       if (r.durationMinutes) return sum + Math.round(Number(r.durationMinutes) * 60);
       return sum + 60;
@@ -468,14 +534,94 @@ class UserStore {
 
     const totalMins = Math.floor(totalSeconds / 60);
     const remSec = totalSeconds % 60;
+
     let totalFormatted = "";
+    let totalFormattedShort = "";
     if (totalSeconds === 0) {
       totalFormatted = "0 นาที";
+      totalFormattedShort = "0 น.";
     } else if (remSec > 0) {
-      totalFormatted = `${totalMins} นาที ${remSec} วินาที`;
+      totalFormatted = totalMins > 0 ? `${totalMins} นาที ${remSec} วินาที` : `${remSec} วินาที`;
+      totalFormattedShort = totalMins > 0 ? `${totalMins} น. ${remSec} วิ.` : `${remSec} วิ.`;
     } else {
       totalFormatted = `${totalMins} นาที`;
+      totalFormattedShort = `${totalMins} น.`;
     }
+
+    const remainingSec = Math.max(0, targetSeconds - totalSeconds);
+    const remMins = Math.floor(remainingSec / 60);
+    const remSecOnly = remainingSec % 60;
+
+    let remainingFormatted = "";
+    let remainingFormattedShort = "";
+    if (remainingSec === 0) {
+      remainingFormatted = "ครบตามเกณฑ์แล้ว";
+      remainingFormattedShort = "ครบเกณฑ์";
+    } else if (remSecOnly > 0) {
+      remainingFormatted = remMins > 0 ? `${remMins} นาที ${remSecOnly} วินาที` : `${remSecOnly} วินาที`;
+      remainingFormattedShort = remMins > 0 ? `${remMins} น. ${remSecOnly} วิ.` : `${remSecOnly} วิ.`;
+    } else {
+      remainingFormatted = `${remMins} นาที`;
+      remainingFormattedShort = `${remMins} น.`;
+    }
+
+    if (totalSeconds === 0) {
+      return {
+        isoDate: isoDateStr,
+        hasWorkout: false,
+        totalSeconds: 0,
+        totalMinutes: 0,
+        totalMins: 0,
+        remSec: 0,
+        totalFormatted: "0 นาที",
+        totalFormattedShort: "0 น.",
+        targetMinutes,
+        targetSeconds,
+        isPassed: false,
+        status: "none",
+        remainingMinutes: targetMinutes,
+        remainingSeconds: targetSeconds,
+        remainingFormatted: `${targetMinutes} นาที`,
+        remainingFormattedShort: `${targetMinutes} น.`,
+        percent: 0,
+        records: []
+      };
+    }
+
+    const isPassed = totalSeconds >= targetSeconds;
+    return {
+      isoDate: isoDateStr,
+      hasWorkout: true,
+      totalSeconds,
+      totalMinutes: totalMins,
+      totalMinutesDecimal: (totalSeconds / 60).toFixed(1),
+      totalMins,
+      remSec,
+      totalFormatted,
+      totalFormattedShort,
+      targetMinutes,
+      targetSeconds,
+      isPassed,
+      status: isPassed ? "passed" : "failed",
+      remainingMinutes: Math.ceil(remainingSec / 60),
+      remainingSeconds: remainingSec,
+      remainingFormatted,
+      remainingFormattedShort,
+      percent: Math.min(100, Math.round((totalSeconds / targetSeconds) * 100)),
+      records
+    };
+  }
+
+  // คำนวณสถิติสะสมสำหรับ "วันนี้" โดยจะรีเซ็ตอัตโนมัติเมื่อขึ้นวันใหม่ (Daily Reset)
+  // ให้ผลตรงกับ getDayStatus() 100% สอดคล้องกันทั้งหน้าแรกและหน้าปฏิทิน
+  getTodayStats() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const todayIso = `${y}-${m}-${d}`;
+
+    const dayStatus = this.getDayStatus(todayIso);
 
     return {
       todayIso,
@@ -485,15 +631,8 @@ class UserStore {
         month: "long",
         day: "numeric"
       }),
-      totalSeconds,
-      totalMinutes: totalMins,
-      totalMinutesDecimal: (totalSeconds / 60).toFixed(1),
-      totalFormatted,
-      targetMinutes,
-      targetSeconds,
-      isGoalReached: totalSeconds >= targetSeconds,
-      percent: Math.min(100, Math.round((totalSeconds / targetSeconds) * 100)),
-      records: todayRecords
+      ...dayStatus,
+      isGoalReached: dayStatus.isPassed
     };
   }
 
@@ -506,7 +645,15 @@ class UserStore {
     });
 
     const uniqueDays = new Set(records.map(r => r.isoDate)).size;
-    const totalMinutes = records.reduce((sum, r) => sum + (Number(r.durationMinutes) || 0), 0);
+    const totalSeconds = records.reduce((sum, r) => {
+      if (r.durationSeconds) return sum + Number(r.durationSeconds);
+      if (r.durationMinutes) return sum + Math.round(Number(r.durationMinutes) * 60);
+      return sum + 60;
+    }, 0);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const remSec = totalSeconds % 60;
+    const totalFormatted = remSec > 0 ? `${totalMinutes} น. ${remSec} วิ.` : `${totalMinutes} นาที`;
+
     const avgHeartRate = records.length > 0
       ? Math.round(records.reduce((sum, r) => sum + (Number(r.heartRate) || 0), 0) / records.length)
       : 0;
@@ -514,41 +661,10 @@ class UserStore {
     return {
       recordCount: records.length,
       activeDaysCount: uniqueDays,
+      totalSeconds,
       totalMinutes,
+      totalFormatted,
       avgHeartRate,
-      records
-    };
-  }
-
-  // ตรวจสอบผลสถานะของวันใดวันหนึ่ง (isoDate: YYYY-MM-DD)
-  // เกณฑ์รายวัน: ผู้ใหญ่/ผู้สูงอายุ 30 นาที, วัยรุ่น 60 นาที
-  // < เกณฑ์ = สีแดง (failed), >= เกณฑ์ = สีเขียว (passed)
-  getDayStatus(isoDateStr) {
-    const records = this.getRecordsByDate(isoDateStr);
-    const totalMinutes = records.reduce((sum, r) => sum + (Number(r.durationMinutes) || 0), 0);
-    const targetMinutes = this.getDailyTargetMinutes();
-
-    if (totalMinutes === 0) {
-      return {
-        isoDate: isoDateStr,
-        hasWorkout: false,
-        totalMinutes: 0,
-        targetMinutes,
-        isPassed: false,
-        status: "none",
-        records: []
-      };
-    }
-
-    const isPassed = totalMinutes >= targetMinutes;
-    return {
-      isoDate: isoDateStr,
-      hasWorkout: true,
-      totalMinutes,
-      targetMinutes,
-      isPassed,
-      status: isPassed ? "passed" : "failed",
-      remainingMinutes: Math.max(0, targetMinutes - totalMinutes),
       records
     };
   }
@@ -660,7 +776,14 @@ class UserStore {
   }
 
   getWeeklyTotalMinutes() {
-    return (this.history || []).reduce((sum, item) => sum + (Number(item.durationMinutes) || 0), 0);
+    const totalSec = (this.history || []).reduce((sum, item) => {
+      if (item.durationSeconds) return sum + Number(item.durationSeconds);
+      if (item.durationMinutes) return sum + Math.round(Number(item.durationMinutes) * 60);
+      return sum + 60;
+    }, 0);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return s > 0 ? `${m} นาที ${s} วินาที` : `${m}`;
   }
 
   printHealthReport(filterDate = null, filterDateLabel = "") {
@@ -674,8 +797,8 @@ class UserStore {
         <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center;">${idx + 1}</td>
         <td style="padding: 8px; border: 1px solid #cbd5e1;">${item.date}</td>
         <td style="padding: 8px; border: 1px solid #cbd5e1;"><strong>${item.exerciseTitle}</strong></td>
-        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center;">${item.durationMinutes} นาที</td>
-        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #0284c7;">${item.heartRate} bpm</td>
+        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center;">${item.durationDisplay || item.durationFormatted || (item.durationMinutes + ' นาที')}</td>
+        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #0284c7;">${typeof item.heartRate === 'number' ? item.heartRate + ' bpm' : (item.heartRate || '-')}</td>
         <td style="padding: 8px; border: 1px solid #cbd5e1;">${item.status}</td>
       </tr>
     `).join("");

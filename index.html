@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -7471,6 +7471,77 @@ const AGE_CRITERIA = {
   }
 };
 
+// ========================================================================
+// ตารางระยะเวลาความยาวคลิปวิดีโอที่แม่นยำตามเวลาจริง (หน่วย: วินาที)
+// ========================================================================
+const EXERCISE_EXACT_DURATIONS = {
+  "routine-warmup": { id: "routine-warmup", title: "ท่าบริหารร่างกายก่อนออกกำลังกาย (Warm-up)", durationSeconds: 168, durationMinutes: 168 / 60, durationFormatted: "2 น. 48 วิ.", durationDisplay: "2 นาที 48 วินาที" },
+  "routine-cooldown": { id: "routine-cooldown", title: "ท่ายืดเหยียดร่างกายหลังออกกำลังกาย (Cool Down)", durationSeconds: 131, durationMinutes: 131 / 60, durationFormatted: "2 น. 11 วิ.", durationDisplay: "2 นาที 11 วินาที" },
+  "jumping-jacks-youth": { id: "jumping-jacks-youth", title: "ท่ากระโดดตบ", durationSeconds: 180, durationMinutes: 3, durationFormatted: "3 น.", durationDisplay: "3 นาที" },
+  "squat-youth": { id: "squat-youth", title: "ท่าย่อตัว", durationSeconds: 138, durationMinutes: 138 / 60, durationFormatted: "2 น. 18 วิ.", durationDisplay: "2 นาที 18 วินาที" },
+  "wall-pushup": { id: "wall-pushup", title: "ท่าวิดพื้นกับกำแพง", durationSeconds: 36, durationMinutes: 36 / 60, durationFormatted: "36 วิ.", durationDisplay: "36 วินาที" },
+  "running-in-place-youth": { id: "running-in-place-youth", title: "ท่าวิ่งอยู่กับที่", durationSeconds: 197, durationMinutes: 197 / 60, durationFormatted: "3 น. 17 วิ.", durationDisplay: "3 นาที 17 วินาที" },
+  "single-leg-hop-youth": { id: "single-leg-hop-youth", title: "ท่ากระโดดขาเดียวสลับข้าง", durationSeconds: 174, durationMinutes: 174 / 60, durationFormatted: "2 น. 54 วิ.", durationDisplay: "2 นาที 54 วินาที" },
+  "reverse-lunge-adult": { id: "reverse-lunge-adult", title: "ท่าก้าวขาถอยหลัง", durationSeconds: 162, durationMinutes: 162 / 60, durationFormatted: "2 น. 42 วิ.", durationDisplay: "2 นาที 42 วินาที" },
+  "glute-bridge-adult": { id: "glute-bridge-adult", title: "ท่ายกสะโพก", durationSeconds: 194, durationMinutes: 194 / 60, durationFormatted: "3 น. 14 วิ.", durationDisplay: "3 นาที 14 วินาที" },
+  "calf-raises": { id: "calf-raises", title: "ท่าเขย่งปลายเท้า", durationSeconds: 181, durationMinutes: 181 / 60, durationFormatted: "3 น. 1 วิ.", durationDisplay: "3 นาที 1 วินาที" },
+  "lateral-raise-adult": { id: "lateral-raise-adult", title: "ท่ากางแขนยกขวดน้ำ", durationSeconds: 83, durationMinutes: 83 / 60, durationFormatted: "1 น. 23 วิ.", durationDisplay: "1 นาที 23 วินาที" },
+  "bird-dog-adult": { id: "bird-dog-adult", title: "ท่าเหยียดแขนและขาสลับกัน", durationSeconds: 159, durationMinutes: 159 / 60, durationFormatted: "2 น. 39 วิ.", durationDisplay: "2 นาที 39 วินาที" },
+  "sit-to-stand-senior": { id: "sit-to-stand-senior", title: "ท่าลุก–นั่งจากเก้าอี้", durationSeconds: 184, durationMinutes: 184 / 60, durationFormatted: "3 น. 4 วิ.", durationDisplay: "3 นาที 4 วินาที" },
+  "side-leg-raise-senior": { id: "side-leg-raise-senior", title: "ท่ากางขาออกด้านข้าง", durationSeconds: 176, durationMinutes: 176 / 60, durationFormatted: "2 น. 56 วิ.", durationDisplay: "2 นาที 56 วินาที" },
+  "knee-extension-senior": { id: "knee-extension-senior", title: "ท่าเหยียดเข่าขณะนั่ง", durationSeconds: 216, durationMinutes: 216 / 60, durationFormatted: "3 น. 36 วิ.", durationDisplay: "3 นาที 36 วินาที" },
+  "seated-torso-twist-senior": { id: "seated-torso-twist-senior", title: "ท่าบิดลำตัวซ้าย–ขวาขณะนั่ง", durationSeconds: 48, durationMinutes: 48 / 60, durationFormatted: "48 วิ.", durationDisplay: "48 วินาที" },
+  "balance-stance-senior": { id: "balance-stance-senior", title: "ท่าฝึกยืนทรงตัว", durationSeconds: 176, durationMinutes: 176 / 60, durationFormatted: "2 น. 56 วิ.", durationDisplay: "2 นาที 56 วินาที" },
+  "pasolob-community-dance": { id: "pasolob-community-dance", title: "การเต้นบาสโลบเพื่อสุขภาพ", durationSeconds: 228, durationMinutes: 228 / 60, durationFormatted: "3 น. 48 วิ.", durationDisplay: "3 นาที 48 วินาที" },
+  "jump-rope-cardio": { id: "jump-rope-cardio", title: "ท่ากระโดดเชือก", durationSeconds: 197, durationMinutes: 197 / 60, durationFormatted: "3 น. 17 วิ.", durationDisplay: "3 นาที 17 วินาที" },
+  "sit-up": { id: "sit-up", title: "ท่าซิทอัพ", durationSeconds: 200, durationMinutes: 200 / 60, durationFormatted: "3 น. 20 วิ.", durationDisplay: "3 นาที 20 วินาที" },
+  "high-knees": { id: "high-knees", title: "ยกเข่าสูงแตะมือ High Knees", durationSeconds: 193, durationMinutes: 193 / 60, durationFormatted: "3 น. 13 วิ.", durationDisplay: "3 นาที 13 วินาที" },
+  "knee-strike": { id: "knee-strike", title: "ท่าตีเข่า", durationSeconds: 200, durationMinutes: 200 / 60, durationFormatted: "3 น. 20 วิ.", durationDisplay: "3 นาที 20 วินาที" },
+  "plank": { id: "plank", title: "แพลงก์", durationSeconds: 171, durationMinutes: 171 / 60, durationFormatted: "2 น. 51 วิ.", durationDisplay: "2 นาที 51 วินาที" },
+  "side-step-jack": { id: "side-step-jack", title: "ท่าก้าวขาด้านข้างพร้อมยกแขนเหนือศีรษะ", durationSeconds: 87, durationMinutes: 87 / 60, durationFormatted: "1 น. 27 วิ.", durationDisplay: "1 นาที 27 วินาที" },
+  "squat-punch": { id: "squat-punch", title: "ย่อลุกชก", durationSeconds: 140, durationMinutes: 140 / 60, durationFormatted: "2 น. 20 วิ.", durationDisplay: "2 นาที 20 วินาที" }
+};
+window.EXERCISE_EXACT_DURATIONS = EXERCISE_EXACT_DURATIONS;
+
+function getExactExerciseDuration(exerciseOrIdOrTitle) {
+  if (!exerciseOrIdOrTitle) return { durationSeconds: 60, durationMinutes: 1, durationFormatted: "1 น.", durationDisplay: "1 นาที" };
+  if (typeof exerciseOrIdOrTitle === "string") {
+    if (EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle]) {
+      return EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle];
+    }
+    for (const key in EXERCISE_EXACT_DURATIONS) {
+      const item = EXERCISE_EXACT_DURATIONS[key];
+      if (item.title === exerciseOrIdOrTitle || exerciseOrIdOrTitle.startsWith(item.title) || item.title.startsWith(exerciseOrIdOrTitle)) {
+        return item;
+      }
+    }
+  } else if (typeof exerciseOrIdOrTitle === "object") {
+    if (exerciseOrIdOrTitle.id && EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle.id]) {
+      return EXERCISE_EXACT_DURATIONS[exerciseOrIdOrTitle.id];
+    }
+    if (exerciseOrIdOrTitle.title) {
+      for (const key in EXERCISE_EXACT_DURATIONS) {
+        const item = EXERCISE_EXACT_DURATIONS[key];
+        if (item.title === exerciseOrIdOrTitle.title || exerciseOrIdOrTitle.title.startsWith(item.title) || item.title.startsWith(exerciseOrIdOrTitle.title)) {
+          return item;
+        }
+      }
+    }
+    if (exerciseOrIdOrTitle.durationSeconds) {
+      const s = exerciseOrIdOrTitle.durationSeconds;
+      const m = Math.floor(s / 60);
+      const rem = s % 60;
+      return {
+        durationSeconds: s,
+        durationMinutes: s / 60,
+        durationFormatted: rem > 0 ? (m > 0 ? (m + " น. " + rem + " วิ.") : (rem + " วิ.")) : (m + " น."),
+        durationDisplay: rem > 0 ? (m > 0 ? (m + " นาที " + rem + " วินาที") : (rem + " วินาที")) : (m + " นาที")
+      };
+    }
+  }
+  return { durationSeconds: 60, durationMinutes: 1, durationFormatted: "1 น.", durationDisplay: "1 นาที" };
+}
+window.getExactExerciseDuration = getExactExerciseDuration;
 // 2. คลังท่าออกกำลังกายแยกตาม 3 กลุ่มวัย (รวม 23 ท่า)
 const EXERCISES = [
   // ==========================================
@@ -7481,7 +7552,10 @@ const EXERCISES = [
     title: "ท่ากระโดดตบ",
     englishTitle: "Jumping Jacks",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "1–2 นาที",
+    duration: "3 นาที",
+    durationSeconds: 180,
+    durationFormatted: "3 น.",
+    durationDisplay: "3 นาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7504,7 +7578,10 @@ const EXERCISES = [
     title: "ท่าย่อตัว",
     englishTitle: "Squat",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "10–15 ครั้ง",
+    duration: "2 นาที 18 วินาที",
+    durationSeconds: 138,
+    durationFormatted: "2 น. 18 วิ.",
+    durationDisplay: "2 นาที 18 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7527,7 +7604,10 @@ const EXERCISES = [
     title: "ท่าวิดพื้นกับกำแพง",
     englishTitle: "Wall Push-up",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–15 ครั้ง (ทำ 2–3 เซ็ต)",
+    duration: "36 วินาที",
+    durationSeconds: 36,
+    durationFormatted: "36 วิ.",
+    durationDisplay: "36 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "กำแพงห้อง",
@@ -7550,7 +7630,10 @@ const EXERCISES = [
     title: "ท่าวิ่งอยู่กับที่",
     englishTitle: "Running in Place",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "2–3 นาที",
+    duration: "3 นาที 17 วินาที",
+    durationSeconds: 197,
+    durationFormatted: "3 น. 17 วิ.",
+    durationDisplay: "3 นาที 17 วินาที",
     restTime: "พัก 20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7573,7 +7656,10 @@ const EXERCISES = [
     title: "ท่ากระโดดขาเดียวสลับข้าง",
     englishTitle: "Single-Leg Hop",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)"],
-    duration: "1–2 นาที",
+    duration: "2 นาที 54 วินาที",
+    durationSeconds: 174,
+    durationFormatted: "2 น. 54 วิ.",
+    durationDisplay: "2 นาที 54 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7600,7 +7686,10 @@ const EXERCISES = [
     title: "ท่าก้าวขาถอยหลัง",
     englishTitle: "Reverse Lunge",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "8–10 ครั้งต่อข้าง",
+    duration: "2 นาที 42 วินาที",
+    durationSeconds: 162,
+    durationFormatted: "2 น. 42 วิ.",
+    durationDisplay: "2 นาที 42 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7623,7 +7712,10 @@ const EXERCISES = [
     title: "ท่ายกสะโพก",
     englishTitle: "Glute Bridge",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "12–15 ครั้ง",
+    duration: "3 นาที 14 วินาที",
+    durationSeconds: 194,
+    durationFormatted: "3 น. 14 วิ.",
+    durationDisplay: "3 นาที 14 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เบาะรองนอน / เสื่อโยคะ",
@@ -7646,7 +7738,10 @@ const EXERCISES = [
     title: "ท่าเขย่งปลายเท้า",
     englishTitle: "Calf Raises / Heel Raise",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "12–15 ครั้ง (1–2 รอบ)",
+    duration: "3 นาที 1 วินาที",
+    durationSeconds: 181,
+    durationFormatted: "3 น. 1 วิ.",
+    durationDisplay: "3 นาที 1 วินาที",
     restTime: "พัก 15–30 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์ (หรือใช้เก้าอี้ช่วยพยุง)",
@@ -7669,7 +7764,10 @@ const EXERCISES = [
     title: "ท่ากางแขนยกขวดน้ำ",
     englishTitle: "Lateral Raise",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–12 ครั้ง",
+    duration: "1 นาที 23 วินาที",
+    durationSeconds: 83,
+    durationFormatted: "1 น. 23 วิ.",
+    durationDisplay: "1 นาที 23 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "ขวดน้ำขนาดเล็ก 2 ขวด",
@@ -7692,7 +7790,10 @@ const EXERCISES = [
     title: "ท่าเหยียดแขนและขาสลับกัน",
     englishTitle: "Bird Dog",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10 ครั้งต่อข้าง",
+    duration: "2 นาที 39 วินาที",
+    durationSeconds: 159,
+    durationFormatted: "2 น. 39 วิ.",
+    durationDisplay: "2 นาที 39 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เบาะรองนอน / เสื่อโยคะ",
@@ -7719,7 +7820,10 @@ const EXERCISES = [
     title: "ท่าลุก–นั่งจากเก้าอี้",
     englishTitle: "Sit to Stand",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "8–10 ครั้ง (1–2 รอบ)",
+    duration: "3 นาที 4 วินาที",
+    durationSeconds: 184,
+    durationFormatted: "3 น. 4 วิ.",
+    durationDisplay: "3 นาที 4 วินาที",
     restTime: "พัก 30–60 วินาทีระหว่างรอบ",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เก้าอี้มั่นคงไม่มีล้อ",
@@ -7742,7 +7846,10 @@ const EXERCISES = [
     title: "ท่ากางขาออกด้านข้าง",
     englishTitle: "Side Leg Raise",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "10 ครั้งต่อข้าง",
+    duration: "2 นาที 56 วินาที",
+    durationSeconds: 176,
+    durationFormatted: "2 น. 56 วิ.",
+    durationDisplay: "2 นาที 56 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3 ครั้งต่อสัปดาห์",
     equipment: "เก้าอี้สำหรับช่วยพยุง",
@@ -7765,7 +7872,10 @@ const EXERCISES = [
     title: "ท่าเหยียดเข่าขณะนั่ง",
     englishTitle: "Knee Extension",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "10 ครั้งต่อข้าง",
+    duration: "3 นาที 36 วินาที",
+    durationSeconds: 216,
+    durationFormatted: "3 น. 36 วิ.",
+    durationDisplay: "3 นาที 36 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "เก้าอี้มีพนักพิง",
@@ -7788,7 +7898,10 @@ const EXERCISES = [
     title: "ท่าบิดลำตัวซ้าย–ขวาขณะนั่ง",
     englishTitle: "Seated Torso Twist",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "8–10 ครั้ง",
+    duration: "48 วินาที",
+    durationSeconds: 48,
+    durationFormatted: "48 วิ.",
+    durationDisplay: "48 วินาที",
     restTime: "พัก 10–15 วินาที",
     frequency: "ทำได้ทุกวัน",
     equipment: "เก้าอี้มีพนักพิง",
@@ -7811,7 +7924,10 @@ const EXERCISES = [
     title: "ท่าฝึกยืนทรงตัว",
     englishTitle: "Balance Stance",
     category: ["ทั้งหมด", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "2–3 รอบ",
+    duration: "2 นาที 56 วินาที",
+    durationSeconds: 176,
+    durationFormatted: "2 น. 56 วิ.",
+    durationDisplay: "2 นาที 56 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "ทำได้ทุกวัน",
     equipment: "เก้าอี้สำหรับช่วยพยุง",
@@ -7834,7 +7950,10 @@ const EXERCISES = [
     title: "การเต้นบาสโลบเพื่อสุขภาพ",
     englishTitle: "Community Pasolob Dance",
     category: ["ทั้งหมด", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "15–30 นาที (3–5 เพลง)",
+    duration: "3 นาที 48 วินาที",
+    durationSeconds: 228,
+    durationFormatted: "3 น. 48 วิ.",
+    durationDisplay: "3 นาที 48 วินาที",
     restTime: "พัก 30–60 วินาทีระหว่างเพลง",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์ (เปิดดนตรีจังหวะบาสโลบ)",
@@ -7857,7 +7976,10 @@ const EXERCISES = [
     title: "ท่ากระโดดเชือก",
     englishTitle: "Jump Rope",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "1–2 นาที (หรือ 50–100 ครั้ง)",
+    duration: "3 นาที 17 วินาที",
+    durationSeconds: 197,
+    durationFormatted: "3 น. 17 วิ.",
+    durationDisplay: "3 นาที 17 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "เชือกกระโดด (หรือเชือกไร้สาย)",
@@ -7880,7 +8002,10 @@ const EXERCISES = [
     title: "ท่าซิทอัพ",
     englishTitle: "Sit-up",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–15 ครั้ง (ทำ 2–3 เซ็ต)",
+    duration: "3 นาที 20 วินาที",
+    durationSeconds: 200,
+    durationFormatted: "3 น. 20 วิ.",
+    durationDisplay: "3 นาที 20 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "เสื่อโยคะหรือเบาะรองนอน",
@@ -7903,7 +8028,10 @@ const EXERCISES = [
     title: "ยกเข่าสูงแตะมือ High Knees",
     englishTitle: "High Knees",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "30–45 วินาที (ทำ 3 เซ็ต)",
+    duration: "3 นาที 13 วินาที",
+    durationSeconds: 193,
+    durationFormatted: "3 น. 13 วิ.",
+    durationDisplay: "3 นาที 13 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7926,7 +8054,10 @@ const EXERCISES = [
     title: "ท่าตีเข่า",
     englishTitle: "Standing Knee Strike",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "ข้างละ 12–15 ครั้ง (ทำ 2–3 เซ็ต)",
+    duration: "3 นาที 20 วินาที",
+    durationSeconds: 200,
+    durationFormatted: "3 น. 20 วิ.",
+    durationDisplay: "3 นาที 20 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7949,7 +8080,10 @@ const EXERCISES = [
     title: "แพลงก์",
     englishTitle: "Plank",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "20–45 วินาที (ทำ 2–3 เซ็ต)",
+    duration: "2 นาที 51 วินาที",
+    durationSeconds: 171,
+    durationFormatted: "2 น. 51 วิ.",
+    durationDisplay: "2 นาที 51 วินาที",
     restTime: "พัก 30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "เสื่อโยคะหรือเบาะรองนอน",
@@ -7972,7 +8106,10 @@ const EXERCISES = [
     title: "ท่าก้าวขาด้านข้างพร้อมยกแขนเหนือศีรษะ",
     englishTitle: "Side Step Jack",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)", "วัยผู้สูงอายุ (65 ปีขึ้นไป)"],
-    duration: "30–60 วินาที (ทำ 3 เซ็ต)",
+    duration: "1 นาที 27 วินาที",
+    durationSeconds: 87,
+    durationFormatted: "1 น. 27 วิ.",
+    durationDisplay: "1 นาที 27 วินาที",
     restTime: "พัก 15–20 วินาที",
     frequency: "3–5 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -7995,7 +8132,10 @@ const EXERCISES = [
     title: "ย่อลุกชก",
     englishTitle: "Squat to Punch",
     category: ["ทั้งหมด", "วัยเด็กและวัยรุ่น (6–17 ปี)", "วัยผู้ใหญ่ (18–64 ปี)"],
-    duration: "10–12 ครั้ง (ทำ 3 เซ็ต)",
+    duration: "2 นาที 20 วินาที",
+    durationSeconds: 140,
+    durationFormatted: "2 น. 20 วิ.",
+    durationDisplay: "2 นาที 20 วินาที",
     restTime: "พัก 20–30 วินาที",
     frequency: "3–4 ครั้งต่อสัปดาห์",
     equipment: "ไม่ใช้อุปกรณ์",
@@ -8020,7 +8160,10 @@ const WARMUP_EXERCISE = {
   id: "routine-warmup",
   title: "ท่าบริหารร่างกายก่อนออกกำลังกาย (Warm-up)",
   englishTitle: "Warm-up Routine",
-  duration: "5–10 นาที",
+  duration: "2 นาที 48 วินาที",
+    durationSeconds: 168,
+    durationFormatted: "2 น. 48 วิ.",
+    durationDisplay: "2 นาที 48 วินาที",
   restTime: "ไม่จำเป็นต้องพักนาน",
   frequency: "ก่อนออกกำลังกายทุกครั้ง",
   equipment: "ไม่ใช้อุปกรณ์",
@@ -8043,7 +8186,10 @@ const COOLDOWN_EXERCISE = {
   id: "routine-cooldown",
   title: "ท่ายืดเหยียดร่างกายหลังออกกำลังกาย (Cool Down)",
   englishTitle: "Cool Down & Static Stretch",
-  duration: "5–10 นาที",
+  duration: "2 นาที 11 วินาที",
+    durationSeconds: 131,
+    durationFormatted: "2 น. 11 วิ.",
+    durationDisplay: "2 นาที 11 วินาที",
   restTime: "ค้างแต่ละท่า 15–20 วินาที",
   frequency: "หลังออกกำลังกายเสร็จสิ้นทุกครั้ง",
   equipment: "ไม่ใช้อุปกรณ์",
@@ -8168,7 +8314,6 @@ const COMMUNITY_INFO = {
     { name: "คุณวิเชียร ใจดี", role: "แกนนำออกกำลังกายชุมชน", contact: "089-xxx-xxxx" }
   ]
 };
-
 
 /* ===== FILE: audio-cues.js ===== */
 /**
@@ -8428,6 +8573,40 @@ class UserStore {
 
     // ล้างข้อมูลจำลองโหมดทดสอบออกอัตโนมัติ เพื่อให้แสดงเฉพาะประวัติจริงของผู้ใช้
     this.cleanupAllDemoData();
+    this.normalizeHistoryDurations();
+  }
+
+  // ปรับปรุงประวัติเก่าให้ตรงกับเวลาจริงของคลิปวิดีโอ (แก้ปัญหาเดิมที่เคยบันทึกผิดเป็น 15 นาที หรือไม่มี durationSeconds)
+  normalizeHistoryDurations() {
+    let modified = false;
+    this.users.forEach(u => {
+      if (!u.history || !Array.isArray(u.history)) return;
+      u.history.forEach(r => {
+        const exact = (typeof getExactExerciseDuration === 'function')
+          ? getExactExerciseDuration(r.exerciseTitle)
+          : (window.EXERCISE_EXACT_DURATIONS && Object.values(window.EXERCISE_EXACT_DURATIONS).find(item => r.exerciseTitle && (r.exerciseTitle === item.title || r.exerciseTitle.startsWith(item.title) || item.title.startsWith(r.exerciseTitle))));
+
+        if (exact) {
+          // ถ้าไม่มี durationSeconds หรือเคยเป็น 15 นาที (จากบั๊กเดิม) หรือค่าไม่ตรงกับเวลาคลิป
+          if (!r.durationSeconds || (r.durationMinutes === 15 && exact.durationSeconds !== 900) || Math.abs((r.durationSeconds || 0) - exact.durationSeconds) > 2) {
+            r.durationSeconds = exact.durationSeconds;
+            r.durationMinutes = exact.durationMinutes;
+            r.durationFormatted = exact.durationFormatted;
+            r.durationDisplay = exact.durationDisplay;
+            modified = true;
+          }
+        } else if (r.durationSeconds && !r.durationFormatted) {
+          const m = Math.floor(r.durationSeconds / 60);
+          const s = r.durationSeconds % 60;
+          r.durationFormatted = s > 0 ? (m > 0 ? `${m} น. ${s} วิ.` : `${s} วิ.`) : `${m} น.`;
+          r.durationDisplay = s > 0 ? (m > 0 ? `${m} นาที ${s} วินาที` : `${s} วินาที`) : `${m} นาที`;
+          modified = true;
+        }
+      });
+    });
+    if (modified) {
+      this.saveAllUsers();
+    }
   }
 
   cleanupAllDemoData() {
@@ -8743,6 +8922,38 @@ class UserStore {
     const d = String(now.getDate()).padStart(2, '0');
     const isoDate = `${y}-${m}-${d}`;
 
+    // ดึงเวลาจริงที่ถูกต้องจากฐานข้อมูลกลาง EXERCISE_EXACT_DURATIONS
+    let durSec = record.durationSeconds;
+    let durFormatted = record.durationFormatted;
+    let durDisplay = record.durationDisplay;
+
+    const exact = (typeof getExactExerciseDuration === 'function')
+      ? getExactExerciseDuration(record.exerciseTitle)
+      : (window.EXERCISE_EXACT_DURATIONS && Object.values(window.EXERCISE_EXACT_DURATIONS).find(item => record.exerciseTitle && (record.exerciseTitle === item.title || record.exerciseTitle.startsWith(item.title) || item.title.startsWith(record.exerciseTitle))));
+
+    if (exact) {
+      if (!durSec || Math.abs(durSec - exact.durationSeconds) > 2) {
+        durSec = exact.durationSeconds;
+      }
+      durFormatted = durFormatted || exact.durationFormatted;
+      durDisplay = durDisplay || exact.durationDisplay;
+    }
+
+    if (!durSec) {
+      if (record.durationMinutes) {
+        durSec = Math.round(Number(record.durationMinutes) * 60);
+      } else {
+        durSec = 60;
+      }
+    }
+
+    if (!durFormatted) {
+      const mNum = Math.floor(durSec / 60);
+      const sNum = durSec % 60;
+      durFormatted = sNum > 0 ? (mNum > 0 ? `${mNum} น. ${sNum} วิ.` : `${sNum} วิ.`) : `${mNum} น.`;
+      durDisplay = sNum > 0 ? (mNum > 0 ? `${mNum} นาที ${sNum} วินาที` : `${sNum} วินาที`) : `${mNum} นาที`;
+    }
+
     const newRecord = {
       id: "rec-" + Date.now(),
       isoDate: isoDate,
@@ -8754,7 +8965,11 @@ class UserStore {
         minute: "2-digit"
       }) + " น.",
       timeStr: now.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) + " น.",
-      ...record
+      ...record,
+      durationSeconds: durSec,
+      durationMinutes: durSec / 60,
+      durationFormatted: durFormatted,
+      durationDisplay: durDisplay || durFormatted
     };
 
     u.history.unshift(newRecord);
@@ -8767,16 +8982,12 @@ class UserStore {
     return (this.history || []).filter(item => item.isoDate === isoDateStr);
   }
 
-  // คำนวณสถิติสะสมสำหรับ "วันนี้" โดยจะรีเซ็ตอัตโนมัติเมื่อขึ้นวันใหม่ (Daily Reset)
-  getTodayStats() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const todayIso = `${y}-${m}-${d}`;
-
-    const todayRecords = this.getRecordsByDate(todayIso);
-    const totalSeconds = todayRecords.reduce((sum, r) => {
+  // ตรวจสอบผลสถานะของวันใดวันหนึ่ง (isoDate: YYYY-MM-DD)
+  // เกณฑ์รายวัน: ผู้ใหญ่/ผู้สูงอายุ 30 นาที, วัยรุ่น 60 นาที
+  // < เกณฑ์ = สีแดง (failed), >= เกณฑ์ = สีเขียว (passed)
+  getDayStatus(isoDateStr) {
+    const records = this.getRecordsByDate(isoDateStr);
+    const totalSeconds = records.reduce((sum, r) => {
       if (r.durationSeconds) return sum + Number(r.durationSeconds);
       if (r.durationMinutes) return sum + Math.round(Number(r.durationMinutes) * 60);
       return sum + 60;
@@ -8787,14 +8998,94 @@ class UserStore {
 
     const totalMins = Math.floor(totalSeconds / 60);
     const remSec = totalSeconds % 60;
+
     let totalFormatted = "";
+    let totalFormattedShort = "";
     if (totalSeconds === 0) {
       totalFormatted = "0 นาที";
+      totalFormattedShort = "0 น.";
     } else if (remSec > 0) {
-      totalFormatted = `${totalMins} นาที ${remSec} วินาที`;
+      totalFormatted = totalMins > 0 ? `${totalMins} นาที ${remSec} วินาที` : `${remSec} วินาที`;
+      totalFormattedShort = totalMins > 0 ? `${totalMins} น. ${remSec} วิ.` : `${remSec} วิ.`;
     } else {
       totalFormatted = `${totalMins} นาที`;
+      totalFormattedShort = `${totalMins} น.`;
     }
+
+    const remainingSec = Math.max(0, targetSeconds - totalSeconds);
+    const remMins = Math.floor(remainingSec / 60);
+    const remSecOnly = remainingSec % 60;
+
+    let remainingFormatted = "";
+    let remainingFormattedShort = "";
+    if (remainingSec === 0) {
+      remainingFormatted = "ครบตามเกณฑ์แล้ว";
+      remainingFormattedShort = "ครบเกณฑ์";
+    } else if (remSecOnly > 0) {
+      remainingFormatted = remMins > 0 ? `${remMins} นาที ${remSecOnly} วินาที` : `${remSecOnly} วินาที`;
+      remainingFormattedShort = remMins > 0 ? `${remMins} น. ${remSecOnly} วิ.` : `${remSecOnly} วิ.`;
+    } else {
+      remainingFormatted = `${remMins} นาที`;
+      remainingFormattedShort = `${remMins} น.`;
+    }
+
+    if (totalSeconds === 0) {
+      return {
+        isoDate: isoDateStr,
+        hasWorkout: false,
+        totalSeconds: 0,
+        totalMinutes: 0,
+        totalMins: 0,
+        remSec: 0,
+        totalFormatted: "0 นาที",
+        totalFormattedShort: "0 น.",
+        targetMinutes,
+        targetSeconds,
+        isPassed: false,
+        status: "none",
+        remainingMinutes: targetMinutes,
+        remainingSeconds: targetSeconds,
+        remainingFormatted: `${targetMinutes} นาที`,
+        remainingFormattedShort: `${targetMinutes} น.`,
+        percent: 0,
+        records: []
+      };
+    }
+
+    const isPassed = totalSeconds >= targetSeconds;
+    return {
+      isoDate: isoDateStr,
+      hasWorkout: true,
+      totalSeconds,
+      totalMinutes: totalMins,
+      totalMinutesDecimal: (totalSeconds / 60).toFixed(1),
+      totalMins,
+      remSec,
+      totalFormatted,
+      totalFormattedShort,
+      targetMinutes,
+      targetSeconds,
+      isPassed,
+      status: isPassed ? "passed" : "failed",
+      remainingMinutes: Math.ceil(remainingSec / 60),
+      remainingSeconds: remainingSec,
+      remainingFormatted,
+      remainingFormattedShort,
+      percent: Math.min(100, Math.round((totalSeconds / targetSeconds) * 100)),
+      records
+    };
+  }
+
+  // คำนวณสถิติสะสมสำหรับ "วันนี้" โดยจะรีเซ็ตอัตโนมัติเมื่อขึ้นวันใหม่ (Daily Reset)
+  // ให้ผลตรงกับ getDayStatus() 100% สอดคล้องกันทั้งหน้าแรกและหน้าปฏิทิน
+  getTodayStats() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const todayIso = `${y}-${m}-${d}`;
+
+    const dayStatus = this.getDayStatus(todayIso);
 
     return {
       todayIso,
@@ -8804,15 +9095,8 @@ class UserStore {
         month: "long",
         day: "numeric"
       }),
-      totalSeconds,
-      totalMinutes: totalMins,
-      totalMinutesDecimal: (totalSeconds / 60).toFixed(1),
-      totalFormatted,
-      targetMinutes,
-      targetSeconds,
-      isGoalReached: totalSeconds >= targetSeconds,
-      percent: Math.min(100, Math.round((totalSeconds / targetSeconds) * 100)),
-      records: todayRecords
+      ...dayStatus,
+      isGoalReached: dayStatus.isPassed
     };
   }
 
@@ -8825,7 +9109,15 @@ class UserStore {
     });
 
     const uniqueDays = new Set(records.map(r => r.isoDate)).size;
-    const totalMinutes = records.reduce((sum, r) => sum + (Number(r.durationMinutes) || 0), 0);
+    const totalSeconds = records.reduce((sum, r) => {
+      if (r.durationSeconds) return sum + Number(r.durationSeconds);
+      if (r.durationMinutes) return sum + Math.round(Number(r.durationMinutes) * 60);
+      return sum + 60;
+    }, 0);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const remSec = totalSeconds % 60;
+    const totalFormatted = remSec > 0 ? `${totalMinutes} น. ${remSec} วิ.` : `${totalMinutes} นาที`;
+
     const avgHeartRate = records.length > 0
       ? Math.round(records.reduce((sum, r) => sum + (Number(r.heartRate) || 0), 0) / records.length)
       : 0;
@@ -8833,41 +9125,10 @@ class UserStore {
     return {
       recordCount: records.length,
       activeDaysCount: uniqueDays,
+      totalSeconds,
       totalMinutes,
+      totalFormatted,
       avgHeartRate,
-      records
-    };
-  }
-
-  // ตรวจสอบผลสถานะของวันใดวันหนึ่ง (isoDate: YYYY-MM-DD)
-  // เกณฑ์รายวัน: ผู้ใหญ่/ผู้สูงอายุ 30 นาที, วัยรุ่น 60 นาที
-  // < เกณฑ์ = สีแดง (failed), >= เกณฑ์ = สีเขียว (passed)
-  getDayStatus(isoDateStr) {
-    const records = this.getRecordsByDate(isoDateStr);
-    const totalMinutes = records.reduce((sum, r) => sum + (Number(r.durationMinutes) || 0), 0);
-    const targetMinutes = this.getDailyTargetMinutes();
-
-    if (totalMinutes === 0) {
-      return {
-        isoDate: isoDateStr,
-        hasWorkout: false,
-        totalMinutes: 0,
-        targetMinutes,
-        isPassed: false,
-        status: "none",
-        records: []
-      };
-    }
-
-    const isPassed = totalMinutes >= targetMinutes;
-    return {
-      isoDate: isoDateStr,
-      hasWorkout: true,
-      totalMinutes,
-      targetMinutes,
-      isPassed,
-      status: isPassed ? "passed" : "failed",
-      remainingMinutes: Math.max(0, targetMinutes - totalMinutes),
       records
     };
   }
@@ -8979,7 +9240,14 @@ class UserStore {
   }
 
   getWeeklyTotalMinutes() {
-    return (this.history || []).reduce((sum, item) => sum + (Number(item.durationMinutes) || 0), 0);
+    const totalSec = (this.history || []).reduce((sum, item) => {
+      if (item.durationSeconds) return sum + Number(item.durationSeconds);
+      if (item.durationMinutes) return sum + Math.round(Number(item.durationMinutes) * 60);
+      return sum + 60;
+    }, 0);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return s > 0 ? `${m} นาที ${s} วินาที` : `${m}`;
   }
 
   printHealthReport(filterDate = null, filterDateLabel = "") {
@@ -8993,8 +9261,8 @@ class UserStore {
         <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center;">${idx + 1}</td>
         <td style="padding: 8px; border: 1px solid #cbd5e1;">${item.date}</td>
         <td style="padding: 8px; border: 1px solid #cbd5e1;"><strong>${item.exerciseTitle}</strong></td>
-        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center;">${item.durationMinutes} นาที</td>
-        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #0284c7;">${item.heartRate} bpm</td>
+        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center;">${item.durationDisplay || item.durationFormatted || (item.durationMinutes + ' นาที')}</td>
+        <td style="padding: 8px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #0284c7;">${typeof item.heartRate === 'number' ? item.heartRate + ' bpm' : (item.heartRate || '-')}</td>
         <td style="padding: 8px; border: 1px solid #cbd5e1;">${item.status}</td>
       </tr>
     `).join("");
@@ -9089,7 +9357,6 @@ class UserStore {
 
 const userStore = new UserStore();
 window.userStore = userStore;
-
 
 /* ===== FILE: pulse-timer.js ===== */
 /**
@@ -9912,9 +10179,16 @@ class PulseTimer {
           const exTitle = currentEx?.title 
             ? `${currentEx.title} (ประเมินด้วยการพูด)` 
             : "การประเมินการพูด (Talk Test)";
-          const durationMins = currentEx?.duration 
-            ? (parseInt(currentEx.duration) || 10) 
-            : 5;
+          
+          const exact = (typeof getExactExerciseDuration === 'function')
+            ? getExactExerciseDuration(currentEx)
+            : null;
+          const durSec = (window.postWorkoutModal && window.postWorkoutModal.recordedDurationSeconds)
+            || exact?.durationSeconds
+            || currentEx?.durationSeconds
+            || 60;
+          const durFormatted = exact?.durationFormatted || `${Math.floor(durSec / 60)} น.`;
+          const durDisplay = exact?.durationDisplay || `${Math.floor(durSec / 60)} นาที`;
 
           const levelLabel = level === "light" 
             ? "ระดับเบา (พูดได้สบาย)" 
@@ -9923,7 +10197,10 @@ class PulseTimer {
           // บันทึกลง User Store
           userStore.addRecord({
             exerciseTitle: exTitle,
-            durationMinutes: durationMins,
+            durationSeconds: durSec,
+            durationMinutes: durSec / 60,
+            durationFormatted: durFormatted,
+            durationDisplay: durDisplay,
             ageGroup: ageKey,
             ageGroupLabel: (typeof AGE_CRITERIA !== "undefined" && AGE_CRITERIA[ageKey]) ? AGE_CRITERIA[ageKey].label : ageGroupText,
             heartRate: levelLabel,
@@ -9949,14 +10226,18 @@ class PulseTimer {
               window.postWorkoutModal.close();
             }
             // รีเฟรชส่วนต่างๆ ในแอป
-            if (window.app && window.app.renderProfileView) {
-              window.app.renderProfileView();
-            }
-            if (window.app && window.app.renderDailyStatCard) {
-              window.app.renderDailyStatCard();
-            }
-            if (window.workoutCalendar && window.workoutCalendar.render) {
-              window.workoutCalendar.render();
+            if (window.app && window.app.refreshAllViews) {
+              window.app.refreshAllViews();
+            } else {
+              if (window.app && window.app.renderProfileView) {
+                window.app.renderProfileView();
+              }
+              if (window.app && window.app.renderDailyStatCard) {
+                window.app.renderDailyStatCard();
+              }
+              if (window.workoutCalendar && window.workoutCalendar.render) {
+                window.workoutCalendar.render();
+              }
             }
           }, 1200);
         });
@@ -9994,7 +10275,6 @@ class PulseTimer {
   }
 }
 
-
 /* ===== FILE: post-workout-modal.js ===== */
 /**
  * FitEasy - Post-Workout Heart Rate Modal
@@ -10029,14 +10309,18 @@ class PostWorkoutModal {
     });
   }
 
-  open(exerciseData, durationSec = 60) {
+  open(exerciseData, durationSec = null) {
     this.currentExercise = exerciseData || {
       title: "ออกกำลังกายตามคลิป",
       duration: "10 นาที"
     };
 
-    // คิดเวลาสะสมจากความยาวคลิปจริง (ปัดขึ้นเป็น 60 วินาที หากไม่ถึง 1 นาที)
-    this.recordedDurationSeconds = Math.max(60, Math.round(durationSec || 60));
+    // คิดเวลาสะสมจากความยาวคลิปจริงตาม EXERCISE_EXACT_DURATIONS
+    const exact = (typeof getExactExerciseDuration === 'function')
+      ? getExactExerciseDuration(exerciseData)
+      : null;
+    const finalDurSec = durationSec || exact?.durationSeconds || exerciseData?.durationSeconds || 60;
+    this.recordedDurationSeconds = Math.round(finalDurSec);
 
     audioCues.playCelebration();
     this.selectedAgeGroup = userStore.profile.ageGroup || "adult";
@@ -10281,12 +10565,19 @@ class PostWorkoutModal {
 
         setTimeout(() => {
           this.close();
-          // รีเฟรชหน้าโปรไฟล์หากเปิดอยู่
-          if (window.app && window.app.renderProfileView) {
-            window.app.renderProfileView();
-          }
-          if (window.app && window.app.renderDailyStatCard) {
-            window.app.renderDailyStatCard();
+          // รีเฟรชหน้าทั้งหมดในแอป (หน้าแรก, ปฏิทิน, โปรไฟล์)
+          if (window.app && window.app.refreshAllViews) {
+            window.app.refreshAllViews();
+          } else {
+            if (window.app && window.app.renderProfileView) {
+              window.app.renderProfileView();
+            }
+            if (window.app && window.app.renderDailyStatCard) {
+              window.app.renderDailyStatCard();
+            }
+            if (window.workoutCalendar && window.workoutCalendar.render) {
+              window.workoutCalendar.render();
+            }
           }
 
           // ตรวจสอบระบบ Cool Down อัตโนมัติ: หากเวลาสะสมวันนี้ถึงเป้าหมายแล้ว ให้เด้งคลิป Cool Down สำหรับผู้ใช้นี้
@@ -10316,7 +10607,6 @@ class PostWorkoutModal {
 
 // Global modal instance placeholder
 let postWorkoutModal = null;
-
 
 /* ===== FILE: video-manager.js ===== */
 /**
@@ -10349,24 +10639,31 @@ class VideoManager {
   recordRoutineTime(routineExercise, customSec = null) {
     if (!routineExercise || !window.userStore) return "";
     
-    // ดึงเวลาจริงจากคลิปวิดีโอ หรือ customSec
+    // ดึงเวลาจริงจากตาราง EXERCISE_EXACT_DURATIONS หรือคลิปวิดีโอ หรือ customSec
     let durSec = customSec;
     if (durSec === null) {
-      if (this.localVideoEl && this.localVideoEl.duration) {
+      const exact = (typeof getExactExerciseDuration === 'function')
+        ? getExactExerciseDuration(routineExercise)
+        : null;
+      if (exact && exact.durationSeconds) {
+        durSec = exact.durationSeconds;
+      } else if (routineExercise.durationSeconds) {
+        durSec = routineExercise.durationSeconds;
+      } else if (this.localVideoEl && this.localVideoEl.duration) {
         durSec = Math.round(this.localVideoEl.duration);
       } else if (this.player && typeof this.player.getDuration === "function" && this.player.getDuration() > 0) {
         durSec = Math.round(this.player.getDuration());
       } else {
-        durSec = 60; // ขั้นต่ำ 1 นาที (60 วินาที) หากยังไม่มีคลิป
+        durSec = 60;
       }
     }
 
-    // หากความยาวคลิปไม่ถึง 1 นาที ให้ปัดขึ้นเป็น 1 นาทีเต็ม (60 วินาที)
-    durSec = Math.max(60, Math.round(durSec || 60));
+    durSec = Math.round(durSec || 60);
 
     const mins = Math.floor(durSec / 60);
     const secs = durSec % 60;
     const durFormatted = secs > 0 ? `${mins} น. ${secs} วิ.` : `${mins} น.`;
+    const durDisplay = secs > 0 ? `${mins} นาที ${secs} วินาที` : `${mins} นาที`;
 
     const isWarmup = routineExercise.id === "routine-warmup";
     const title = isWarmup 
@@ -10378,6 +10675,7 @@ class VideoManager {
       durationSeconds: durSec,
       durationMinutes: durSec / 60,
       durationFormatted: durFormatted,
+      durationDisplay: durDisplay,
       ageGroup: userStore.profile ? userStore.profile.ageGroup || "adult" : "adult",
       ageGroupLabel: isWarmup ? "อบอุ่นร่างกาย" : "ยืดเหยียดผ่อนคลาย",
       heartRate: "-",
@@ -10388,7 +10686,9 @@ class VideoManager {
         : "ช่วยคลายกล้ามเนื้อ ลดอาการปวดเมื่อย และปรับอัตราการเต้นของหัวใจสู่สภาวะปกติ"
     });
 
-    if (window.app && window.app.renderDailyStatCard) {
+    if (window.app && window.app.refreshAllViews) {
+      window.app.refreshAllViews();
+    } else if (window.app && window.app.renderDailyStatCard) {
       window.app.renderDailyStatCard();
     }
 
@@ -10483,9 +10783,19 @@ class VideoManager {
     const modal = document.getElementById("video-player-modal");
     if (!modal) return;
 
-    this.renderModalContent(exercise);
+    // ตรวจสอบว่ามีการแก้ไข URL กำหนดเองหรือไม่
+    const effectiveUrl = this.customUrls[exercise.id] || exercise.videoUrl;
+    const videoId = this.extractYouTubeId(effectiveUrl);
+
+    this.renderModalContent(exercise, videoId, effectiveUrl);
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
+
+    if (videoId) {
+      this.initPlayer(videoId);
+    } else if (effectiveUrl) {
+      this.initLocalVideo();
+    }
   }
 
   closeModal() {
@@ -10497,12 +10807,12 @@ class VideoManager {
     if (this.localVideoEl) {
       try {
         this.localVideoEl.pause();
-        this.localVideoEl.src = "";
+        this.localVideoEl.removeAttribute("src");
         this.localVideoEl.load();
       } catch (e) {}
       this.localVideoEl = null;
     }
-    if (this.player && typeof this.player.destroy === "function") {
+    if (this.player && this.player.destroy) {
       try {
         this.player.destroy();
       } catch (e) {}
@@ -10513,9 +10823,45 @@ class VideoManager {
       modal.classList.remove("active");
     }
     document.body.style.overflow = "";
+
+    // หากเป็นการดู Warm-up หรือ Cool Down และยังไม่ได้บันทึกเวลา ให้บันทึกเวลาสะสมทันที
+    let routineTimeFormatted = "";
+    if (this.currentExercise && (this.currentExercise.id === "routine-warmup" || this.currentExercise.id === "routine-cooldown")) {
+      if (!this.routineRecordedThisSession) {
+        this.routineRecordedThisSession = true;
+        routineTimeFormatted = this.recordRoutineTime(this.currentExercise) || "1 น.";
+      }
+
+      if (this.currentExercise.id === "routine-cooldown" && window.userStore) {
+        const activeUserId = userStore.activeUserId || "default";
+        const todayStats = userStore.getTodayStats();
+        localStorage.setItem(`fiteasy_cooldown_done_${activeUserId}`, todayStats.todayIso);
+        if (routineTimeFormatted) {
+          this.showToastNotice(`🧘‍♂️ บันทึกเวลายืดเหยียด Cool Down (+${routineTimeFormatted}) เรียบร้อยแล้ว สุขภาพดีเยี่ยมครับ!`);
+        }
+      }
+      if (window.app && window.app.renderDailyStatCard) {
+        window.app.renderDailyStatCard();
+      }
+    }
+
+    // หากเพิ่งเสร็จจาก Warm-up และมีท่าที่ผู้ใช้เลือกไว้ค้างอยู่ ให้นำเข้าสู่ท่านั้นอัตโนมัติ
+    if (this.pendingExercise) {
+      const nextEx = this.pendingExercise;
+      this.pendingExercise = null;
+      setTimeout(() => {
+        const noticeTxt = routineTimeFormatted 
+          ? `✨ วอร์มอัพเรียบร้อยแล้ว (+${routineTimeFormatted})! กำลังเปิดท่า "${nextEx.title}" ▶`
+          : `✨ วอร์มอัพเรียบร้อยแล้ว! กำลังเปิดท่า "${nextEx.title}" ▶`;
+        this.showToastNotice(noticeTxt);
+        setTimeout(() => {
+          this.openVideo(nextEx, false);
+        }, 700);
+      }, 350);
+    }
   }
 
-  renderModalContent(exercise) {
+  renderModalContent(exercise, videoId, effectiveUrl) {
     const titleEl = document.getElementById("video-modal-exercise-title");
     const container = document.getElementById("video-embed-container");
 
@@ -10532,9 +10878,7 @@ class VideoManager {
       practiceBtnText = "🧘‍♂️ ยืดเหยียดผ่อนคลายร่างกายเสร็จสิ้น บันทึกเวลา";
     }
 
-    const effectiveUrl = exercise.videoUrl ? exercise.videoUrl.trim() : "";
-    const ytId = effectiveUrl ? this.extractYouTubeId(effectiveUrl) : null;
-    const isYouTube = Boolean(ytId);
+    const isYouTube = Boolean(videoId);
     const hasVideo = Boolean(effectiveUrl);
 
     const isWarmupRoutine = exercise.id === "routine-warmup";
@@ -10702,7 +11046,7 @@ class VideoManager {
     // เริ่มต้นตัวเล่นวิดีโอ (ถ้ามี)
     if (hasVideo) {
       if (isYouTube) {
-        this.initPlayer(ytId);
+        this.initPlayer(videoId);
       } else {
         this.initLocalVideo();
       }
@@ -10772,12 +11116,15 @@ class VideoManager {
         clearInterval(this.localSeekInterval);
         this.localSeekInterval = null;
       }
-      let durationSec = 60;
-      if (this.localVideoEl) {
-        const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
-        durationSec = Math.max(60, Math.round(rawDur));
-      }
       const ex = this.currentExercise;
+      const exact = (typeof getExactExerciseDuration === 'function')
+        ? getExactExerciseDuration(ex)
+        : null;
+      let durationSec = exact?.durationSeconds || ex?.durationSeconds || 60;
+      if (this.localVideoEl && (!exact || !exact.durationSeconds)) {
+        const rawDur = this.localVideoEl.duration || this.localVideoEl.currentTime || 0;
+        if (rawDur > 0) durationSec = Math.round(rawDur);
+      }
       if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
         if (!this.routineRecordedThisSession) {
           this.routineRecordedThisSession = true;
@@ -10788,8 +11135,10 @@ class VideoManager {
       }
 
       this.closeModal();
-      if (ex && window.postWorkoutModal) {
-        window.postWorkoutModal.open(ex, durationSec);
+      if (ex) {
+        if (window.postWorkoutModal) {
+          window.postWorkoutModal.open(ex, durationSec);
+        }
       }
     });
 
@@ -10852,19 +11201,23 @@ class VideoManager {
   }
 
   onPlayerStateChange(event) {
-    if (window.YT && event.data === YT.PlayerState.PLAYING) {
+    if (event.data === YT.PlayerState.PLAYING) {
       this.startSeekMonitor();
       this.checkYouTubeSeek(true);
-    } else if (window.YT && (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.BUFFERING)) {
+    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.BUFFERING) {
       this.checkYouTubeSeek(true);
-    } else if (window.YT && event.data === YT.PlayerState.ENDED) {
+    } else if (event.data === YT.PlayerState.ENDED) {
+      // ดูคลิปจนจบ 100% -> ปลดล็อกระบบวัดชีพจรหลังออกกำลังกายทันที!
       this.stopSeekMonitor();
-      let durationSec = 60;
-      if (this.player && typeof this.player.getDuration === "function") {
-        const rawDur = this.player.getDuration();
-        durationSec = Math.max(60, Math.round(rawDur || 0));
-      }
       const ex = this.currentExercise;
+      const exact = (typeof getExactExerciseDuration === 'function')
+        ? getExactExerciseDuration(ex)
+        : null;
+      let durationSec = exact?.durationSeconds || ex?.durationSeconds || 60;
+      if (this.player && typeof this.player.getDuration === "function" && (!exact || !exact.durationSeconds)) {
+        const rawDur = this.player.getDuration();
+        if (rawDur > 0) durationSec = Math.round(rawDur);
+      }
       if (ex && (ex.id === "routine-warmup" || ex.id === "routine-cooldown")) {
         if (!this.routineRecordedThisSession) {
           this.routineRecordedThisSession = true;
@@ -10875,8 +11228,10 @@ class VideoManager {
       }
 
       this.closeModal();
-      if (ex && window.postWorkoutModal) {
-        window.postWorkoutModal.open(ex, durationSec);
+      if (ex) {
+        if (window.postWorkoutModal) {
+          window.postWorkoutModal.open(ex, durationSec);
+        }
       }
     }
   }
@@ -10913,7 +11268,6 @@ class VideoManager {
 
 // Global instance reference
 let videoManager = window.videoManager || null;
-
 
 /* ===== FILE: calendar.js ===== */
 /**
@@ -11192,7 +11546,7 @@ class WorkoutCalendar {
           <div class="hist-row-meta">📅 ${item.date}</div>
         </td>
         <td style="text-align: center;">
-          <span class="hist-row-dur">${item.durationMinutes} นาที</span>
+          <span class="hist-row-dur">${item.durationDisplay || item.durationFormatted || (item.durationMinutes + ' นาที')}</span>
         </td>
         <td style="text-align: center;">
           <span class="hist-row-hr">${typeof item.heartRate === 'number' ? `${item.heartRate} bpm` : (item.heartRate || '-')}</span>
@@ -11325,18 +11679,18 @@ class WorkoutCalendar {
           // ผ่านเกณฑ์ >= 30 นาที (หรือ 60 สำหรับวัยรุ่น) -> สีเขียว 🟢
           statusClass = "day-passed";
           workoutPillHtml = `
-            <div class="cal-day-workout-pill pill-passed" title="ผ่านเกณฑ์: ออกกำลังกายสะสม ${dayStatus.totalMinutes} นาที (เป้าหมาย ${dayStatus.targetMinutes} นาที)">
+            <div class="cal-day-workout-pill pill-passed" title="ผ่านเกณฑ์: ออกกำลังกายสะสม ${dayStatus.totalFormatted} (เป้าหมาย ${dayStatus.targetMinutes} นาที)">
               <span class="pill-status-icon">✓</span>
-              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalMinutes}</span><span class="pill-mins-unit"> นาที</span></span>
+              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalFormattedShort}</span></span>
             </div>
           `;
         } else {
           // ไม่ผ่านเกณฑ์ < 30 นาที -> สีแดง 🔴
           statusClass = "day-failed";
           workoutPillHtml = `
-            <div class="cal-day-workout-pill pill-failed" title="ไม่ผ่านเกณฑ์: ${dayStatus.totalMinutes} นาที (ขาดอีก ${dayStatus.remainingMinutes} นาที)">
+            <div class="cal-day-workout-pill pill-failed" title="ไม่ผ่านเกณฑ์: ${dayStatus.totalFormatted} (ขาดอีก ${dayStatus.remainingFormatted})">
               <span class="pill-status-icon">✕</span>
-              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalMinutes}</span><span class="pill-mins-unit"> นาที</span></span>
+              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalFormattedShort}</span></span>
             </div>
           `;
         }
@@ -11401,7 +11755,7 @@ class WorkoutCalendar {
             <div>
               <div class="eval-banner-status">ผ่านเกณฑ์ประจำวันแล้ว! 🎉</div>
               <div class="eval-banner-detail">
-                ออกกำลังกายรวม <strong>${dayStatus.totalMinutes} นาที</strong> (บรรลุเกณฑ์เป้าหมาย ≥ ${dayStatus.targetMinutes} นาที/วัน)
+                ออกกำลังกายรวม <strong>${dayStatus.totalFormatted}</strong> (บรรลุเกณฑ์เป้าหมาย ≥ ${dayStatus.targetMinutes} นาที/วัน)
               </div>
             </div>
           </div>
@@ -11415,7 +11769,7 @@ class WorkoutCalendar {
             <div>
               <div class="eval-banner-status">ยังไม่ผ่านเกณฑ์ประจำวัน ⚠️</div>
               <div class="eval-banner-detail">
-                ออกกำลังกายสะสม <strong>${dayStatus.totalMinutes} นาที</strong> (เกณฑ์คือ ${dayStatus.targetMinutes} นาที ขาดอีก <strong>${dayStatus.remainingMinutes} นาที</strong>)
+                ออกกำลังกายสะสม <strong>${dayStatus.totalFormatted}</strong> (เกณฑ์คือ ${dayStatus.targetMinutes} นาที ขาดอีก <strong>${dayStatus.remainingFormatted}</strong>)
               </div>
             </div>
           </div>
@@ -11428,7 +11782,7 @@ class WorkoutCalendar {
         <div class="day-detail-header">
           <div>
             <div class="detail-date-title">📋 ผลการออกกำลังกาย: ${dateFormattedThai}</div>
-            <div class="detail-date-summary">ออกกำลังกายไปทั้งหมด ${records.length} ท่า รวมระยะเวลา ${dayStatus.totalMinutes} นาที</div>
+            <div class="detail-date-summary">ออกกำลังกายไปทั้งหมด ${records.length} ท่า รวมระยะเวลา ${dayStatus.totalFormatted}</div>
           </div>
           <div class="day-detail-header-actions">
             <button type="button" class="btn-print-day-pill" id="btn-print-day-direct" title="พิมพ์เฉพาะรายงานของวันนี้">
@@ -11451,7 +11805,7 @@ class WorkoutCalendar {
                 <div class="workout-icon-badge">🏃</div>
                 <div>
                   <h4 class="workout-item-name">${item.exerciseTitle}</h4>
-                  <div class="workout-item-time">⏰ บันทึกเมื่อ: ${item.timeStr || item.date} | ⏱️ ระยะเวลา: ${item.durationMinutes} นาที</div>
+                  <div class="workout-item-time">⏰ บันทึกเมื่อ: ${item.timeStr || item.date} | ⏱️ ระยะเวลา: ${item.durationDisplay || item.durationFormatted || (item.durationMinutes + ' นาที')}</div>
                 </div>
               </div>
               <div class="workout-card-right">
@@ -11587,7 +11941,6 @@ class WorkoutCalendar {
 
 // Global calendar instance placeholder
 let workoutCalendar = null;
-
 
 /* ===== FILE: pwa-install.js ===== */
 /**

@@ -274,7 +274,7 @@ class WorkoutCalendar {
           <div class="hist-row-meta">📅 ${item.date}</div>
         </td>
         <td style="text-align: center;">
-          <span class="hist-row-dur">${item.durationMinutes} นาที</span>
+          <span class="hist-row-dur">${item.durationDisplay || item.durationFormatted || (item.durationMinutes + ' นาที')}</span>
         </td>
         <td style="text-align: center;">
           <span class="hist-row-hr">${typeof item.heartRate === 'number' ? `${item.heartRate} bpm` : (item.heartRate || '-')}</span>
@@ -407,18 +407,18 @@ class WorkoutCalendar {
           // ผ่านเกณฑ์ >= 30 นาที (หรือ 60 สำหรับวัยรุ่น) -> สีเขียว 🟢
           statusClass = "day-passed";
           workoutPillHtml = `
-            <div class="cal-day-workout-pill pill-passed" title="ผ่านเกณฑ์: ออกกำลังกายสะสม ${dayStatus.totalMinutes} นาที (เป้าหมาย ${dayStatus.targetMinutes} นาที)">
+            <div class="cal-day-workout-pill pill-passed" title="ผ่านเกณฑ์: ออกกำลังกายสะสม ${dayStatus.totalFormatted} (เป้าหมาย ${dayStatus.targetMinutes} นาที)">
               <span class="pill-status-icon">✓</span>
-              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalMinutes}</span><span class="pill-mins-unit"> นาที</span></span>
+              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalFormattedShort}</span></span>
             </div>
           `;
         } else {
           // ไม่ผ่านเกณฑ์ < 30 นาที -> สีแดง 🔴
           statusClass = "day-failed";
           workoutPillHtml = `
-            <div class="cal-day-workout-pill pill-failed" title="ไม่ผ่านเกณฑ์: ${dayStatus.totalMinutes} นาที (ขาดอีก ${dayStatus.remainingMinutes} นาที)">
+            <div class="cal-day-workout-pill pill-failed" title="ไม่ผ่านเกณฑ์: ${dayStatus.totalFormatted} (ขาดอีก ${dayStatus.remainingFormatted})">
               <span class="pill-status-icon">✕</span>
-              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalMinutes}</span><span class="pill-mins-unit"> นาที</span></span>
+              <span class="pill-mins-txt"><span class="pill-mins-num">${dayStatus.totalFormattedShort}</span></span>
             </div>
           `;
         }
@@ -483,7 +483,7 @@ class WorkoutCalendar {
             <div>
               <div class="eval-banner-status">ผ่านเกณฑ์ประจำวันแล้ว! 🎉</div>
               <div class="eval-banner-detail">
-                ออกกำลังกายรวม <strong>${dayStatus.totalMinutes} นาที</strong> (บรรลุเกณฑ์เป้าหมาย ≥ ${dayStatus.targetMinutes} นาที/วัน)
+                ออกกำลังกายรวม <strong>${dayStatus.totalFormatted}</strong> (บรรลุเกณฑ์เป้าหมาย ≥ ${dayStatus.targetMinutes} นาที/วัน)
               </div>
             </div>
           </div>
@@ -497,7 +497,7 @@ class WorkoutCalendar {
             <div>
               <div class="eval-banner-status">ยังไม่ผ่านเกณฑ์ประจำวัน ⚠️</div>
               <div class="eval-banner-detail">
-                ออกกำลังกายสะสม <strong>${dayStatus.totalMinutes} นาที</strong> (เกณฑ์คือ ${dayStatus.targetMinutes} นาที ขาดอีก <strong>${dayStatus.remainingMinutes} นาที</strong>)
+                ออกกำลังกายสะสม <strong>${dayStatus.totalFormatted}</strong> (เกณฑ์คือ ${dayStatus.targetMinutes} นาที ขาดอีก <strong>${dayStatus.remainingFormatted}</strong>)
               </div>
             </div>
           </div>
@@ -510,7 +510,7 @@ class WorkoutCalendar {
         <div class="day-detail-header">
           <div>
             <div class="detail-date-title">📋 ผลการออกกำลังกาย: ${dateFormattedThai}</div>
-            <div class="detail-date-summary">ออกกำลังกายไปทั้งหมด ${records.length} ท่า รวมระยะเวลา ${dayStatus.totalMinutes} นาที</div>
+            <div class="detail-date-summary">ออกกำลังกายไปทั้งหมด ${records.length} ท่า รวมระยะเวลา ${dayStatus.totalFormatted}</div>
           </div>
           <div class="day-detail-header-actions">
             <button type="button" class="btn-print-day-pill" id="btn-print-day-direct" title="พิมพ์เฉพาะรายงานของวันนี้">
@@ -533,7 +533,7 @@ class WorkoutCalendar {
                 <div class="workout-icon-badge">🏃</div>
                 <div>
                   <h4 class="workout-item-name">${item.exerciseTitle}</h4>
-                  <div class="workout-item-time">⏰ บันทึกเมื่อ: ${item.timeStr || item.date} | ⏱️ ระยะเวลา: ${item.durationMinutes} นาที</div>
+                  <div class="workout-item-time">⏰ บันทึกเมื่อ: ${item.timeStr || item.date} | ⏱️ ระยะเวลา: ${item.durationDisplay || item.durationFormatted || (item.durationMinutes + ' นาที')}</div>
                 </div>
               </div>
               <div class="workout-card-right">
