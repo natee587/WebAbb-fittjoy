@@ -228,19 +228,10 @@ class FitJoyApp {
       }
     }
 
-    // จัดการการแสดงผลของแบนเนอร์ติดตั้งแอปบนหน้าลงทะเบียน (ซ่อนทันทีหากติดตั้งแล้ว หรือกำลังแก้ไขข้อมูล)
+    // แถบติดตั้งแอปบนหน้าลงทะเบียน (แสดงเสมอเมื่อลงทะเบียน เพื่อให้ผู้ใช้สามารถติดตั้งแอปได้สะดวก)
     const obInstallBanner = document.getElementById("onboarding-install-banner");
-    const isInstalled = (typeof window.fitjoyIsAppInstalled === 'function')
-      ? window.fitjoyIsAppInstalled()
-      : (localStorage.getItem('fitjoy_pwa_installed') === 'true' || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
-    const isDismissed = sessionStorage.getItem('fitjoy_dismiss_onboarding_install') === 'true';
-
     if (obInstallBanner) {
-      if (this.isEditingUser || isInstalled || isDismissed) {
-        obInstallBanner.style.display = "none";
-      } else {
-        obInstallBanner.style.display = "flex";
-      }
+      obInstallBanner.style.display = this.isEditingUser ? "none" : "flex";
     }
 
     onboardingEl.style.removeProperty("display");

@@ -8,30 +8,14 @@
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const isWindows = /Windows/i.test(navigator.userAgent);
   const isAndroid = /Android/i.test(navigator.userAgent);
+  const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
 
-  function isAppInstalled() {
-    if (typeof window.fitjoyIsAppInstalled === 'function') {
-      return window.fitjoyIsAppInstalled();
-    }
-    try {
-      const isStandalone = (window.matchMedia && (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.matchMedia('(display-mode: fullscreen)').matches ||
-        window.matchMedia('(display-mode: minimal-ui)').matches ||
-        window.matchMedia('(display-mode: window-controls-overlay)').matches
-      )) || window.navigator.standalone === true;
-
-      const isReferrerPwa = typeof document.referrer === 'string' && document.referrer.includes('android-app://');
-      const isStorageInstalled = localStorage.getItem('fitjoy_pwa_installed') === 'true';
-
-      if (isStandalone || isReferrerPwa) {
-        try { localStorage.setItem('fitjoy_pwa_installed', 'true'); } catch (e) {}
-      }
-      return isStandalone || isReferrerPwa || isStorageInstalled;
-    } catch (e) {
-      return false;
-    }
-  }
+  // ล้างค่าตกค้างที่อาจเคยบล็อกการติดตั้งแอป
+  try {
+    localStorage.removeItem('fitjoy_pwa_installed');
+    sessionStorage.removeItem('fitjoy_dismiss_onboarding_install');
+    document.documentElement.classList.remove('pwa-installed');
+  } catch (e) {}
 
   // 1. ลงทะเบียน Service Worker
   if ('serviceWorker' in navigator) {
@@ -46,34 +30,18 @@
     });
   }
 
-  // ตรวจสอบแอปที่ติดตั้งแล้ว (getInstalledRelatedApps)
-  if ('getInstalledRelatedApps' in navigator) {
-    navigator.getInstalledRelatedApps().then((apps) => {
-      if (apps && apps.length > 0) {
-        console.log('[PWA] Installed related apps detected:', apps);
-        try { localStorage.setItem('fitjoy_pwa_installed', 'true'); } catch (e) {}
-        document.documentElement.classList.add('pwa-installed');
-        hideInstallUI();
-      }
-    }).catch(() => {});
-  }
-
   // 2. ดักจับ Event beforeinstallprompt
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     window.fitjoyDeferredPrompt = e;
     console.log('[PWA] beforeinstallprompt captured!');
-    if (!isAppInstalled()) {
-      showInstallUI();
-    }
+    showInstallUI();
   });
 
   // 3. เมื่อติดตั้งสำเร็จ
   window.addEventListener('appinstalled', () => {
     console.log('[PWA] FitJoy installed successfully');
-    try { localStorage.setItem('fitjoy_pwa_installed', 'true'); } catch (e) {}
-    document.documentElement.classList.add('pwa-installed');
     deferredPrompt = null;
     window.fitjoyDeferredPrompt = null;
     hideInstallUI();
@@ -91,21 +59,12 @@
     const btnHeaderInstall = document.getElementById('btn-header-pwa-install');
     const btnOnboardingInstall = document.getElementById('btn-onboarding-pwa-install');
     const btnCloseBanner = document.getElementById('btn-pwa-banner-close');
-    const btnCloseOnboardingBanner = document.getElementById('btn-onboarding-install-close');
 
     const confirmModal = document.getElementById('pwa-confirm-modal');
     const btnConfirmCancel = document.getElementById('btn-pwa-confirm-cancel');
     const btnConfirmInstall = document.getElementById('btn-pwa-confirm-install');
 
-    if (isAppInstalled()) {
-      document.documentElement.classList.add('pwa-installed');
-      hideInstallUI();
-      return;
-    }
-
-    showInstallUI();
-
-    // เปิดหน้าต่างถามยืนยัน
+    // ผูก Event ปุ่มติดตั้งทั้งหมดเสมอ ห้าม return ก่อนผูกเด็ดขาด
     if (btnInstall) btnInstall.addEventListener('click', openConfirmModal);
     if (btnHeaderInstall) btnHeaderInstall.addEventListener('click', openConfirmModal);
     if (btnOnboardingInstall) btnOnboardingInstall.addEventListener('click', openConfirmModal);
@@ -131,29 +90,25 @@
       });
     }
 
-    // ปิดแบนเนอร์ในหน้าลงทะเบียน
-    if (btnCloseOnboardingBanner) {
-      btnCloseOnboardingBanner.addEventListener('click', () => {
-        const obBanner = document.getElementById('onboarding-install-banner');
-        if (obBanner) obBanner.style.display = 'none';
-        sessionStorage.setItem('fitjoy_dismiss_onboarding_install', 'true');
-      });
-    }
-
     // ปิดเมื่อคลิกพื้นหลังสีดำ
     if (confirmModal) {
       confirmModal.addEventListener('click', (e) => {
         if (e.target === confirmModal) confirmModal.style.display = 'none';
       });
     }
+
+    // จัดการแสดงปุ่มและแบนเนอร์ติดตั้ง
+    if (isStandalone) {
+      const installBanner = document.getElementById('pwa-install-banner');
+      if (installBanner) installBanner.style.display = 'none';
+      const headerBtn = document.getElementById('btn-header-pwa-install');
+      if (headerBtn) headerBtn.style.display = 'none';
+    } else {
+      showInstallUI();
+    }
   }
 
   function showInstallUI() {
-    if (isAppInstalled()) {
-      hideInstallUI();
-      return;
-    }
-
     const installBanner = document.getElementById('pwa-install-banner');
     if (installBanner && sessionStorage.getItem('fitjoy_dismiss_install') !== 'true') {
       installBanner.style.display = 'flex';
@@ -163,7 +118,7 @@
     if (headerBtn) headerBtn.style.display = 'inline-flex';
 
     const onboardingBanner = document.getElementById('onboarding-install-banner');
-    if (onboardingBanner && sessionStorage.getItem('fitjoy_dismiss_onboarding_install') !== 'true') {
+    if (onboardingBanner) {
       onboardingBanner.style.display = 'flex';
     }
   }
@@ -174,9 +129,6 @@
 
     const headerBtn = document.getElementById('btn-header-pwa-install');
     if (headerBtn) headerBtn.style.display = 'none';
-
-    const onboardingBanner = document.getElementById('onboarding-install-banner');
-    if (onboardingBanner) onboardingBanner.style.display = 'none';
   }
 
   // เปิดหน้าต่างยืนยัน
@@ -220,12 +172,9 @@
         const choiceResult = await promptObj.userChoice;
         console.log('[PWA] User choice outcome:', choiceResult.outcome);
         if (choiceResult.outcome === 'accepted') {
-          try { localStorage.setItem('fitjoy_pwa_installed', 'true'); } catch (e) {}
-          document.documentElement.classList.add('pwa-installed');
           hideInstallUI();
           const confirmModal = document.getElementById('pwa-confirm-modal');
           if (confirmModal) confirmModal.style.display = 'none';
-          showToast('ติดตั้งแอป "ฟิตจอย" เรียบร้อยแล้ว!');
         }
       } catch (err) {
         console.warn('[PWA] Install prompt failed:', err);
@@ -242,8 +191,15 @@
       return;
     }
 
+    if (isAndroid) {
+      alert("วิธีติดตั้งบน Android:\n👉 แตะที่ปุ่มเมนูจุด 3 จุด (⋮) ด้านบนขวาของ Chrome แล้วเลือก 'ติดตั้งแอป' (Install app) หรือ 'เพิ่มลงในหน้าจอหลัก' (Add to Home screen) ได้ทันทีครับ");
+      const confirmModal = document.getElementById('pwa-confirm-modal');
+      if (confirmModal) confirmModal.style.display = 'none';
+      return;
+    }
+
     // บน Desktop Chrome / Edge หากเบราว์เซอร์บังคับให้คลิกผ่าน URL bar
-    alert("ระบบกำลังพร้อมติดตั้ง!\n👉 โปรดคลิกที่ไอคอน 'ติดตั้ง' (รูปหน้าจอคอม 💻 หรือ ⬇️) ที่อยู่ปลายขวาสุดของแถบ URL ด้านบนของ Google Chrome เพื่อเพิ่มลงหน้าจอ Desktop ได้ทันทีครับ");
+    alert("ระบบกำลังพร้อมติดตั้ง!\n👉 โปรดคลิกที่ไอคอน 'ติดตั้ง' (รูปหน้าจอคอม 💻 หรือ ⬇️) ที่อยู่ปลายขวาสุดของแถบ URL ด้านบนของ Google Chrome หรือ Microsoft Edge เพื่อเพิ่มลงหน้าจอ Desktop ได้ทันทีครับ");
   }
 
   function showToast(msg) {
@@ -263,12 +219,12 @@
     promptInstall: handleExecuteInstall,
     hideInstallUI: hideInstallUI,
     showInstallUI: showInstallUI,
-    isInstalled: isAppInstalled,
     onPromptReady: (e) => {
       deferredPrompt = e;
-      if (!isAppInstalled()) {
-        showInstallUI();
-      }
+      showInstallUI();
+    },
+    onInstalled: () => {
+      hideInstallUI();
     }
   };
 })();
